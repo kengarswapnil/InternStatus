@@ -1,0 +1,247 @@
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Provider, useDispatch } from "react-redux";
+import { useEffect, useState } from "react";
+import appStore from "./store/appStore";
+
+/* API */
+import API from "./api/api";
+
+/* Redux actions */
+import { addUser, removeUser } from "./store/userSlice";
+
+/* Layout */
+import MainLayout from "./layouts/MainLayout";
+
+/* Public Pages */
+import Home from "./pages/Home";
+import Login from "./pages/auth/Login";
+import CompanyRegister from "./pages/company/CompanyRegister";
+import CollegeRegister from "./pages/college/CollegeRegister";
+
+/* Dashboards */
+import StudentDashboard from "./pages/students/StudentDashboard";
+import FacultyDashboard from "./pages/faculty/FacultyDashboard";
+import MentorDashboard from "./pages/mentor/MentorDashboard";
+
+/* Admin */
+import AdminLogin from "./pages/admin/AdminLogin";
+import AdminColleges from "./pages/admin/colleges/AdminColleges";
+import AdminCollegeForm from "./pages/admin/colleges/AdminCollegeForm";
+import AdminCollegeDetails from "./pages/admin/colleges/AdminCollegeDetails";
+
+import SetPassword from "./pages/SetPassword";
+
+import ProtectedRoute from "./routes/ProtectedRoute";
+
+import CollegeDashboard from "./pages/college/CollegeDashboard";
+import CompanyDashboard from "./pages/company/CompanyDashboard";
+
+import InviteStudent from "./pages/faculty/InviteStudent";
+import InviteFaculty from "./pages/college/InviteFaculty";
+import Courses from "./pages/college/Courses";
+import InviteMentor from "./pages/company/InviteMentor";
+import StudentProfile from "./pages/students/StudentProfile";
+import CollegeProfile from "./pages/college/CollegeProfile";
+import FacultyProfile from "./pages/faculty/FacultyProfile";
+import MentorProfile from "./pages/mentor/MentorProfile";
+import CompanyProfile from "./pages/company/CompanyProfile";
+import CollegeFacultyList from "./pages/college/CollegeFacultyList";
+import CompanyMentorList from "./pages/company/CompanyMentorList";
+import CollegeStudents from "./pages/college/CollegeStudents";
+import FacultyStudents from "./pages/faculty/FacultyStudents";
+import PostInternship from "./pages/company/PostInternship";
+import BrowseInternships from "./pages/students/BrowseInternships";
+import InternshipDetails from "./pages/students/InternshipDetails";
+import MyApplications from "./pages/students/MyApplications";
+import InternshipApplicants from "./pages/company/InternshipApplicants";
+import CompanyInternships from "./pages/company/CompanyInternships";
+import EditInternship from "./pages/company/EditInternship";
+import CompanyInterns from "./pages/company/CompanyInterns";
+import InternDetails from "./pages/company/InternDetails";
+import AdminLayout from "./layouts/AdminLayout";
+import PendingRequests from "./pages/admin/onboarding/PendingRequests";
+import VerifiedOnboardings from "./pages/admin/onboarding/VerifiedOnboardings";
+import OnboardingDetails from "./pages/admin/onboarding/OnboardingDetails";
+import AdminCompanies from "./pages/admin/companies/AdminCompanies";
+import AdminCompanyForm from "./pages/admin/companies/AdminCompanyForm";
+import AdminCompanyDetails from "./pages/admin/companies/AdminCompanyDetails";
+import AdminUsers from "./pages/admin/users/AdminUsers";
+import AdminUserDetails from "./pages/admin/users/AdminUserDetails";
+import ForgotPassword from "../../../Member/internStatus/frontend/src/pages/auth/ForgotPassword";
+import ResetPassword from "../../../Member/internStatus/frontend/src/pages/auth/ResetPassword";
+
+
+function AppContent() {
+
+  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+
+    const initAuth = async () => {
+
+      try {
+
+        // ✅ Check if session exists via API (rely on cookie)
+        const res = await API.get("/users/profile");
+
+        dispatch(addUser({
+          user: res.data.user,
+          profile: res.data.profile,
+          token: null // Token is in httpOnly cookie
+        }));
+
+      } catch (err) {
+
+        dispatch(removeUser());
+
+      } finally {
+        setLoading(false);
+      }
+    };
+
+  initAuth();
+
+}, [dispatch]);
+
+useEffect(() => {
+
+  const handleStorageChange = () => {
+
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      dispatch(removeUser());
+    }
+
+  };
+
+  window.addEventListener("storage", handleStorageChange);
+
+  return () => {
+    window.removeEventListener("storage", handleStorageChange);
+  };
+
+}, [dispatch]);
+
+if (loading) {
+  return (
+    <div className="h-screen flex items-center justify-center">
+      <p>Loading...</p>
+    </div>
+  );
+}
+
+  return (
+    <BrowserRouter>
+      <Routes>
+
+        <Route element={<MainLayout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/college/register" element={<CollegeRegister />} />
+          <Route path="/company/register" element={<CompanyRegister />} />
+          <Route path="/setup-account" element={<SetPassword />} />
+        </Route>
+
+        <Route element={<ProtectedRoute role="college" />}>
+          <Route path="/college/dashboard" element={<CollegeDashboard />} />
+          <Route path="/college/invite-student" element={<InviteStudent />} />
+          <Route path="/college/invite-faculty" element={<InviteFaculty />} />
+          <Route path="/college/courses" element={<Courses />} />
+          <Route path="/college/profile" element={<CollegeProfile />} />
+          <Route path="/college/faculty" element={<CollegeFacultyList />} />
+          <Route path="/college/students" element={<CollegeStudents />} />
+        </Route>
+
+        <Route element={<ProtectedRoute role="faculty" />}>
+          <Route path="/faculty/profile" element={<FacultyProfile />} />
+          <Route path="/faculty/invite-student" element={<InviteStudent />} />
+          <Route path="/faculty/students" element={<FacultyStudents />} />
+        </Route>
+
+        <Route element={<ProtectedRoute role="mentor" />}>
+          <Route path="/mentor/profile" element={<MentorProfile />} />
+        </Route>
+
+        <Route element={<ProtectedRoute role="company" />}>
+          <Route path="/company/dashboard" element={<CompanyDashboard />} />
+          <Route path="/company/invite-mentor" element={<InviteMentor />} />
+          <Route path="/company/profile" element={<CompanyProfile />} />
+          <Route path="/company/mentors" element={<CompanyMentorList />} />
+          <Route path="/company/post-internship" element={<PostInternship />} />
+          <Route path="/company/company-internships" element={<CompanyInternships />} />
+          <Route path="/company/internship/:id/applicants" element={<InternshipApplicants />} />
+          <Route path="/company/internship/:id/edit" element={<EditInternship />} />
+          <Route path="/company/interns" element={<CompanyInterns />} />
+          <Route path="/company/intern/:id" element={<InternDetails />} />
+
+        </Route>
+
+        <Route element={<ProtectedRoute role="student" />}>
+          <Route path="/student/dashboard" element={<StudentDashboard />} />
+          <Route path="/student/profile" element={<StudentProfile />} />
+          <Route path="/student/browse-internships" element={<BrowseInternships />} />
+          <Route path="/student/internships/:id" element={<InternshipDetails />} />
+          <Route path="/student/my-applications" element={<MyApplications />} />
+        </Route>
+
+        <Route element={<ProtectedRoute role="faculty" />}>
+          <Route path="/faculty/dashboard" element={<FacultyDashboard />} />
+          <Route path="/faculty/invite-student" element={<InviteStudent />} />
+        </Route>
+
+            <Route element={<ProtectedRoute role="mentor" />}>
+          <Route path="/mentor" element={<MentorDashboard />} />
+        </Route>
+        
+
+       <Route element={<ProtectedRoute role="admin" />}>
+  
+        <Route path="/admin" element={<AdminLayout />}>
+
+        {/* Dashboard */}
+        <Route index element={<div>ADMIN OK</div>} />
+
+        {/* Onboarding */}
+        <Route path="onboarding/pending" element={<PendingRequests />} />
+        <Route path="onboarding/verified" element={<VerifiedOnboardings />} />
+        <Route path="onboarding/:type/:id" element={<OnboardingDetails />} /> 
+        <Route path="colleges" element={<AdminColleges />} />
+<Route path="colleges/new" element={<AdminCollegeForm />} />
+<Route path="colleges/edit/:id" element={<AdminCollegeForm />} />
+<Route path="colleges/:id" element={<AdminCollegeDetails />} />
+
+        <Route path="companies" element={<AdminCompanies />} />
+<Route path="companies/new" element={<AdminCompanyForm />} />
+<Route path="companies/edit/:id" element={<AdminCompanyForm />} />
+<Route path="companies/:id" element={<AdminCompanyDetails />} />
+<Route path="users" element={<AdminUsers />} />
+<Route path="users/:id" element={<AdminUserDetails />} />
+
+      </Route>
+
+</Route>
+
+        <Route path="/admin/login" element={<AdminLogin />} />
+
+        <Route path="*" element={<Home />} />
+
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+
+function App() {
+  return (
+    <Provider store={appStore}>
+      <AppContent />
+    </Provider>
+  );
+}
+
+export default App;
