@@ -16,7 +16,7 @@ export default function TrackInternship() {
     try {
 
       const res = await API.get(
-        `/student/internship/${applicationId}/track`
+        `/students/internship/${applicationId}/track`
       );
 
       setInternship(res.data.data);

@@ -271,7 +271,7 @@ return (
 
         <div
           key={sub._id}
-          className="border p-4 rounded mb-6 bg-white shadow"
+          className="border p-4 rounded mb-6 bg-yellow shadow"
         >
 
           <div className="flex justify-between">
