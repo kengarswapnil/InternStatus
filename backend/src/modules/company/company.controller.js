@@ -5,7 +5,8 @@ import {
   updateCompanyMentorService,
   removeMentorFromCompanyService,
   getCompanyInternsService,
-  assignMentorService
+  assignMentorService,
+  getInternProgressService
 } from "./company.service.js";
 
 export const getCompanyProfile = async (req, res, next) => {
@@ -131,6 +132,29 @@ export const assignMentor = async (req, res) => {
     res.status(400).json({
       success: false,
       message: err.message
+    });
+
+  }
+};
+
+export const getInternProgressController = async (req, res) => {
+  try {
+
+    const companyId = req.user.referenceId; // ✅ correct
+    const { id } = req.params;
+
+    const data = await getInternProgressService(companyId, id);
+
+    res.status(200).json({
+      success: true,
+      data
+    });
+
+  } catch (error) {
+
+    res.status(400).json({
+      success: false,
+      message: error.message
     });
 
   }

@@ -69,7 +69,15 @@ import AdminUsers from "./pages/admin/users/AdminUsers";
 import AdminUserDetails from "./pages/admin/users/AdminUserDetails";
 import ForgotPassword from "../../../Member/internStatus/frontend/src/pages/auth/ForgotPassword";
 import ResetPassword from "../../../Member/internStatus/frontend/src/pages/auth/ResetPassword";
-
+import MentorInterns from "./pages/mentor/MentorInterns";
+import TrackInternship from "./pages/students/TrackInternship";
+import MentorInternTrack from "./pages/mentor/MentorInternTrack";
+import CreateTask from "./pages/mentor/CreateTask";
+import StudentTasks from "./pages/students/StudentTaskDetails";
+import TaskDetails from "./pages/mentor/TaskDetails";
+import StudentDetails from "./pages/students/StudentDetails";
+import InternProgress from "./pages/company/InternProgress";
+import AcademicInternshipTrack from "./pages/college/AcademicInternshipTrack";
 
 function AppContent() {
 
@@ -152,16 +160,38 @@ if (loading) {
           <Route path="/college/profile" element={<CollegeProfile />} />
           <Route path="/college/faculty" element={<CollegeFacultyList />} />
           <Route path="/college/students" element={<CollegeStudents />} />
+          <Route path="/college/students/:studentId" element={<StudentDetails />} />
+     
         </Route>
 
         <Route element={<ProtectedRoute role="faculty" />}>
+          <Route path="/faculty/dashboard" element={<FacultyDashboard />} />
           <Route path="/faculty/profile" element={<FacultyProfile />} />
           <Route path="/faculty/invite-student" element={<InviteStudent />} />
           <Route path="/faculty/students" element={<FacultyStudents />} />
-        </Route>
+          <Route path="/faculty/students/:studentId" element={<StudentDetails />} />
+       </Route>
+
+       <Route element={<ProtectedRoute role={["faculty","college"]} />}>
+
+  <Route
+    path="/academic-internship-track/:applicationId"
+    element={<AcademicInternshipTrack />}
+  />
+
+</Route>
+
 
         <Route element={<ProtectedRoute role="mentor" />}>
+          <Route path="/mentor/dashboard" element={<MentorDashboard />} />
           <Route path="/mentor/profile" element={<MentorProfile />} />
+          <Route path="/mentor/interns" element={<MentorInterns />} />
+          <Route path="/mentor/intern/:applicationId/track" element={<MentorInternTrack />} />
+          <Route path="/mentor/tasks/:taskId" element={<TaskDetails/>} />
+        <Route
+  path="/mentor/intern/:applicationId/create-task"
+  element={<CreateTask />}
+/>
         </Route>
 
         <Route element={<ProtectedRoute role="company" />}>
@@ -175,6 +205,10 @@ if (loading) {
           <Route path="/company/internship/:id/edit" element={<EditInternship />} />
           <Route path="/company/interns" element={<CompanyInterns />} />
           <Route path="/company/intern/:id" element={<InternDetails />} />
+          <Route
+  path="/company/interns/:id/progress"
+  element={<InternProgress />}
+/>
 
         </Route>
 
@@ -184,17 +218,17 @@ if (loading) {
           <Route path="/student/browse-internships" element={<BrowseInternships />} />
           <Route path="/student/internships/:id" element={<InternshipDetails />} />
           <Route path="/student/my-applications" element={<MyApplications />} />
-        </Route>
+           
+           <Route
+  path="/student/intern/:applicationId/track"
+  element={<TrackInternship />}
+/>
 
-        <Route element={<ProtectedRoute role="faculty" />}>
-          <Route path="/faculty/dashboard" element={<FacultyDashboard />} />
-          <Route path="/faculty/invite-student" element={<InviteStudent />} />
+<Route
+  path="/student/task/:taskId"
+  element={<StudentTasks />}
+/>
         </Route>
-
-            <Route element={<ProtectedRoute role="mentor" />}>
-          <Route path="/mentor" element={<MentorDashboard />} />
-        </Route>
-        
 
        <Route element={<ProtectedRoute role="admin" />}>
   

@@ -24,7 +24,7 @@ export default function Login() {
     if (r === "student") return "/student";
     if (r === "faculty") return "/faculty";
     if (r === "company") return "/company";
-    if (r === "mentor") return "/mentor";
+    if (r === "mentor") return "/mentor/dashboard";
 
     return "/";
   };

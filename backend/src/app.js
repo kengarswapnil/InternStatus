@@ -17,6 +17,10 @@ import adminRoutes from "./modules/admin/admin.routes.js";
 import adminOnBoardingRoutes from "./modules/admin/admin.onboarding.routes.js";
 import adminOrganizationRoutes from "./modules/admin/admin.organization.routes.js";
 import adminUsersRoutes from "./modules/admin/user/admin.users.routes.js";
+import taskRoutes from "./modules/tasks/task.routes.js";
+import studentRoutes from "./modules/student/student.routes.js";
+import taskSubmissionRoutes from "./modules/taskSubmissions/taskSubmission.routes.js";
+import progressLogRoutes from "./modules/progressLogs/progressLog.routes.js";
 
 
 
@@ -62,6 +66,10 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/admin/onboarding", adminOnBoardingRoutes);
 app.use("/api/admin", adminOrganizationRoutes);
 app.use("/api/admin/users", adminUsersRoutes); 
+app.use("/api/tasks", taskRoutes);
+app.use("/api/students", studentRoutes);
+app.use("/api/task-submissions", taskSubmissionRoutes);
+app.use("/api/progress", progressLogRoutes);
 
 /* ---------------------------------------
    404 HANDLER

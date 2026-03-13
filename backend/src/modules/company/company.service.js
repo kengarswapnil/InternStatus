@@ -5,6 +5,9 @@ import MentorEmploymentHistory from "../../models/MentorEmploymentHistory.js";
 import User from "../../models/User.js";
 import mongoose from "mongoose";
 import Application from "../../models/Application.js";
+import Task from "../../models/Task.js";
+import ProgressLog from "../../models/ProgressLog.js";
+import InternshipReport from "../../models/InternshipReport.js";
 
 const EDITABLE_FIELDS = [
   "name",
@@ -282,4 +285,39 @@ export const assignMentorService = async (
   await application.save();
 
   return application;
+};
+
+export const getInternProgressService = async (companyId, applicationId) => {
+
+  const application = await Application.findById(applicationId)
+    .populate("student", "fullName email phoneNo")
+    .populate("mentor", "fullName email")
+    .populate("internship", "title startDate endDate");
+
+  if (!application) {
+    throw new Error("Internship record not found");
+  }
+
+  if (application.company.toString() !== companyId.toString()) {
+    throw new Error("Unauthorized access");
+  }
+
+  const tasks = await Task.find({ application: applicationId })
+    .sort({ createdAt: -1 })
+    .lean();
+
+  const logs = await ProgressLog.find({ application: applicationId })
+    .sort({ createdAt: -1 })
+    .lean();
+
+  const reports = await InternshipReport.find({ application: applicationId })
+    .sort({ createdAt: -1 })
+    .lean();
+
+  return {
+    application,
+    tasks,
+    logs,
+    reports
+  };
 };

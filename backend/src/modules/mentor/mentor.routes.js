@@ -1,6 +1,8 @@
 import express from "express";
 import {
+  getMentorInternsController,
   getMentorProfile,
+  updateMentorApplicationStatusController,
   updateMentorProfile
 } from "./mentor.controller.js";
 
@@ -21,6 +23,20 @@ router.patch(
   authenticate,
   authorizeRoles("mentor"),
   updateMentorProfile
+);
+
+router.get(
+  "/interns",
+  authenticate,
+  authorizeRoles("mentor"),
+  getMentorInternsController
+);
+
+router.patch(
+  "/interns/:id/status",
+  authenticate,
+  authorizeRoles("mentor"),
+  updateMentorApplicationStatusController
 );
 
 export default router;

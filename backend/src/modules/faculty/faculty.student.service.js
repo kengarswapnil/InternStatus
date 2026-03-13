@@ -1,24 +1,17 @@
 import StudentProfile from "../../models/StudentProfile.js";
 
-
-// ======================================
-// GET FACULTY STUDENTS
-// ======================================
-
 export const getFacultyStudentsService = async (user) => {
 
   const facultyId = user.referenceId;
 
   const FacultyProfile = StudentProfile.db.model("FacultyProfile");
 
-  const facultyProfile = await FacultyProfile.findById(facultyId);
+  const faculty = await FacultyProfile.findById(facultyId);
 
-  if (!facultyProfile) {
-    throw new Error("Faculty profile not found");
-  }
+  if (!faculty) throw new Error("Faculty profile not found");
 
   const students = await StudentProfile.find({
-    college: facultyProfile.college,
+    college: faculty.college,
     status: "active"
   })
     .select(`
@@ -40,10 +33,6 @@ export const getFacultyStudentsService = async (user) => {
 
 
 
-// ======================================
-// UPDATE STUDENT BY FACULTY
-// ======================================
-
 export const updateFacultyStudentService = async (
   user,
   studentId,
@@ -54,24 +43,18 @@ export const updateFacultyStudentService = async (
 
   const FacultyProfile = StudentProfile.db.model("FacultyProfile");
 
-  const facultyProfile = await FacultyProfile.findById(facultyId);
+  const faculty = await FacultyProfile.findById(facultyId);
 
-  if (!facultyProfile) {
-    throw new Error("Faculty profile not found");
-  }
+  if (!faculty) throw new Error("Faculty profile not found");
 
-  // Ensure student belongs to same college
   const student = await StudentProfile.findOne({
     _id: studentId,
-    college: facultyProfile.college
+    college: faculty.college
   });
 
-  if (!student) {
-    throw new Error("Student not found in your college");
-  }
+  if (!student) throw new Error("Student not found in your college");
 
-  // Academic fields
-  const academicFields = [
+  const fields = [
     "courseName",
     "specialization",
     "courseStartYear",
@@ -80,18 +63,16 @@ export const updateFacultyStudentService = async (
     "status"
   ];
 
-  academicFields.forEach(field => {
-    if (body[field] !== undefined) {
-      student[field] = body[field];
+  fields.forEach((f) => {
+    if (body[f] !== undefined) {
+      student[f] = body[f];
     }
   });
 
-  // PRN correction allowed
   if (body.prn !== undefined) {
     student.prn = body.prn;
   }
 
-  // ABC correction allowed with validation
   if (body.abcId !== undefined) {
 
     if (!/^\d{12}$/.test(body.abcId)) {

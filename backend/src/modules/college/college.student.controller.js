@@ -4,14 +4,17 @@ import {
   removeStudentFromCollegeService
 } from "./college.student.service.js";
 
-
 export const getCollegeStudents = async (req, res) => {
+
   const data = await getCollegeStudentsService(req.user);
+
   res.json({ data });
 };
 
 
+
 export const updateCollegeStudent = async (req, res) => {
+
   const data = await updateCollegeStudentService(
     req.user,
     req.params.studentId,
@@ -23,6 +26,7 @@ export const updateCollegeStudent = async (req, res) => {
     data
   });
 };
+
 
 
 export const removeStudentFromCollege = async (req, res) => {

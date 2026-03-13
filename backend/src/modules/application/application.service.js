@@ -246,34 +246,9 @@ export const updateApplicationStatusService = async (
   newStatus
 ) => {
 
-  if (user.role !== "company") {
-    throw new Error("Only company allowed");
+  if (!mongoose.Types.ObjectId.isValid(applicationId)) {
+    throw new Error("Invalid application id");
   }
-
-  const allowedStatuses = [
-    "shortlisted",
-    "selected",
-    "rejected",
-    "ongoing",
-    "completed",
-    "terminated"
-  ];
-
-  if (!allowedStatuses.includes(newStatus)) {
-    throw new Error("Invalid status");
-  }
-
-  const transitions = {
-    applied: ["shortlisted", "rejected"],
-    shortlisted: ["selected", "rejected"],
-    selected: [], // company cannot move further
-    offer_accepted: ["ongoing"],
-    ongoing: ["completed", "terminated"],
-    completed: [],
-    rejected: [],
-    withdrawn: [],
-    terminated: []
-  };
 
   const session = await mongoose.startSession();
 
@@ -303,8 +278,93 @@ export const updateApplicationStatusService = async (
     }
 
     /*
-      TRANSITION CHECK
+      ROLE BASED PERMISSIONS
     */
+
+    let allowedStatuses = [];
+    let transitions = {};
+
+    /*
+      COMPANY CONTROL (HIRING)
+    */
+    if (user.role === "company") {
+
+      allowedStatuses = ["shortlisted", "selected", "rejected"];
+
+      transitions = {
+        applied: ["shortlisted", "rejected"],
+        shortlisted: ["selected", "rejected"],
+        selected: []
+      };
+
+      const internship = await Internship.findOne({
+        _id: application.internship,
+        company: user.referenceId
+      }).session(session);
+
+      if (!internship) throw new Error("Unauthorized");
+
+      /*
+        POSITION CONTROL
+      */
+      if (newStatus === "selected") {
+
+        const selectedCount = await Application.countDocuments({
+          internship: internship._id,
+          status: "selected"
+        }).session(session);
+
+        if (selectedCount >= internship.positions) {
+          throw new Error("All positions filled");
+        }
+
+        application.selectionDate = new Date();
+      }
+
+    }
+
+    /*
+      MENTOR CONTROL (EXECUTION)
+    */
+    else if (user.role === "mentor") {
+
+      allowedStatuses = ["ongoing", "completed", "terminated"];
+
+      transitions = {
+        offer_accepted: ["ongoing"],
+        ongoing: ["completed", "terminated"]
+      };
+
+      if (!application.mentor) {
+        throw new Error("Mentor not assigned");
+      }
+
+      if (application.mentor.toString() !== user.referenceId.toString()) {
+        throw new Error("Unauthorized mentor");
+      }
+
+      if (newStatus === "ongoing") {
+        application.internshipStartDate = new Date();
+      }
+
+      if (newStatus === "completed") {
+        application.internshipEndDate = new Date();
+      }
+
+    }
+
+    else {
+      throw new Error("Unauthorized role");
+    }
+
+    /*
+      STATUS VALIDATION
+    */
+
+    if (!allowedStatuses.includes(newStatus)) {
+      throw new Error("Invalid status");
+    }
+
     if (
       !transitions[currentStatus] ||
       !transitions[currentStatus].includes(newStatus)
@@ -312,47 +372,6 @@ export const updateApplicationStatusService = async (
       throw new Error(
         `Invalid transition from ${currentStatus} to ${newStatus}`
       );
-    }
-
-    /*
-      VERIFY COMPANY
-    */
-    const internship = await Internship.findOne({
-      _id: application.internship,
-      company: user.referenceId
-    }).session(session);
-
-    if (!internship) throw new Error("Unauthorized");
-
-    /*
-      POSITION CONTROL
-    */
-    if (newStatus === "selected") {
-
-      const selectedCount = await Application.countDocuments({
-        internship: internship._id,
-        status: "selected"
-      }).session(session);
-
-      if (selectedCount >= internship.positions) {
-        throw new Error("All positions filled");
-      }
-
-      application.selectionDate = new Date();
-    }
-
-    /*
-      ONGOING
-    */
-    if (newStatus === "ongoing") {
-      application.internshipStartDate = new Date();
-    }
-
-    /*
-      COMPLETED
-    */
-    if (newStatus === "completed") {
-      application.internshipEndDate = new Date();
     }
 
     application.status = newStatus;
@@ -373,6 +392,7 @@ export const updateApplicationStatusService = async (
     session.endSession();
 
   }
+
 };
 
 export const offerDecisionService = async (
@@ -554,4 +574,42 @@ export const getApplicationByIdService = async (user, applicationId) => {
   // Faculty → optional future validation
 
   return application;
+};
+
+
+export const getApplicationProgressService = async (applicationId) => {
+
+  if (!mongoose.Types.ObjectId.isValid(applicationId)) {
+    throw new Error("Invalid application id");
+  }
+
+  const application = await Application.findById(applicationId)
+    .populate("student","fullName")
+    .populate("company","name")
+    .populate("mentor","fullName")
+    .populate("internship","title")
+    .lean();
+
+  if (!application) {
+    throw new Error("Application not found");
+  }
+
+  const tasks = await Task.find({
+    application: applicationId
+  }).sort({ createdAt: -1 }).lean();
+
+  const logs = await ProgressLog.find({
+    application: applicationId
+  }).sort({ logDate: -1 }).lean();
+
+  const reports = await InternshipReport.find({
+    application: applicationId
+  }).sort({ createdAt: -1 }).lean();
+
+  return {
+    application,
+    tasks,
+    logs,
+    reports
+  };
 };

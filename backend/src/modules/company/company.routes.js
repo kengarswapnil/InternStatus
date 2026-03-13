@@ -4,6 +4,7 @@ import {
   getCompanyInterns,
   getCompanyMentors,
   getCompanyProfile,
+  getInternProgressController,
   removeMentorFromCompany,
   updateCompanyMentor,
   updateCompanyProfile
@@ -63,6 +64,13 @@ router.patch(
   authenticate,
   authorizeRoles("company"),
   assignMentor
+);
+
+router.get(
+  "/interns/:id/progress",
+  authenticate,
+  authorizeRoles("company"),
+  getInternProgressController
 );
 
 export default router;

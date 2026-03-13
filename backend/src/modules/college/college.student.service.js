@@ -2,11 +2,8 @@ import StudentProfile from "../../models/StudentProfile.js";
 import StudentAcademicHistory from "../../models/StudentAcademicHistory.js";
 import User from "../../models/User.js";
 
-
-// ======================================
-// GET COLLEGE STUDENTS
-// ======================================
 export const getCollegeStudentsService = async (user) => {
+
   const collegeId = user.referenceId;
 
   const students = await StudentProfile.find({
@@ -18,10 +15,6 @@ export const getCollegeStudentsService = async (user) => {
       prn
       abcId
       phoneNo
-      skills
-      bio
-      resumeUrl
-      collegeIdCardUrl
       courseName
       specialization
       courseStartYear
@@ -37,15 +30,12 @@ export const getCollegeStudentsService = async (user) => {
 
 
 
-// ======================================
-// UPDATE STUDENT
-// ======================================
-
 export const updateCollegeStudentService = async (
   user,
   studentId,
   body
 ) => {
+
   const collegeId = user.referenceId;
 
   const student = await StudentProfile.findOne({
@@ -55,8 +45,7 @@ export const updateCollegeStudentService = async (
 
   if (!student) throw new Error("Student not found");
 
-  // Academic fields
-  const academicFields = [
+  const fields = [
     "courseName",
     "specialization",
     "courseStartYear",
@@ -65,18 +54,16 @@ export const updateCollegeStudentService = async (
     "status"
   ];
 
-  academicFields.forEach(field => {
-    if (body[field] !== undefined) {
-      student[field] = body[field];
+  fields.forEach((f) => {
+    if (body[f] !== undefined) {
+      student[f] = body[f];
     }
   });
 
-  // PRN correction allowed
   if (body.prn !== undefined) {
     student.prn = body.prn;
   }
 
-  // ABC correction allowed with validation
   if (body.abcId !== undefined) {
 
     if (!/^\d{12}$/.test(body.abcId)) {
@@ -93,17 +80,12 @@ export const updateCollegeStudentService = async (
 
 
 
-// ======================================
-// REMOVE STUDENT FROM COLLEGE
-// ======================================
-
 export const removeStudentFromCollegeService = async (
   user,
   studentId
 ) => {
 
   const collegeId = user.referenceId;
-  const adminId = user._id;
 
   const student = await StudentProfile.findOne({
     _id: studentId,
@@ -112,7 +94,6 @@ export const removeStudentFromCollegeService = async (
 
   if (!student) throw new Error("Student not found");
 
-  // end academic history
   await StudentAcademicHistory.updateOne(
     {
       student: studentId,
@@ -121,19 +102,15 @@ export const removeStudentFromCollegeService = async (
     {
       endDate: new Date(),
       status: "ended",
-      endedBy: adminId
+      endedBy: user._id
     }
   );
 
-  // unassign
   student.college = null;
-  student.courseName = null;
-  student.specialization = null;
   student.status = "unassigned";
 
   await student.save();
 
-  // reset credentials for reassignment
   const userDoc = await User.findById(student.user);
 
   if (userDoc) {

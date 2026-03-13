@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import API from "../../api/api";
+import { useNavigate } from "react-router-dom";
 
 export default function MyApplications() {
   const [data, setData] = useState([]);
   const [loadingId, setLoadingId] = useState(null);
   const [expandedId, setExpandedId] = useState(null);
+  const navigate = useNavigate();
 
   const fetchData = async () => {
     try {
@@ -90,6 +92,7 @@ export default function MyApplications() {
               const canAccept = app.status === "selected";
               const waitingStart = app.status === "offer_accepted";
               const isExpanded = expandedId === app._id;
+              const canTrack = app.status === "ongoing" || app.status === "completed";
 
               return (
                 <div
@@ -184,6 +187,15 @@ export default function MyApplications() {
                               : "Withdraw Application"}
                           </button>
                         )}
+
+                        {canTrack && (
+  <button
+    onClick={() => navigate(`/student/intern/${app._id}/track`)}
+    className="px-6 py-3 text-[10px] tracking-widest font-bold text-white bg-gradient-to-r from-fuchsia-600 to-violet-600 rounded-lg hover:shadow-[0_4px_15px_-3px_rgba(217,70,239,0.5)] transition-all duration-300 uppercase hover:-translate-y-0.5"
+  >
+    Track Internship
+  </button>
+)}
 
                         {canAccept && (
                           <>

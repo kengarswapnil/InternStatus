@@ -1,4 +1,4 @@
-import { applyInternshipService, getApplicationByIdService, getApplicationsForInternshipService, getMyApplicationsService, offerDecisionService, updateApplicationStatusService, withdrawApplicationService } from "./application.service.js";
+import { applyInternshipService, getApplicationByIdService, getApplicationProgressService, getApplicationsForInternshipService, getMyApplicationsService, offerDecisionService, updateApplicationStatusService, withdrawApplicationService } from "./application.service.js";
 
 export const applyInternship = async (req, res) => {
   try {
@@ -153,4 +153,29 @@ export const getApplicationById = async (req, res) => {
     });
 
   }
+};
+
+
+export const getApplicationProgressController = async (req,res)=>{
+
+  try{
+
+    const { applicationId } = req.params;
+
+    const data = await getApplicationProgressService(applicationId);
+
+    res.json({
+      success:true,
+      data
+    });
+
+  }catch(err){
+
+    res.status(400).json({
+      success:false,
+      message:err.message
+    });
+
+  }
+
 };
