@@ -10,6 +10,10 @@ export default function InternDetails() {
   const [mentors, setMentors] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  // ✅ certificate states
+  const [certificateFile, setCertificateFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
+
   const fetchData = async () => {
     try {
       const res = await API.get(`/applications/${id}`);
@@ -26,6 +30,7 @@ export default function InternDetails() {
     fetchData();
   }, []);
 
+  // ================= MENTOR =================
   const assignMentor = async (mentorId) => {
     if (!mentorId) return;
 
@@ -37,7 +42,7 @@ export default function InternDetails() {
     try {
       setLoading(true);
 
-      await API.patch(`/applications/${id}/assign-mentor`, {
+      await API.patch(`/company/${id}/assign-mentor`, {
         mentorId,
       });
 
@@ -49,6 +54,42 @@ export default function InternDetails() {
     }
   };
 
+  // ================= CERTIFICATE =================
+  const handleCertificateUpload = async () => {
+    if (!certificateFile) {
+      alert("Please select a certificate file");
+      return;
+    }
+
+    try {
+      setUploading(true);
+
+      const formData = new FormData();
+      formData.append("certificate", certificateFile);
+
+      await API.post(
+        `/company/applications/${id}/certificate`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data"
+          }
+        }
+      );
+
+      alert("Certificate issued successfully");
+
+      setCertificateFile(null);
+      await fetchData();
+
+    } catch (err) {
+      alert(err.response?.data?.message || "Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  // ================= STATUS UI =================
   const getStatusBadge = (status) => {
     let colorClass = "bg-white/10 text-white/80 border-white/20";
     if (status === "offer_accepted")
@@ -61,132 +102,115 @@ export default function InternDetails() {
       colorClass = "bg-red-500/10 text-red-400 border-red-500/20";
 
     return (
-      <span
-        className={`inline-block px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest border ${colorClass}`}
-      >
+      <span className={`inline-block px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest border ${colorClass}`}>
         {status.replace("_", " ")}
       </span>
     );
   };
 
   if (!data) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-[#0B0F19]">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-10 h-10 border-4 border-white/10 border-t-fuchsia-500 rounded-full animate-spin"></div>
-          <p className="text-fuchsia-400 font-bold tracking-widest uppercase text-[10px] animate-pulse m-0">
-            Loading Details
-          </p>
-        </div>
-      </div>
-    );
+    return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
   }
 
   const s = data.studentSnapshot || {};
+  const report = data.report || {};
+
+  // ✅ flags
+  const isCompleted = data.status === "completed";
+  const hasCertificate = !!data.certificateUrl;
+  const canUploadCertificate = isCompleted && !hasCertificate;
+
   const mentorLocked = data.status !== "offer_accepted";
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0B0F19] p-4 md:p-8 font-sans box-border text-white selection:bg-fuchsia-500/30 selection:text-fuchsia-200 relative overflow-hidden">
-      {/* Ambient Backgrounds */}
-      <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-violet-600/20 rounded-full blur-[120px] pointer-events-none mix-blend-screen" aria-hidden="true"></div>
-      <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-fuchsia-600/10 rounded-full blur-[120px] pointer-events-none mix-blend-screen" aria-hidden="true"></div>
+    <div className="min-h-screen flex items-center justify-center bg-[#0B0F19] p-6 text-white">
 
-      <div className="w-full max-w-3xl bg-white/5 backdrop-blur-xl p-8 md:p-12 rounded-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] border border-white/10 box-border relative z-10 transition-all duration-300 hover:border-white/20">
-        
-        <header className="mb-10 pb-6 border-b border-white/10 text-center md:text-left">
-          <div className="text-[10px] font-bold text-violet-400 uppercase tracking-widest mb-2">
-            Internship Record
-          </div>
-          <h2 className="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-white/60 m-0 tracking-tight">
-            Intern Details
-          </h2>
-        </header>
+      <div className="w-full max-w-3xl bg-white/5 p-8 rounded-2xl border border-white/10">
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-          <div className="flex flex-col gap-1.5 bg-[#0B0F19]/30 p-5 rounded-2xl border border-white/5 transition-all hover:border-white/10">
-            <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">
-              Name
-            </span>
-            <span className="text-sm font-bold text-white/90">
-              {s.fullName}
-            </span>
-          </div>
+        <h2 className="text-2xl font-bold mb-6">Intern Details</h2>
 
-          <div className="flex flex-col gap-1.5 bg-[#0B0F19]/30 p-5 rounded-2xl border border-white/5 transition-all hover:border-white/10">
-            <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">
-              Email
-            </span>
-            <span className="text-sm font-medium text-white/90 break-all">
-              {s.email}
-            </span>
-          </div>
-
-          <div className="flex flex-col gap-1.5 bg-[#0B0F19]/30 p-5 rounded-2xl border border-white/5 transition-all hover:border-white/10">
-            <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">
-              Phone
-            </span>
-            <span className="text-sm font-medium text-white/90">
-              {s.phoneNo}
-            </span>
-          </div>
-
-          <div className="flex flex-col gap-1.5 bg-[#0B0F19]/30 p-5 rounded-2xl border border-white/5 transition-all hover:border-white/10 justify-center items-start">
-            <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">
-              Status
-            </span>
-            {getStatusBadge(data.status)}
-          </div>
+        {/* ================= STUDENT INFO ================= */}
+        <div className="grid grid-cols-2 gap-4 mb-6">
+          <div>{s.fullName}</div>
+          <div>{s.email}</div>
+          <div>{s.phoneNo}</div>
+          <div>{getStatusBadge(data.status)}</div>
         </div>
 
-        {["ongoing", "completed", "terminated"].includes(data.status) && (
-          <div className="mb-10">
+        {/* ================= PROGRESS ================= */}
+        {["ongoing", "completed"].includes(data.status) && (
+          <button
+            onClick={() => navigate(`/company/interns/${id}/progress`)}
+            className="mb-6 px-4 py-2 bg-blue-600 rounded"
+          >
+            View Progress
+          </button>
+        )}
+
+        {/* ================= REPORT ================= */}
+        {isCompleted && report?.reportUrl && (
+          <div className="mb-6">
             <button
-              onClick={() => navigate(`/company/interns/${id}/progress`)}
-              className="w-full md:w-auto px-8 py-4 text-[10px] font-bold text-white bg-gradient-to-r from-violet-600 to-fuchsia-600 border-none rounded-xl cursor-pointer transition-all duration-300 hover:shadow-[0_8px_20px_-6px_rgba(217,70,239,0.5)] hover:-translate-y-0.5 uppercase tracking-widest outline-none"
+              onClick={() => window.open(report.reportUrl, "_blank")}
+              className="px-4 py-2 bg-gray-700 rounded"
             >
-              View Internship Progress
+              View Report
             </button>
           </div>
         )}
 
-        <div className="h-px w-full bg-white/10 my-10"></div>
+        {/* ================= CERTIFICATE ================= */}
+        {isCompleted && (
+          <div className="mb-6 flex flex-col gap-3">
 
-        <div className="flex flex-col gap-5">
-          <h3 className="text-xl font-black text-white/90 m-0 tracking-tight">
-            Assign Mentor
-          </h3>
+            {/* upload */}
+            {canUploadCertificate && (
+              <>
+                <input
+                  type="file"
+                  accept=".pdf,.jpg,.png"
+                  onChange={(e) => setCertificateFile(e.target.files[0])}
+                />
 
-          <div className="flex flex-col gap-2 relative">
-            <select
-              className="w-full px-5 py-4 text-sm text-white bg-[#0B0F19]/50 border border-white/10 rounded-xl outline-none transition-all duration-300 focus:border-violet-500 focus:ring-1 focus:ring-violet-500 disabled:opacity-50 disabled:cursor-not-allowed box-border cursor-pointer appearance-none [&>option]:bg-[#0B0F19]"
-              value={data.mentor?._id || ""}
-              onChange={(e) => assignMentor(e.target.value)}
-              disabled={loading || mentorLocked}
-            >
-              <option value="" disabled className="text-white/40">
-                Select Mentor
-              </option>
-              {mentors.map((m) => (
-                <option key={m._id} value={m._id}>
-                  {m.fullName}
-                </option>
-              ))}
-            </select>
+                <button
+                  onClick={handleCertificateUpload}
+                  disabled={uploading}
+                  className="px-4 py-2 bg-purple-600 rounded"
+                >
+                  {uploading ? "Uploading..." : "Issue Certificate"}
+                </button>
+              </>
+            )}
+
+            {/* view */}
+            {hasCertificate && (
+              <button
+                onClick={() => window.open(data.certificateUrl, "_blank")}
+                className="px-4 py-2 bg-green-600 rounded"
+              >
+                View Certificate
+              </button>
+            )}
           </div>
+        )}
 
-          {mentorLocked && (
-            <div className="mt-2 px-5 py-4 text-[11px] font-bold text-amber-300 bg-amber-500/10 border border-amber-500/30 rounded-xl uppercase tracking-widest leading-relaxed">
-              Mentor assignment is locked after the internship starts.
-            </div>
-          )}
-
-          {loading && (
-            <div className="mt-2 flex items-center justify-center gap-3 text-[10px] font-bold text-fuchsia-400 uppercase tracking-widest bg-white/5 p-4 rounded-xl border border-white/10">
-              <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-              Assigning mentor...
-            </div>
-          )}
+        {/* ================= MENTOR ================= */}
+        <div className="mt-6">
+          <select
+            value={data.mentor?._id || ""}
+            onChange={(e) => assignMentor(e.target.value)}
+            disabled={loading || mentorLocked}
+            className="p-2 text-black"
+          >
+            <option value="">Select Mentor</option>
+            {mentors.map((m) => (
+              <option key={m._id} value={m._id}>
+                {m.fullName}
+              </option>
+            ))}
+          </select>
         </div>
+
       </div>
     </div>
   );

@@ -51,7 +51,7 @@ export default function InternProgress() {
   const internship = application.internship || {};
 
   return (
-    <div className="p-8 max-w-6xl mx-auto">
+    <div className="p-8 max-w-6xl mx-auto bg-amber-200">
 
       {/* HEADER */}
       <div className="mb-8">
@@ -62,7 +62,7 @@ export default function InternProgress() {
       </div>
 
       {/* INTERN INFO */}
-      <div className="bg-white shadow rounded-xl p-6 mb-8">
+      <div className="bg-yellow-500 shadow rounded-xl p-6 mb-8">
 
         <h2 className="text-xl font-semibold mb-4">
           Intern Information
@@ -99,7 +99,7 @@ export default function InternProgress() {
       </div>
 
       {/* TASKS */}
-      <div className="bg-white shadow rounded-xl p-6 mb-8">
+      <div className="bg-amber-500 shadow rounded-xl p-6 mb-8">
 
         <h2 className="text-xl font-semibold mb-4">
           Tasks
@@ -131,71 +131,8 @@ export default function InternProgress() {
 
       </div>
 
-      {/* PROGRESS LOGS */}
-      <div className="bg-white shadow rounded-xl p-6 mb-8">
-
-        <h2 className="text-xl font-semibold mb-4">
-          Progress Logs
-        </h2>
-
-        {logs.length === 0 ? (
-          <p className="text-gray-500">No logs submitted</p>
-        ) : (
-          <div className="space-y-3">
-            {logs.map((log) => (
-              <div
-                key={log._id}
-                className="border p-4 rounded-lg"
-              >
-                <p className="text-sm text-gray-500">
-                  {log.date?.slice(0, 10)}
-                </p>
-                <p>{log.description}</p>
-              </div>
-            ))}
-          </div>
-        )}
-
-      </div>
-
-      {/* REPORTS */}
-      <div className="bg-white shadow rounded-xl p-6">
-
-        <h2 className="text-xl font-semibold mb-4">
-          Internship Reports
-        </h2>
-
-        {reports.length === 0 ? (
-          <p className="text-gray-500">No reports submitted</p>
-        ) : (
-          <div className="space-y-3">
-            {reports.map((report) => (
-              <div
-                key={report._id}
-                className="border p-4 rounded-lg flex justify-between"
-              >
-                <p className="capitalize">{report.type}</p>
-
-                <span className="text-sm font-medium capitalize">
-                  {report.status}
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
-
-      </div>
-
       {/* BACK BUTTON */}
-      <div className="mt-8">
-        <button
-          onClick={() => navigate(-1)}
-          className="px-5 py-2 bg-gray-900 text-white rounded-lg"
-        >
-          Back
-        </button>
-      </div>
-
+     
     </div>
   );
 }

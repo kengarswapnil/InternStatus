@@ -144,6 +144,9 @@ const MentorInterns = () => {
 
             <div className="mt-5 flex gap-2 flex-wrap">
 
+              <div className="mt-5 flex gap-2 flex-wrap">
+
+  {/* START */}
   {intern.status === "offer_accepted" && (
     <button
       onClick={() => updateStatus(intern.applicationId, "ongoing")}
@@ -153,6 +156,7 @@ const MentorInterns = () => {
     </button>
   )}
 
+  {/* ONGOING */}
   {intern.status === "ongoing" && (
     <>
       <button
@@ -171,26 +175,32 @@ const MentorInterns = () => {
     </>
   )}
 
-  {/* View Intern */}
+  {/* 🔥 VIEW REPORT ONLY AFTER COMPLETED + SUBMITTED */}
+  {intern.status === "completed" &&
+    intern.report &&
+    intern.report.status !== "generated" && (
+      <button
+        onClick={() => window.open(intern.report.reportUrl, "_blank")}
+        className="px-3 py-1 bg-gray-800 text-white rounded text-sm"
+      >
+        View Report
+      </button>
+  )}
+
+  {/* TRACK (ALWAYS AVAILABLE) */}
   <button
-    onClick={() => navigate(`/mentor/intern/${intern.applicationId}`)}
-    className="px-3 py-1 bg-gray-700 text-white rounded text-sm"
+    onClick={() =>
+      navigate(`/mentor/intern/${intern.applicationId}/track`)
+    }
+    className="px-3 py-1 bg-purple-600 text-white rounded text-sm"
   >
-    View
+    Track
   </button>
 
-  {/* Assign Task */}
- <button
-  onClick={() =>
-    navigate(`/mentor/intern/${intern.applicationId}/track`)
-  }
-  className="px-3 py-1 bg-purple-600 text-white rounded text-sm"
->
-  Track
-</button>
-
-
 </div>
+  
+
+            </ div>
 
             </div>
 

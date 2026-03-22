@@ -242,7 +242,7 @@ export const getCompanyInternsService = async (user) => {
     throw new Error("Only company allowed");
   }
 
-  const interns = await Application.find({
+  const applications = await Application.find({
     company: user.referenceId,
     status: { $in: ["offer_accepted", "ongoing", "completed"] }
   })
@@ -251,7 +251,30 @@ export const getCompanyInternsService = async (user) => {
     .populate("internship")
     .lean();
 
-  return interns;
+  // 🔥 FETCH REPORTS
+  const appIds = applications.map(app => app._id);
+
+  const reports = await InternshipReport.find({
+    application: { $in: appIds }
+  }).lean();
+
+  const reportMap = {};
+  reports.forEach(r => {
+    reportMap[r.application.toString()] = r;
+  });
+
+  // 🔥 ATTACH REPORT
+  const finalData = applications.map(app => {
+    const appId = app._id.toString();
+
+    return {
+      ...app,
+      applicationId: appId,
+      report: reportMap[appId] || null
+    };
+  });
+
+  return finalData;
 };
 
 export const assignMentorService = async (
@@ -319,5 +342,90 @@ export const getInternProgressService = async (companyId, applicationId) => {
     tasks,
     logs,
     reports
+  };
+};
+
+export const issueCertificateService = async ({
+  applicationId,
+  file,
+  user
+}) => {
+
+  const application = await Application.findById(applicationId);
+
+  if (!application) {
+    throw new Error("Application not found");
+  }
+
+  // ✅ FIX: use .equals() for ObjectId comparison
+  if (!application.company.equals(user.referenceId)) {
+    throw new Error("Unauthorized to issue certificate for this application");
+  }
+
+  // 🔥 business rule
+  if (application.status !== "completed") {
+    throw new Error("Internship not completed yet");
+  }
+
+  // ❌ prevent duplicate
+  if (application.certificateUrl) {
+    throw new Error("Certificate already issued");
+  }
+
+  if (!file) {
+    throw new Error("Certificate file is required");
+  }
+
+  // ☁️ upload
+  const result = await uploadToCloudinary(file, "certificates");
+
+  application.certificateUrl = result.secure_url;
+  application.certificateIssuedAt = new Date();
+
+  await application.save();
+
+  return application;
+};
+
+
+
+/*
+  ================= GET CERTIFICATE =================
+*/
+export const getCertificateService = async ({
+  applicationId,
+  user
+}) => {
+
+  const application = await Application.findById(applicationId)
+    .select("certificateUrl student faculty company");
+
+  if (!application) {
+    throw new Error("Application not found");
+  }
+
+  // 🔐 access control (FIXED with .equals())
+  const isStudent =
+    user.role === "student" &&
+    application.student?.equals(user.referenceId);
+
+  const isFaculty =
+    user.role === "faculty" &&
+    application.faculty?.equals(user.referenceId);
+
+  const isCompany =
+    user.role === "company" &&
+    application.company?.equals(user.referenceId);
+
+  if (!isStudent && !isFaculty && !isCompany) {
+    throw new Error("Forbidden");
+  }
+
+  if (!application.certificateUrl) {
+    throw new Error("Certificate not issued yet");
+  }
+
+  return {
+    certificateUrl: application.certificateUrl
   };
 };

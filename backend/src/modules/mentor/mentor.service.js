@@ -111,6 +111,7 @@ export const getMentorInternsService = async (mentorUserId) => {
       path: "internship",
       select: "title mode locations"
     })
+    .populate("report")
     .sort({ createdAt: -1 })
     .lean();
 
@@ -129,7 +130,8 @@ export const getMentorInternsService = async (mentorUserId) => {
     endDate: app.internshipEndDate,
 
     status: app.status,
-    evaluationScore: app.evaluationScore
+    evaluationScore: app.evaluationScore,
+    report: app.report || null
   }));
 
   return interns;

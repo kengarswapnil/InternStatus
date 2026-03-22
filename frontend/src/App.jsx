@@ -75,9 +75,10 @@ import MentorInternTrack from "./pages/mentor/MentorInternTrack";
 import CreateTask from "./pages/mentor/CreateTask";
 import StudentTasks from "./pages/students/StudentTaskDetails";
 import TaskDetails from "./pages/mentor/TaskDetails";
-import StudentDetails from "./pages/students/StudentDetails";
+import StudentDetails from "./pages/college/StudentDetails";
 import InternProgress from "./pages/company/InternProgress";
 import AcademicInternshipTrack from "./pages/college/AcademicInternshipTrack";
+import StudentInternships from "./pages/college/StudentInternship";
 
 function AppContent() {
 
@@ -161,6 +162,7 @@ if (loading) {
           <Route path="/college/faculty" element={<CollegeFacultyList />} />
           <Route path="/college/students" element={<CollegeStudents />} />
           <Route path="/college/students/:studentId" element={<StudentDetails />} />
+
      
         </Route>
 
@@ -178,6 +180,12 @@ if (loading) {
     path="/academic-internship-track/:applicationId"
     element={<AcademicInternshipTrack />}
   />
+
+
+  <Route
+  path="/student/internships"
+  element={<StudentInternships />}
+/>
 
 </Route>
 

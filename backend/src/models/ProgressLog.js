@@ -23,51 +23,47 @@ const progressLogSchema = new mongoose.Schema(
       index: true
     },
 
+    task: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Task",
+      required: true,
+      index: true
+    },
+
     logDate: {
       type: Date,
       required: true,
       index: true
     },
 
+    /*
+      Actual meaningful content
+      Comes from submission.description
+    */
     summary: {
       type: String,
       required: true,
       trim: true
     },
 
-    technologiesUsed: [
-      {
-        type: String,
-        trim: true
-      }
-    ],
-
-    evidenceLinks: [
-      {
-        type: String,
-        trim: true
-      }
-    ],
-
-    attachments: [
-      {
-        type: String
-      }
-    ],
-
-    mentorFeedback: {
-      type: String,
-      trim: true
-    },
+   technologiesUsed: [
+  {
+    type: String,
+    trim: true
+  }
+],
 
     status: {
       type: String,
-      enum: ["submitted", "approved", "revision_requested"],
-      default: "submitted",
+      enum: ["approved"],
+      default: "approved",
       index: true
     },
 
-    reviewedAt: Date
+    reviewedAt: {
+      type: Date,
+      default: Date.now
+    }
   },
   {
     timestamps: true
@@ -75,16 +71,14 @@ const progressLogSchema = new mongoose.Schema(
 );
 
 /*
-  Prevent duplicate log entries for same day
+  Prevent duplicate logs per task
 */
 progressLogSchema.index(
-  { application: 1, logDate: 1 },
+  { task: 1 },
   { unique: true }
 );
 
-const ProgressLog = mongoose.model(
-  "ProgressLog",
-  progressLogSchema
-);
+
+const ProgressLog = mongoose.model("ProgressLog", progressLogSchema);
 
 export default ProgressLog;

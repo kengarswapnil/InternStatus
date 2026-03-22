@@ -14,6 +14,7 @@ export const getAcademicInternshipTrackService = async (applicationId) => {
     .populate("company", "name")
     .populate("mentor", "fullName")
     .populate("internship", "title")
+    .populate("report")
     .lean();
 
   if (!application) {
@@ -45,6 +46,7 @@ export const getAcademicInternshipTrackService = async (applicationId) => {
     internship: application.internship,
     status: application.status,
     tasks: anonymizedTasks,
+    report: application.report,
     logs
   };
 };

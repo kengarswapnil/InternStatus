@@ -9,86 +9,101 @@ export default function TrackInternship() {
 
   const [internship, setInternship] = useState(null);
   const [tasks, setTasks] = useState([]);
+  const [report, setReport] = useState(null);
+
   const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState(false);
 
+  // ================= FETCH =================
   const fetchData = async () => {
-
     try {
+      const [internRes, taskRes, reportRes] = await Promise.all([
+        API.get(`/students/internship/${applicationId}/track`),
+        API.get(`/tasks/application/${applicationId}`),
+        API.get(`/reports/${applicationId}`)
+      ]);
 
-      const res = await API.get(
-        `/students/internship/${applicationId}/track`
-      );
-
-      setInternship(res.data.data);
-
-      const taskRes = await API.get(
-        `/tasks/application/${applicationId}`
-      );
-
-      const filteredTasks =
-        (taskRes.data.data || []).filter(
-          t => t.status !== "cancelled"
-        );
-
-      setTasks(filteredTasks);
+      setInternship(internRes.data.data);
+      setTasks(taskRes.data.data || []);
+      setReport(reportRes.data || null);
 
     } catch (err) {
-
-      console.error("Failed to load internship", err);
-
+      console.error(err);
     } finally {
-
       setLoading(false);
-
     }
-
   };
 
   useEffect(() => {
     fetchData();
   }, [applicationId]);
 
-
+  // ================= STATUS =================
   const getStatusColor = (status) => {
-
     switch (status) {
-
       case "completed":
         return "bg-green-100 text-green-700";
-
-      case "submitted":
-      case "under_review":
-        return "bg-yellow-100 text-yellow-700";
-
-      case "revision_requested":
-        return "bg-red-100 text-red-700";
-
+      case "ongoing":
+        return "bg-blue-100 text-blue-700";
       default:
         return "bg-gray-100 text-gray-700";
-
     }
-
   };
 
+  console.log("INTERNSHIP DATA:", internship);
+
+  const isCompleted = internship?.status === "completed";
+  const isGenerated = report?.isLocked;
+  const isSubmitted = report?.status === "faculty_pending";
+
+  const hasCertificate = !!internship?.certificateUrl;
+
+  // ================= ACTIONS =================
+  const handleGenerate = async () => {
+    if (isGenerated) return;
+
+    try {
+      setActionLoading(true);
+      await API.post(`/reports/generate/${applicationId}`);
+      fetchData();
+    } catch (err) {
+      alert(err.response?.data?.error || "Failed");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleDownloadReport = () => {
+    if (!report?.reportUrl) return;
+    window.open(report.reportUrl, "_blank");
+  };
+
+  const handleSubmit = async () => {
+    try {
+      setActionLoading(true);
+      await API.post(`/reports/submit/${applicationId}`);
+      fetchData();
+    } catch (err) {
+      alert(err.response?.data?.error || "Failed");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  // ✅ CERTIFICATE VIEW
+  const handleViewCertificate = () => {
+    if (!internship?.certificateUrl) return;
+    window.open(internship.certificateUrl, "_blank");
+  };
 
   if (loading) {
-
-    return (
-      <div className="flex justify-center items-center h-screen">
-        Loading internship...
-      </div>
-    );
-
+    return <div className="flex justify-center items-center h-screen">Loading...</div>;
   }
 
-
   return (
-
     <div className="p-8 max-w-6xl mx-auto">
 
-
-      {/* Internship Info */}
-
+      {/* ================= INTERNSHIP ================= */}
       <div className="bg-white border rounded-lg p-6 shadow mb-8">
 
         <h1 className="text-2xl font-bold mb-2">
@@ -103,72 +118,101 @@ export default function TrackInternship() {
           Mentor: {internship?.mentor?.fullName || "Not assigned"}
         </p>
 
-        <p className="text-gray-600">
-          Status: {internship?.status}
+        <p className={`mt-2 inline-block px-2 py-1 rounded text-sm ${getStatusColor(internship?.status)}`}>
+          {internship?.status}
         </p>
+
+        {/* ================= REPORT STATUS ================= */}
+        {isGenerated && (
+          <p className="mt-2 text-sm text-green-600">
+            Report Generated
+          </p>
+        )}
+
+        {isSubmitted && (
+          <p className="text-sm text-purple-600">
+            Submitted to Faculty
+          </p>
+        )}
+
+        {/* ================= ACTIONS ================= */}
+        {isCompleted && (
+          <div className="mt-4 flex gap-3 flex-wrap">
+
+            {/* GENERATE REPORT */}
+            {!isGenerated && (
+              <button
+                onClick={handleGenerate}
+                disabled={actionLoading}
+                className="px-4 py-2 rounded text-white bg-green-600 hover:bg-green-700 disabled:bg-gray-400"
+              >
+                {actionLoading ? "Generating..." : "Generate Report"}
+              </button>
+            )}
+
+            {/* DOWNLOAD REPORT */}
+            {isGenerated && (
+              <button
+                onClick={handleDownloadReport}
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              >
+                Download Report
+              </button>
+            )}
+
+            {/* SUBMIT REPORT */}
+            {isGenerated && (
+              <button
+                disabled={isSubmitted || actionLoading}
+                onClick={handleSubmit}
+                className={`px-4 py-2 rounded text-white ${
+                  isSubmitted
+                    ? "bg-gray-400"
+                    : "bg-purple-600 hover:bg-purple-700"
+                }`}
+              >
+                {actionLoading
+                  ? "Processing..."
+                  : isSubmitted
+                  ? "Submitted"
+                  : "Submit Report"}
+              </button>
+            )}
+
+            {/* 🔥 CERTIFICATE BUTTON (FINAL FIX) */}
+            {hasCertificate && (
+              <button
+                onClick={handleViewCertificate}
+                className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
+              >
+                View Certificate
+              </button>
+            )}
+
+          </div>
+        )}
 
       </div>
 
-
-      {/* Tasks */}
-
-      <h2 className="text-xl font-semibold mb-4">
-        Assigned Tasks
-      </h2>
+      {/* ================= TASKS ================= */}
+      <h2 className="text-xl font-semibold mb-4">Assigned Tasks</h2>
 
       {tasks.length === 0 ? (
-
-        <div className="text-gray-500">
-          No tasks assigned yet
-        </div>
-
+        <div className="text-gray-500">No tasks assigned</div>
       ) : (
-
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-
           {tasks.map((task) => (
+            <div key={task._id} className="border rounded-lg p-4 shadow bg-white">
 
-            <div
-              key={task._id}
-              className="border rounded-lg p-4 bg-white shadow hover:shadow-md transition"
-            >
+              <h3 className="font-semibold text-lg">{task.title}</h3>
 
-              <h3 className="font-semibold text-lg">
-                {task.title}
-              </h3>
-
-
-              {/* Description */}
-
-              {task.description && (
-                <p className="text-sm text-gray-600 mt-1">
-                  {task.description}
-                </p>
-              )}
-
-
-              {/* External link */}
-
-              {task.externalLink && (
-                <a
-                  href={task.externalLink}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-blue-600 underline text-sm"
-                >
-                  Open Task
-                </a>
-              )}
-
-
-              {/* Assigned Date */}
+              <p className="text-sm text-gray-600 mt-1">
+                {task.description}
+              </p>
 
               <div className="mt-2 text-sm text-gray-500">
                 Assigned: {new Date(task.assignedAt).toLocaleDateString()}
               </div>
-
-
-              {/* Deadline */}
 
               <div className="text-sm text-gray-500">
                 Deadline: {
@@ -178,72 +222,24 @@ export default function TrackInternship() {
                 }
               </div>
 
-
-              {/* Mentor resources */}
-
-              {task.resourceFiles?.length > 0 && (
-
-                <div className="mt-2">
-
-                  <p className="text-xs font-semibold mb-1">
-                    Resources
-                  </p>
-
-                  <div className="flex flex-wrap gap-2">
-
-                    {task.resourceFiles.map(file => (
-
-                      <a
-                        key={file._id}
-                        href={file.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-xs bg-gray-100 px-2 py-1 rounded hover:bg-gray-200"
-                      >
-                        {file.fileName}
-                      </a>
-
-                    ))}
-
-                  </div>
-
-                </div>
-
-              )}
-
-
-              {/* Status */}
-
               <div className="mt-3">
-
-                <span className={`text-xs px-2 py-1 rounded ${getStatusColor(task.status)}`}>
+                <span className={`text-xs px-2 py-1 rounded capitalize ${getStatusColor(task.status)}`}>
                   {task.status}
                 </span>
-
               </div>
 
-
-              {/* View Button */}
-
               <button
-                onClick={() =>
-                  navigate(`/student/task/${task._id}`)
-                }
-                className="mt-3 px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
+                onClick={() => navigate(`/student/task/${task._id}`)}
+                className="mt-3 px-3 py-1 bg-blue-600 text-white rounded text-sm"
               >
                 View Task
               </button>
 
             </div>
-
           ))}
-
         </div>
-
       )}
 
     </div>
-
   );
-
 }

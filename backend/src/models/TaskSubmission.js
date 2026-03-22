@@ -29,12 +29,19 @@ const taskSubmissionSchema = new mongoose.Schema(
     default: 1
   },
 
-  description: {
+  workSummary : {
     type: String,
     required: true,
     trim: true,
     maxlength: 5000
   },
+
+  technologiesUsed: [   // ✅ THIS WAS MISSING
+    {
+      type: String,
+      trim: true
+    }
+  ],
 
   /*
    Files uploaded by student

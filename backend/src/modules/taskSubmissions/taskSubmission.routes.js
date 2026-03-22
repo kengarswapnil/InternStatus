@@ -11,36 +11,43 @@ import {
 
 const router = express.Router();
 
-
 /*
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 STUDENT SUBMITS TASK
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 */
 router.post(
   "/",
   authenticate,
   authorizeRoles("student"),
-  upload.array("files", 5),   // supports single or multiple files
+  upload.array("files", 5),
   submitTaskController
 );
 
-
 /*
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 GET SUBMISSIONS FOR A TASK
-Allowed roles:
-- mentor
+Roles:
 - student
+- mentor
 - faculty
+- company ✅ (FIXED)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Query:
+?latestOnly=true → clean view
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 */
 router.get(
   "/task/:taskId",
   authenticate,
-  authorizeRoles("mentor", "student", "faculty"),
+  authorizeRoles("mentor", "student", "faculty", "company"),
   getTaskSubmissionsController
 );
 
-
 /*
-MENTOR REVIEW SUBMISSION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+MENTOR REVIEW
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 */
 router.patch(
   "/:submissionId/review",

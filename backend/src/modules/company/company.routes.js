@@ -1,10 +1,12 @@
 import express from "express";
 import {
   assignMentor,
+  getCertificate,
   getCompanyInterns,
   getCompanyMentors,
   getCompanyProfile,
   getInternProgressController,
+  issueCertificate,
   removeMentorFromCompany,
   updateCompanyMentor,
   updateCompanyProfile
@@ -71,6 +73,20 @@ router.get(
   authenticate,
   authorizeRoles("company"),
   getInternProgressController
+);
+
+router.post(
+  "/applications/:id/certificate",
+  authenticate,
+  authorizeRoles("company"),
+  upload.single("certificate"),
+  issueCertificate
+);
+
+router.get(
+  "/applications/:id/certificate",
+  authenticate,
+  getCertificate
 );
 
 export default router;

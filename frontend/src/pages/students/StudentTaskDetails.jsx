@@ -1,436 +1,311 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import API from "../../api/api";
 
 export default function StudentTaskDetails() {
 
-const { taskId } = useParams();
+  const { taskId } = useParams();
 
-const [task, setTask] = useState(null);
-const [submissions, setSubmissions] = useState([]);
-const [loading, setLoading] = useState(true);
-const [submitting, setSubmitting] = useState(false);
+  const [task, setTask] = useState(null);
+  const [submissions, setSubmissions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
 
-const [form, setForm] = useState({
-description: "",
-githubLink: "",
-files: []
-});
-
-/* ================= FETCH ================= */
-
-const fetchTask = async () => {
-
-try {
-
-  const taskRes = await API.get(`/tasks/${taskId}`);
-  setTask(taskRes.data.data);
-
-  const subRes = await API.get(`/task-submissions/task/${taskId}`);
-  setSubmissions(subRes.data.data || []);
-
-} catch (err) {
-
-  console.error("Failed to fetch task", err);
-
-} finally {
-
-  setLoading(false);
-
-}
-
-};
-
-useEffect(() => {
-
-if (!taskId) return;
-
-fetchTask();
-
-}, [taskId]);
-
-/* ================= FILES ================= */
-
-const handleFileChange = (e) => {
-
-if (e.target.files.length > 5) {
-  alert("Maximum 5 files allowed");
-  return;
-}
-
-setForm(prev => ({
-  ...prev,
-  files: e.target.files
-}));
-
-};
-
-/* ================= SUBMIT ================= */
-
-const submitTask = async () => {
-
-if (!form.description.trim()) {
-  alert("Description is required");
-  return;
-}
-
-try {
-
-  setSubmitting(true);
-
-  const formData = new FormData();
-
-  formData.append("taskId", taskId);
-  formData.append("description", form.description);
-  formData.append("githubLink", form.githubLink);
-
-  for (let i = 0; i < form.files.length; i++) {
-    formData.append("files", form.files[i]);
-  }
-
-  await API.post("/task-submissions", formData);
-
-  alert("Task submitted successfully");
-
-  setForm({
-    description: "",
+  const [form, setForm] = useState({
+    workSummary: "",
     githubLink: "",
+    technologiesUsed: "",
     files: []
   });
 
-  fetchTask();
+  const ALLOWED_TYPES = [
+    "application/pdf",
+    "image/png",
+    "image/jpeg",
+    "image/jpg",
+    "application/zip"
+  ];
 
-} catch (err) {
+  /* ================= FETCH ================= */
 
-  alert(err.response?.data?.message || "Submission failed");
+  const fetchTask = async () => {
+    try {
+      const [taskRes, subRes] = await Promise.all([
+        API.get(`/tasks/${taskId}`),
+        API.get(`/task-submissions/task/${taskId}`)
+      ]);
 
-} finally {
+      setTask(taskRes.data.data);
 
-  setSubmitting(false);
+      const sorted = (subRes.data.data || []).sort(
+        (a, b) => new Date(b.submittedAt) - new Date(a.submittedAt)
+      );
 
-}
+      setSubmissions(sorted);
 
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-};
+  useEffect(() => {
+    fetchTask();
+  }, [taskId]);
 
-/* ================= STATUS COLOR ================= */
+  /* ================= DERIVED ================= */
 
-const getStatusColor = (status) => {
+  const latestSubmission = useMemo(() => {
+    return submissions.length ? submissions[0] : null;
+  }, [submissions]);
 
-switch (status) {
+  const canSubmit =
+    task &&
+    !["completed", "cancelled"].includes(task.status) &&
+    (!latestSubmission || latestSubmission.status === "revision_requested");
 
-  case "completed":
-    return "bg-green-100 text-green-700";
+  /* ================= FILE ================= */
 
-  case "submitted":
-  case "under_review":
-    return "bg-yellow-100 text-yellow-700";
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files);
 
-  case "revision_requested":
-    return "bg-red-100 text-red-700";
+    if (files.length > 5) {
+      alert("Max 5 files allowed");
+      return;
+    }
 
-  default:
-    return "bg-blue-100 text-blue-700";
+    for (const file of files) {
+      if (!ALLOWED_TYPES.includes(file.type)) {
+        alert(`Invalid type: ${file.type}`);
+        return;
+      }
+    }
 
-}
+    setForm(prev => ({ ...prev, files }));
+  };
 
-};
+  /* ================= SUBMIT ================= */
 
-/* ================= LOADING ================= */
+  const submitTask = async () => {
+    if (!form.workSummary.trim()) {
+      alert("Work summary required");
+      return;
+    }
 
-if (loading) {
+    try {
+      setSubmitting(true);
 
-return (
-  <div className="flex flex-col justify-center items-center h-screen space-y-4">
-    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-    <p className="text-gray-500 font-medium">
-      Loading task details...
-    </p>
-  </div>
-);
-}
+      const formData = new FormData();
 
-if (!task) {
-return <div className="p-8">Task not found</div>;
-}
+      formData.append("taskId", taskId);
+      formData.append("workSummary", form.workSummary);
+      formData.append("githubLink", form.githubLink);
 
-const canSubmit =
-task.status !== "completed" &&
-task.status !== "cancelled" &&
-(
-submissions.length === 0 ||
-submissions[0]?.status === "revision_requested"
-);
+      const techArray = form.technologiesUsed
+        .split(",")
+        .map(t => t.trim())
+        .filter(Boolean);
 
-return (
+      formData.append("technologiesUsed", JSON.stringify(techArray));
 
-<div className="p-6 md:p-10 max-w-5xl mx-auto bg-gray-50 min-h-screen">
+      form.files.forEach(file => {
+        formData.append("files", file);
+      });
 
+      await API.post("/task-submissions", formData);
 
-  {/* ================= TASK HEADER ================= */}
+      alert("Submitted");
 
-  <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm mb-10">
+      setForm({
+        workSummary: "",
+        githubLink: "",
+        technologiesUsed: "",
+        files: []
+      });
 
-    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+      fetchTask();
 
-      <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">
-        {task.title}
-      </h1>
+    } catch (err) {
+      alert(err.response?.data?.message || "Error");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
-      <span className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider ${getStatusColor(task.status)}`}>
-        {task.status}
-      </span>
+  /* ================= STATUS ================= */
 
-    </div>
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "completed":
+        return "bg-green-100 text-green-700";
+      case "submitted":
+      case "under_review":
+        return "bg-yellow-100 text-yellow-700";
+      case "revision_requested":
+        return "bg-red-100 text-red-600";
+      default:
+        return "bg-gray-100 text-gray-600";
+    }
+  };
 
+  /* ================= LOADING ================= */
 
-    {task.description && (
+  if (loading) return <div className="p-10">Loading...</div>;
+  if (!task) return <div className="p-10">Task not found</div>;
 
-      <p className="text-gray-700 leading-relaxed mb-6 text-lg">
-        {task.description}
-      </p>
+  /* ================= UI ================= */
 
-    )}
+  return (
+    <div className="max-w-5xl mx-auto p-6 space-y-6">
 
-
-    {task.externalLink && (
-
-      <div className="mb-6">
-
-        <a
-          href={task.externalLink}
-          target="_blank"
-          rel="noreferrer"
-          className="inline-flex items-center px-4 py-2 bg-blue-50 text-blue-700 rounded-lg font-medium hover:bg-blue-100 transition"
-        >
-          Open External Task
-        </a>
-
-      </div>
-
-    )}
-
-
-    {task.resourceFiles?.length > 0 && (
-
-      <div className="mb-6">
-
-        <p className="text-sm font-semibold text-gray-600 mb-2">
-          Resources
-        </p>
-
-        <div className="flex flex-wrap gap-2">
-
-          {task.resourceFiles.map((file, index) => (
-
-            <a
-              key={index}
-              href={file.url}
-              target="_blank"
-              rel="noreferrer"
-              className="text-xs bg-gray-100 px-3 py-1 rounded hover:bg-gray-200"
-            >
-              {file.fileName}
-            </a>
-
-          ))}
-
+      {/* ===== TASK ===== */}
+      <div className="bg-white p-6 rounded-xl border space-y-3">
+        <div className="flex justify-between">
+          <h1 className="font-bold text-lg">{task.title}</h1>
+          <span className={`text-xs px-3 py-1 rounded ${getStatusColor(task.status)}`}>
+            {task.status}
+          </span>
         </div>
 
+        <p className="text-sm text-gray-600">{task.description}</p>
+
+        {/* RESOURCE FILES */}
+        {task.resourceFiles?.length > 0 && (
+          <div>
+            <p className="text-xs text-gray-500 mb-1">Resources:</p>
+            {task.resourceFiles.map((f, i) => (
+              <a
+                key={i}
+                href={f.url}
+                target="_blank"
+                rel="noreferrer"
+                className="block text-blue-600 text-sm"
+              >
+                {f.fileName}
+              </a>
+            ))}
+          </div>
+        )}
+
+        {/* EXTERNAL LINK */}
+        {task.externalLink && (
+          <a
+            href={task.externalLink}
+            target="_blank"
+            rel="noreferrer"
+            className="text-blue-600 text-sm underline"
+          >
+            Open Resource
+          </a>
+        )}
       </div>
 
-    )}
+      {/* ===== SUBMISSIONS ===== */}
+      <div className="space-y-4">
 
+        {submissions.map(sub => (
+          <div key={sub._id} className="bg-white p-5 rounded-xl border space-y-3">
 
-    <div className="flex gap-6 text-sm text-gray-500 border-t pt-4">
-
-      <div>
-        Assigned:
-        <span className="ml-1 font-semibold text-gray-700">
-          {task.assignedAt
-            ? new Date(task.assignedAt).toLocaleDateString()
-            : "-"}
-        </span>
-      </div>
-
-      <div>
-        Deadline:
-        <span className="ml-1 font-semibold text-gray-700">
-          {task.deadline
-            ? new Date(task.deadline).toLocaleDateString()
-            : "No deadline"}
-        </span>
-      </div>
-
-    </div>
-
-  </div>
-
-
-  <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-
-
-    {/* ================= SUBMISSIONS ================= */}
-
-    <div className="lg:col-span-2">
-
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">
-        Submission History ({submissions.length})
-      </h2>
-
-
-      {submissions.length === 0 ? (
-
-        <div className="bg-white border-2 border-dashed border-gray-200 rounded-xl p-12 text-center text-gray-400">
-          No work has been submitted yet.
-        </div>
-
-      ) : (
-
-        <div className="space-y-6">
-
-          {submissions.map((sub) => (
-
-            <div
-              key={sub._id}
-              className="bg-white border border-gray-200 border-l-4 border-l-blue-500 rounded-r-xl p-6 shadow-sm"
-            >
-
-              <div className="flex justify-between items-start mb-4">
-
-                <span className="text-xs font-bold text-blue-600 uppercase">
-                  Attempt {sub.attempt}
-                </span>
-
-                <span className={`px-2 py-1 rounded text-xs font-semibold ${getStatusColor(sub.status)}`}>
-                  {sub.status}
-                </span>
-
-              </div>
-
-              <p className="text-gray-800 mb-3">
-                {sub.description}
-              </p>
-
-
-              {sub.githubLink && (
-
-                <a
-                  href={sub.githubLink}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-blue-600 underline text-sm"
-                >
-                  Repository Link
-                </a>
-
-              )}
-
-
-              {sub.files?.length > 0 && (
-
-                <div className="mt-4">
-
-                  <p className="text-xs font-semibold text-gray-500 mb-1">
-                    Files
-                  </p>
-
-                  {sub.files.map((file, i) => (
-
-                    <a
-                      key={i}
-                      href={file.url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="block text-blue-600 underline text-sm"
-                    >
-                      {file.fileName}
-                    </a>
-
-                  ))}
-
-                </div>
-
-              )}
-
-
-              {sub.mentorFeedback && (
-
-                <div className="mt-4 bg-amber-50 border border-amber-200 p-3 rounded">
-
-                  <p className="text-xs font-semibold text-amber-800">
-                    Mentor Feedback
-                  </p>
-
-                  <p className="text-sm text-amber-900">
-                    {sub.mentorFeedback}
-                  </p>
-
-                </div>
-
-              )}
-
+            <div className="flex justify-between text-xs">
+              <span>Attempt {sub.attempt}</span>
+              <span className={getStatusColor(sub.status)}>
+                {sub.status}
+              </span>
             </div>
 
-          ))}
+            <p className="text-sm">{sub.workSummary}</p>
 
-        </div>
+            {/* TECH */}
+            {sub.technologiesUsed?.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {sub.technologiesUsed.map((t, i) => (
+                  <span key={i} className="bg-blue-100 text-xs px-2 py-1 rounded">
+                    {t}
+                  </span>
+                ))}
+              </div>
+            )}
 
-      )}
+            {/* GITHUB */}
+            {sub.githubLink && (
+              <a
+                href={sub.githubLink}
+                target="_blank"
+                rel="noreferrer"
+                className="text-blue-600 text-sm underline"
+              >
+                View GitHub
+              </a>
+            )}
 
-    </div>
+            {/* FILES */}
+            {sub.files?.length > 0 && (
+              <div>
+                {sub.files.map((f, i) => (
+                  <a
+                    key={i}
+                    href={f.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="block text-sm text-blue-600"
+                  >
+                    {f.fileName}
+                  </a>
+                ))}
+              </div>
+            )}
 
+            {/* FEEDBACK */}
+            {sub.mentorFeedback && (
+              <div className="bg-yellow-50 p-3 text-sm rounded">
+                {sub.mentorFeedback}
+              </div>
+            )}
 
-    {/* ================= SUBMIT FORM ================= */}
+          </div>
+        ))}
 
-    <div className="lg:col-span-1">
+      </div>
 
+      {/* ===== FORM ===== */}
       {canSubmit && (
-
-        <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm sticky top-8">
-
-          <h2 className="text-xl font-bold text-gray-800 mb-6">
-            Submit Work
-          </h2>
+        <div className="bg-white p-5 rounded-xl border space-y-3">
 
           <textarea
-            placeholder="Describe your work..."
-            value={form.description}
-            onChange={(e)=>setForm({...form,description:e.target.value})}
-            className="w-full border p-3 rounded mb-4"
+            placeholder="Work summary"
+            value={form.workSummary}
+            onChange={(e) => setForm({ ...form, workSummary: e.target.value })}
+            className="w-full border p-2 rounded"
           />
 
           <input
-            placeholder="GitHub Link (optional)"
+            placeholder="Technologies (comma separated)"
+            value={form.technologiesUsed}
+            onChange={(e) => setForm({ ...form, technologiesUsed: e.target.value })}
+            className="w-full border p-2 rounded"
+          />
+
+          <input
+            placeholder="GitHub link"
             value={form.githubLink}
-            onChange={(e)=>setForm({...form,githubLink:e.target.value})}
-            className="w-full border p-3 rounded mb-4"
+            onChange={(e) => setForm({ ...form, githubLink: e.target.value })}
+            className="w-full border p-2 rounded"
           />
 
-          <input
-            type="file"
-            multiple
-            onChange={handleFileChange}
-            className="mb-4"
-          />
+          <input type="file" multiple onChange={handleFileChange} />
 
           <button
             onClick={submitTask}
             disabled={submitting}
-            className="w-full py-2 bg-blue-600 text-white rounded"
+            className="w-full bg-blue-600 text-white py-2 rounded"
           >
-            {submitting ? "Submitting..." : "Submit Task"}
+            {submitting ? "Submitting..." : "Submit"}
           </button>
 
         </div>
-
       )}
 
     </div>
-
-  </div>
-
-</div>
-);
-
+  );
 }

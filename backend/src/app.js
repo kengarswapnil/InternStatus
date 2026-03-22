@@ -21,6 +21,7 @@ import taskRoutes from "./modules/tasks/task.routes.js";
 import studentRoutes from "./modules/student/student.routes.js";
 import taskSubmissionRoutes from "./modules/taskSubmissions/taskSubmission.routes.js";
 import progressLogRoutes from "./modules/progressLogs/progressLog.routes.js";
+import internshipReportRoutes from "./modules/internshipReports/internshipReport.routes.js";
 
 
 
@@ -70,10 +71,21 @@ app.use("/api/tasks", taskRoutes);
 app.use("/api/students", studentRoutes);
 app.use("/api/task-submissions", taskSubmissionRoutes);
 app.use("/api/progress", progressLogRoutes);
+app.use("/api/reports", internshipReportRoutes);
 
 /* ---------------------------------------
    404 HANDLER
 ---------------------------------------- */
+
+// GLOBAL ERROR HANDLER
+app.use((err, req, res, next) => {
+  console.error("Server Error:", err.message);
+
+  res.status(err.status || 500).json({
+    error: err.message || "Internal Server Error"
+  });
+});
+
 app.use((req, res) => {
   res.status(404).json({
     message: "Route not found"

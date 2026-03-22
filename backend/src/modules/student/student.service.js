@@ -32,11 +32,13 @@ export const getStudentInternshipTrackService = async (user, applicationId) => {
     .sort({ createdAt: -1 })
     .lean();
 
+  // ✅ FIX: include certificateUrl
   return {
     internship: application.internship,
     company: application.company,
     mentor: application.mentor,
     status: application.status,
+    certificateUrl: application.certificateUrl,   // 🔥 THIS LINE FIXES YOUR ISSUE
     tasks
   };
 };
@@ -63,32 +65,48 @@ export const getStudentDetailsService = async (studentId) => {
 };
 
 
-
-/*
-GET STUDENT INTERNSHIP STATS
-*/
 export const getStudentInternshipStatsService = async (studentId) => {
 
   if (!mongoose.Types.ObjectId.isValid(studentId)) {
     throw new Error("Invalid student id");
   }
 
+  const objectId = new mongoose.Types.ObjectId(studentId);
+
   const stats = await Application.aggregate([
+
     {
       $match: {
-        student: new mongoose.Types.ObjectId(studentId)
+        student: objectId
       }
     },
+
     {
-      $group: {
-        _id: "$status",
-        count: { $sum: 1 }
+      $facet: {
+
+        // ✅ TOTAL APPLICATIONS
+        totalApplied: [
+          { $count: "count" }
+        ],
+
+        // ✅ STATUS COUNTS
+        statusCounts: [
+          {
+            $group: {
+              _id: "$status",
+              count: { $sum: 1 }
+            }
+          }
+        ]
+
       }
     }
+
   ]);
 
   const result = {
-    applied: 0,
+    totalApplied: 0,
+    applied: 0,              // 🔥 ADD THIS
     shortlisted: 0,
     selected: 0,
     offer_accepted: 0,
@@ -97,14 +115,16 @@ export const getStudentInternshipStatsService = async (studentId) => {
     rejected: 0
   };
 
-  stats.forEach(s => {
+  // ✅ TOTAL
+  result.totalApplied = stats[0].totalApplied[0]?.count || 0;
+
+  // ✅ STATUS
+  stats[0].statusCounts.forEach(s => {
     result[s._id] = s.count;
   });
 
   return result;
 };
-
-
 
 /*
 GET STUDENT INTERNSHIPS
@@ -120,6 +140,7 @@ export const getStudentInternshipsService = async (studentId) => {
     .populate("internship", "title startDate durationMonths")
     .populate("company", "name")
     .populate("mentor", "designation")
+    .populate("report") 
     .sort({ createdAt: -1 })
     .lean();
 

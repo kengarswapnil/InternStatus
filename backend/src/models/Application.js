@@ -126,6 +126,16 @@ applicationSchema.index(
   { unique: true }
 );
 
+applicationSchema.virtual("report", {
+  ref: "InternshipReport",
+  localField: "_id",
+  foreignField: "application",
+  justOne: true
+});
+
+applicationSchema.set("toObject", { virtuals: true });
+applicationSchema.set("toJSON", { virtuals: true });
+
 const Application = mongoose.model(
   "Application",
   applicationSchema

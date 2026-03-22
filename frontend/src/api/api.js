@@ -9,36 +9,40 @@ const API = axios.create({
 
 API.interceptors.response.use(
   (response) => response,
+
   async (error) => {
 
     if (error.response) {
       const status = error.response.status;
+      const data = error.response.data;
 
-      console.error("API Error:", error.response.data);
+      // 🔥 LOG ONLY IMPORTANT ERRORS
+      if (status !== 404 && status !== 400) {
+        console.error("API Error:", data || error.message);
+      }
+
+      // 🔐 HANDLE AUTH ERROR
       if (status === 401) {
-        // clear any persisted authentication and redux state
+
         localStorage.removeItem("token");
         delete API.defaults.headers.common.Authorization;
 
         try {
-          // import store dynamically to avoid circular deps
           const { default: store } = await import("../store/appStore");
           const { removeUser } = await import("../store/userSlice");
           store.dispatch(removeUser());
         } catch (e) {
-          console.warn("Could not clear redux state on 401", e);
+          console.warn("Redux clear failed:", e);
         }
 
-        // only redirect if the failing request wasn't the simple profile check
-        // (allow public pages such as /setup-account to complete)
-        const url = error.config?.url || "";
-        if (!url.includes("/users/profile")) {
-          if (window.location.pathname !== "/login") {
-            window.location.href = "/login";
-          }
+        // avoid redirect loops
+        if (window.location.pathname !== "/login") {
+          window.location.href = "/login";
         }
       }
+
     } else {
+      // 🌐 NETWORK ERROR
       console.error("Network Error:", error.message);
     }
 

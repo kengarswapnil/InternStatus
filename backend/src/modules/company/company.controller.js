@@ -6,7 +6,9 @@ import {
   removeMentorFromCompanyService,
   getCompanyInternsService,
   assignMentorService,
-  getInternProgressService
+  getInternProgressService,
+  getCertificateService,
+  issueCertificateService
 } from "./company.service.js";
 
 export const getCompanyProfile = async (req, res, next) => {
@@ -157,5 +159,65 @@ export const getInternProgressController = async (req, res) => {
       message: error.message
     });
 
+  }
+};
+
+export const issueCertificate = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const data = await issueCertificateService({
+      applicationId: id,
+      file: req.file,
+      user: req.user
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Certificate issued successfully",
+      data
+    });
+
+  } catch (err) {
+
+    let statusCode = 400;
+
+    if (err.message.includes("Unauthorized")) statusCode = 403;
+    else if (err.message.includes("not found")) statusCode = 404;
+    else if (err.message.includes("already")) statusCode = 409;
+
+    res.status(statusCode).json({
+      success: false,
+      message: err.message
+    });
+  }
+};
+
+/*
+  ================= GET CERTIFICATE =================
+*/
+export const getCertificate = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const data = await getCertificateService({
+      applicationId: id,
+      user: req.user
+    });
+
+    res.status(200).json({
+      success: true,
+      data
+    });
+
+  } catch (err) {
+
+    const statusCode =
+      err.message === "Forbidden" ? 403 : 400;
+
+    res.status(statusCode).json({
+      success: false,
+      message: err.message
+    });
   }
 };

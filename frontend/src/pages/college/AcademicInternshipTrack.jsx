@@ -1,126 +1,162 @@
-import React,{useEffect,useState} from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import API from "../../api/api";
 
-export default function AcademicInternshipTrack(){
+/* ================= HELPERS ================= */
 
-const { applicationId } = useParams();
-
-const [data,setData] = useState(null);
-
-useEffect(()=>{
-
-const fetchData = async()=>{
-
-  const res = await API.get(`/applications/${applicationId}/academic-track`);
-  setData(res.data.data);
-
-};
-
-fetchData();
-
-},[applicationId]);
-
-if(!data){
-return <div className="p-10">Loading progress...</div>;
+function getWeekNumber(startDate, currentDate) {
+  const diff = new Date(currentDate) - new Date(startDate);
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  return Math.floor(days / 7) + 1;
 }
 
-return(
+function formatDate(date) {
+  return new Date(date).toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "short"
+  });
+}
 
-<div className="max-w-5xl mx-auto p-8">
+function groupTasksByWeek(tasks) {
+  if (!tasks?.length) return [];
 
-<h1 className="text-xl font-bold mb-6">
-Internship Monitoring
-</h1>
+  const sorted = [...tasks].sort(
+    (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+  );
 
-<div className="grid grid-cols-2 gap-4 mb-8 text-sm">
+  const startDate = sorted[0].createdAt;
+  const weekMap = {};
 
-<div>
-<span className="text-gray-500">Student</span>
-<div>{data.student.fullName}</div>
-</div>
+  for (const task of sorted) {
+    const week = getWeekNumber(startDate, task.createdAt);
 
-<div>
-<span className="text-gray-500">Company</span>
-<div>{data.company.name}</div>
-</div>
+    if (!weekMap[week]) {
+      weekMap[week] = {
+        weekNumber: week,
+        startDate: task.createdAt,
+        endDate: task.createdAt,
+        tasks: []
+      };
+    }
 
-<div>
-<span className="text-gray-500">Mentor</span>
-<div>{data.mentor?.fullName}</div>
-</div>
+    weekMap[week].endDate = task.createdAt;
+    weekMap[week].tasks.push(task);
+  }
 
-<div>
-<span className="text-gray-500">Status</span>
-<div>{data.status}</div>
-</div>
+  return Object.values(weekMap);
+}
 
-</div>
+/* ================= MAIN ================= */
 
-{/* TASK TABLE */}
+export default function AcademicInternshipTrack() {
 
-<h2 className="font-semibold mb-3">Task Progress</h2>
+  const { applicationId } = useParams();
 
-<table className="w-full border text-sm">
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-<thead className="bg-gray-100">
+  useEffect(() => {
+    fetchData();
+  }, [applicationId]);
 
-<tr>
-<th className="p-2 border">Task</th>
-<th className="p-2 border">Status</th>
-<th className="p-2 border">Created</th>
-</tr>
+  const fetchData = async () => {
+    try {
+      const res = await API.get(`/applications/${applicationId}/academic-track`);
+      setData(res.data.data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-</thead>
+  if (loading) return <div className="p-10">Loading...</div>;
+  if (!data) return <div className="p-10">No data found</div>;
 
-<tbody>
+  const weeklyTasks = groupTasksByWeek(data.tasks);
 
-{data.tasks.map((t,i)=>(
-<tr key={i}>
-<td className="border p-2">{t.label}</td>
-<td className="border p-2">{t.status}</td>
-<td className="border p-2">
-{new Date(t.createdAt).toLocaleDateString()}
-</td>
-</tr>
-))}
+  return (
+    <div className="max-w-6xl mx-auto p-8 space-y-8">
 
-</tbody>
+      {/* ================= HEADER ================= */}
+      <div>
+        <h1 className="text-2xl font-bold mb-4">
+          Internship Tracking
+        </h1>
 
-</table>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+          <Info label="Student" value={data.student?.fullName} />
+          <Info label="Company" value={data.company?.name} />
+          <Info label="Mentor" value={data.mentor?.fullName} />
+          <Info label="Status" value={data.status} />
+        </div>
+      </div>
 
-{/* LOG SUMMARY */}
+      {/* ================= WEEK TABLES ================= */}
+      {weeklyTasks.map((week) => (
+        <div key={week.weekNumber} className="border rounded-xl p-4">
 
-<h2 className="font-semibold mt-8 mb-3">
-Activity Logs
-</h2>
+          {/* WEEK HEADER */}
+          <div className="flex justify-between mb-3">
+            <div className="font-semibold">
+              Week {week.weekNumber}
+            </div>
 
-<table className="w-full border text-sm">
+            <div className="text-sm text-gray-500">
+              {formatDate(week.startDate)} - {formatDate(week.endDate)}
+            </div>
+          </div>
 
-<thead className="bg-gray-100">
-<tr>
-<th className="p-2 border">Date</th>
-<th className="p-2 border">Status</th>
-</tr>
-</thead>
+          {/* TASK TABLE */}
+          <table className="w-full border text-sm">
 
-<tbody>
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="p-2 border w-16">Sr No.</th>
+                <th className="p-2 border">Task</th>
+                <th className="p-2 border">Status</th>
+              </tr>
+            </thead>
 
-{data.logs.map(l=>(
-<tr key={l._id}>
-<td className="border p-2">
-{new Date(l.logDate).toLocaleDateString()}
-</td>
-<td className="border p-2">{l.status}</td>
-</tr>
-))}
+            <tbody>
+              {week.tasks.map((task, index) => (
+                <tr key={task._id || index}>
 
-</tbody>
+                  {/* SR NO */}
+                  <td className="border p-2 text-center">
+                    {index + 1}
+                  </td>
 
-</table>
+                  {/* GENERIC TASK NAME */}
+                  <td className="border p-2">
+                    Task {index + 1}
+                  </td>
 
-</div>
+                  {/* STATUS */}
+                  <td className="border p-2 capitalize">
+                    {task.status}
+                  </td>
 
-);
+                </tr>
+              ))}
+            </tbody>
 
+          </table>
+
+        </div>
+      ))}
+
+    </div>
+  );
+}
+
+/* ================= INFO ================= */
+
+function Info({ label, value }) {
+  return (
+    <div>
+      <span className="text-gray-500">{label}</span>
+      <div className="font-medium capitalize">{value || "-"}</div>
+    </div>
+  );
 }
