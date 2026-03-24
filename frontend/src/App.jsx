@@ -81,6 +81,7 @@ import AcademicInternshipTrack from "./pages/college/AcademicInternshipTrack";
 import StudentInternships from "./pages/college/StudentInternship";
 import StudentCredits from "./pages/students/StudentCredits";
 import CreditManagement from "./pages/college/CreditManagement";
+import CollegeLayout from "./layouts/CollegeLayout";
 
 function AppContent() {
   const dispatch = useDispatch();
@@ -157,6 +158,7 @@ function AppContent() {
           </Route>
 
           <Route element={<ProtectedRoute role="college" />}>
+            <Route path="/college" element={<CollegeLayout />}>
             <Route path="/college/dashboard" element={<CollegeDashboard />} />
             <Route path="/college/invite-student" element={<InviteStudent />} />
             <Route path="/college/invite-faculty" element={<InviteFaculty />} />
@@ -168,6 +170,7 @@ function AppContent() {
               path="/college/students/:studentId"
               element={<StudentDetails />}
             />
+            </Route>
           </Route>
 
           <Route element={<ProtectedRoute role="faculty" />}>
@@ -182,17 +185,25 @@ function AppContent() {
           </Route>
 
           <Route element={<ProtectedRoute role={["faculty", "college"]} />}>
-            <Route
-              path="/academic-internship-track/:applicationId"
-              element={<AcademicInternshipTrack />}
-            />
-            <Route
-              path="/student/internships"
-              element={<StudentInternships />}
-            />
-            <Route path="/credits" element={<CreditManagement />} />
-          </Route>
 
+  {/* ✅ Separate static routes */}
+  <Route path="/college/*" element={<CollegeLayout />} />
+  <Route path="/faculty/*" element={<CollegeLayout />} />
+
+  {/* Shared routes */}
+  <Route
+    path="/academic-internship-track/:applicationId"
+    element={<AcademicInternshipTrack />}
+  />
+
+  <Route
+    path="/student/internships"
+    element={<StudentInternships />}
+  />
+
+  <Route path="/credits" element={<CreditManagement />} />
+
+</Route>
           <Route element={<ProtectedRoute role="mentor" />}>
             <Route path="/mentor/dashboard" element={<MentorDashboard />} />
             <Route path="/mentor/profile" element={<MentorProfile />} />

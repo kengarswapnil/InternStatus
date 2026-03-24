@@ -97,7 +97,6 @@ const CollegeDashboard = () => {
 
   return (
     <>
-      <CollegeNavBar />
       <div className="min-h-screen bg-[#f9f9f9] text-[#111] font-sans pb-12">
         {/* <CollegeNavBar /> */}
 

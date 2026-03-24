@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from "react";
 import API from "../../api/api";
+import { useNavigate } from "react-router-dom";
 
 export default function CollegeFacultyList() {
+
+  const navigate = useNavigate();
+
   const [faculty, setFaculty] = useState([]);
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState(null);
+  
 
   // New Filter States
   const [searchTerm, setSearchTerm] = useState("");
@@ -157,12 +162,13 @@ export default function CollegeFacultyList() {
         {/* Header & Filters */}
         <header className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 border-b border-[#e5e5e5] pb-6">
           <div>
-            <div className="text-[10px] font-bold text-[#333] opacity-60 uppercase tracking-[0.2em] mb-2">
-              Institution Management
-            </div>
             <h2 className="text-3xl md:text-4xl font-black text-[#111] m-0 tracking-tighter uppercase">
               College Faculty
             </h2>
+            <button className="px-4 py-2.5 rounded-[14px] text-[#fff] font-bold bg-[#111] hover:opacity-80 transition-opacity no-underline tracking-wide border-none text-[13px]"
+            onClick={() => navigate("/college/invite-faculty")}>
+              Invite Faculty
+            </button>
           </div>
 
           <div className="flex flex-col sm:flex-row items-center gap-4 w-full lg:w-auto">

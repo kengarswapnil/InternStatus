@@ -105,9 +105,10 @@ export default function CollegeStudents() {
             <h1 className="text-[23px] font-black text-[#333] m-0 tracking-tight leading-tight">
               College Students
             </h1>
-            <p className="text-[13px] font-bold text-[#333] opacity-60 m-0 uppercase tracking-widest">
-              Institutional Enrollment List
-            </p>
+            <button className="px-4 py-2.5 rounded-[14px] text-[#fff] font-bold bg-[#111] hover:opacity-80 transition-opacity no-underline tracking-wide border-none text-[13px]"
+            onClick={() => navigate("/college/invite-student")}>
+              Invite Student
+            </button>
           </div>
         </header>
 

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import API from "../../api/api";
 import { useParams, useNavigate } from "react-router-dom";
+import { PieChart } from "recharts";
 
 export default function InternProgress() {
   const { id } = useParams();
@@ -124,6 +125,7 @@ export default function InternProgress() {
                 </div>
               </div>
             </div>
+
 
             <div className="bg-[#fff] border border-[#e5e5e5] rounded-[20px] p-5 shadow-sm">
               <h3 className="text-[11px] font-bold text-[#333] opacity-50 m-0 uppercase tracking-widest border-b border-[#f9f9f9] pb-3 mb-4">

@@ -35,32 +35,6 @@ const CollegeNavBar = () => {
             </span>
           </Link>
 
-          {showCore && (
-            <div className="flex flex-wrap items-center gap-1 xl:border-l border-[#e5e5e5] xl:pl-6">
-              <Link to="/faculty/dashboard" className={navLinkClass}>
-                Dashboard
-              </Link>
-              <Link to="/college/faculty" className={navLinkClass}>
-                Faculty List
-              </Link>
-              <Link to="/college/students" className={navLinkClass}>
-                Student List
-              </Link>
-              <Link to="/college/invite-faculty" className={navLinkClass}>
-                Add Faculty
-              </Link>
-              <Link to="/college/invite-student" className={navLinkClass}>
-                Add Student
-              </Link>
-              <Link to="/college/courses" className={navLinkClass}>
-                Courses
-              </Link>
-              <Link to="/credits" className={navLinkClass}>
-                Assign Credits
-              </Link>
-            </div>
-          )}
-
           <div className="flex flex-wrap items-center gap-3 ml-auto xl:ml-6">
             {showPending && (
               <Link
