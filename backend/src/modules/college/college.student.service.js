@@ -127,18 +127,29 @@ export const removeStudentFromCollegeService = async (
 };
 
 
-export const searchStudentService = async (query, user) => {
-
-  if (!query) {
+export const searchStudentService = async (query, user, options = {}) => {
+  if (!query || !query.trim()) {
     throw new Error("Search query required");
   }
 
+  const trimmedQuery = query.trim();
+
+  // pagination defaults
+  const limit = Math.min(Number(options.limit) || 10, 50); // max 50
+  const page = Number(options.page) || 1;
+  const skip = (page - 1) * limit;
+
   let filter = {};
 
-  if (/^\d{12}$/.test(query)) {
-    filter.abcId = query;
+  // 🔍 ABC ID exact match (fast path)
+  if (/^\d{12}$/.test(trimmedQuery)) {
+    filter.abcId = trimmedQuery;
   } else {
-    filter.fullName = { $regex: query, $options: "i" };
+    // 🔍 Name search (case-insensitive, partial)
+    filter.fullName = {
+      $regex: trimmedQuery,
+      $options: "i",
+    };
   }
 
   // 🔒 COLLEGE RESTRICTION
@@ -146,14 +157,30 @@ export const searchStudentService = async (query, user) => {
     filter.college = user.referenceId;
   }
 
-  const student = await StudentProfile.findOne(filter)
-    .select("fullName abcId college");
+  // 🔍 QUERY EXECUTION
+  const students = await StudentProfile.find(filter)
+    .select("fullName abcId college")
+    .sort({ fullName: 1 }) // alphabetical
+    .skip(skip)
+    .limit(limit)
+    .lean();
 
-  if (!student) {
-    throw new Error("Student not found or not in your college");
+  // count for pagination
+  const total = await StudentProfile.countDocuments(filter);
+
+  if (!students.length) {
+    throw new Error("No students found");
   }
 
-  return student;
+  return {
+    results: students,
+    pagination: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
 };
 
 export const getStudentReportsService = async (studentId, user) => {

@@ -9,8 +9,8 @@ export default function AdminLogin() {
   const dispatch = useDispatch();
 
   const [form, setForm] = useState({
-    email: "",
-    password: "",
+    email: "admin@gmail.com",
+    password: "Admin@123",
   });
 
   const [loading, setLoading] = useState(false);

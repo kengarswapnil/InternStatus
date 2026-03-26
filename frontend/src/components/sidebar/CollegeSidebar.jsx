@@ -1,35 +1,8 @@
-import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import API from "../../api/api";
 
 export default function CollegeSidebar() {
-  const [counts, setCounts] = useState({
-    all: 0,
-    college: 0,
-    company: 0,
-  });
-
-  const fetchCounts = async () => {
-    try {
-      const res = await API.get("/admin/onboarding/pending?type=all");
-      const colleges = res.data?.data?.colleges || [];
-      const companies = res.data?.data?.companies || [];
-
-      setCounts({
-        all: colleges.length + companies.length,
-        college: colleges.length,
-        company: companies.length,
-      });
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  useEffect(() => {
-    fetchCounts();
-    const interval = setInterval(fetchCounts, 30000);
-    return () => clearInterval(interval);
-  }, []);
+ 
 
   const linkClass = ({ isActive }) =>
     `group flex flex-col items-stretch px-3 py-2.5 rounded-[14px] transition-all duration-300 border mb-1 no-underline ${
@@ -53,10 +26,6 @@ export default function CollegeSidebar() {
           <span className="text-[13px] font-bold">Dashboard</span>
         </NavLink>
 
-         <NavLink to="/college/profile" className={linkClass} end>
-          <span className="text-[13px] font-bold">Profile</span>
-        </NavLink>
-
         <NavLink to="/college/faculty" className={linkClass}>
           <span className="text-[13px] font-bold">Faculty</span>
         </NavLink>
@@ -65,15 +34,22 @@ export default function CollegeSidebar() {
           <span className="text-[13px] font-bold">Student</span>
         </NavLink>
 
+        <NavLink to="/college/invite-faculty" className={linkClass}>
+          <span className="text-[13px] font-bold">Add Faculty</span>
+        </NavLink>
+
+        <NavLink to="/college/invite-student" className={linkClass}>
+          <span className="text-[13px] font-bold">Add Student</span>
+        </NavLink>
+
         <NavLink to="/college/courses" className={linkClass}>
           <span className="text-[13px] font-bold">Courses</span>
         </NavLink>
 
-        <NavLink to="/credits" className={linkClass}>
+        <NavLink to="college/credits" className={linkClass}>
           <span className="text-[13px] font-bold">Assign Credits</span>
-        </NavLink>        
+        </NavLink>
       </nav>
-
     </aside>
   );
 }

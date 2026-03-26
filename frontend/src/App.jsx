@@ -162,7 +162,9 @@ function AppContent() {
             <Route path="/faculty/profile" element={<FacultyProfile />} />
             <Route path="/faculty/students" element={<FacultyStudents />} />
             <Route path="/faculty/invite-student" element={<InviteStudent />} />
-            <Route path="/credits" element={<CreditManagement />} />
+             <Route path="/faculty/students/:studentId" element={<StudentDetails />} />
+              <Route path="/academic-internship-track/:applicationId" element={<AcademicInternshipTrack />} />
+            <Route path="faculty/credits" element={<CreditManagement />} />
           </Route>
         </Route>
 
@@ -204,10 +206,11 @@ function AppContent() {
             <Route path="/college/students" element={<CollegeStudents />} />
             <Route path="/college/students/:studentId" element={<StudentDetails />} />
             <Route path="/college/invite-faculty" element={<InviteFaculty />} />
+            <Route path="/college/invite-student" element={<InviteStudent />} />
             <Route path="/college/courses" element={<Courses />} />
             <Route path="/academic-internship-track/:applicationId" element={<AcademicInternshipTrack />} />
             <Route path="/student/internships" element={<StudentInternships />} />
-            <Route path="/credits" element={<CreditManagement />} />
+            <Route path="college/credits" element={<CreditManagement />} />
           </Route>
         </Route>
 

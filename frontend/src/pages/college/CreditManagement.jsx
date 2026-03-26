@@ -3,12 +3,21 @@ import API from "../../api/api";
 
 export default function CreditManagement() {
   const [query, setQuery] = useState("");
+  const [students, setStudents] = useState([]); // NEW: list of matched students
   const [student, setStudent] = useState(null);
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(false);
   const [scores, setScores] = useState({});
   const [remarks, setRemarks] = useState({});
   const [lockedReports, setLockedReports] = useState({});
+  
+
+  // NEW: loads reports for a given student object
+  const loadReports = async (selected) => {
+    if (!selected?._id) throw new Error("Invalid student data");
+    const reportsRes = await API.get(`/college/students/${selected._id}/reports`);
+    setReports(reportsRes.data.data || []);
+  };
 
   const handleSearch = async () => {
     if (!query.trim()) {
@@ -18,20 +27,50 @@ export default function CreditManagement() {
 
     try {
       setLoading(true);
-      const res = await API.get(`/college/students/search?query=${query}`);
-      const studentData = res.data.data;
-      setStudent(studentData);
-
-      const reportsRes = await API.get(
-        `/college/students/${studentData._id}/reports`,
-      );
-      setReports(reportsRes.data.data);
-
+      setStudent(null);
+      setStudents([]);
+      setReports([]);
       setScores({});
       setRemarks({});
       setLockedReports({});
+
+      const res = await API.get(`/college/students/search?query=${query}`);
+      const results = res?.data?.data?.results || [];
+
+      if (!results.length) {
+        return alert("No students found");
+      }
+
+      if (results.length === 1) {
+        // CASE 1: Single result — auto select and load reports
+        setStudent(results[0]);
+        await loadReports(results[0]);
+      } else {
+        // CASE 2: Multiple results — show selection list, do NOT auto-pick
+        setStudents(results);
+      }
     } catch (err) {
+      console.error(err);
       alert(err.response?.data?.message || "Search failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // NEW: called when user clicks a student from the multi-result list
+  const handleSelectStudent = async (selected) => {
+    try {
+      setLoading(true);
+      setStudent(selected);
+      setStudents([]); // collapse the list
+      setReports([]);
+      setScores({});
+      setRemarks({});
+      setLockedReports({});
+      await loadReports(selected);
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.message || "Failed to load reports");
     } finally {
       setLoading(false);
     }
@@ -65,6 +104,8 @@ export default function CreditManagement() {
     }
   };
 
+  
+
   return (
     <div className="min-h-screen bg-[#f9f9f9] text-[#333] font-sans pb-10">
       <main className="max-w-7xl mx-auto w-full px-4 md:px-6 py-6 flex flex-col gap-6">
@@ -95,6 +136,37 @@ export default function CreditManagement() {
           </button>
         </div>
 
+        {/* CASE 2: Multiple students — show selectable list ABOVE the student card */}
+        {students.length > 1 && (
+          <div className="bg-[#fff] border border-[#e5e5e5] rounded-[20px] shadow-sm overflow-hidden">
+            <div className="px-5 py-3 border-b border-[#e5e5e5] bg-[#f9f9f9]">
+              <p className="text-[11px] font-bold text-[#333] opacity-60 uppercase tracking-widest m-0">
+                {students.length} students found — select one to continue
+              </p>
+            </div>
+            <ul className="divide-y divide-[#e5e5e5]">
+              {students.map((s) => (
+                <li
+                  key={s._id}
+                  onClick={() => handleSelectStudent(s)}
+                  className="flex items-center gap-4 px-5 py-3 hover:bg-[#f9f9f9] cursor-pointer transition-colors duration-150"
+                >
+                  <div className="w-9 h-9 bg-[#f9f9f9] border border-[#e5e5e5] rounded-full flex items-center justify-center text-[14px] font-black shrink-0">
+                    {s.fullName?.[0]?.toUpperCase() ?? "?"}
+                  </div>
+                  <div>
+                    <p className="text-[13px] font-bold text-[#333] m-0">{s.fullName}</p>
+                    <p className="text-[11px] font-bold text-[#333] opacity-50 m-0 uppercase tracking-widest">
+                      ABC ID: <span className="text-[#111] opacity-100">{s.abcId || "Not Linked"}</span>
+                    </p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Existing student card — untouched */}
         {student && (
           <div className="bg-[#fff] border border-[#e5e5e5] p-5 rounded-[20px] shadow-sm flex items-center gap-5">
             <div className="w-12 h-12 bg-[#f9f9f9] border border-[#e5e5e5] rounded-full flex items-center justify-center text-[18px] font-black">
@@ -114,6 +186,7 @@ export default function CreditManagement() {
           </div>
         )}
 
+        {/* Existing table — completely untouched */}
         {reports.length > 0 ? (
           <div className="bg-[#fff] border border-[#e5e5e5] rounded-[20px] shadow-sm overflow-hidden box-border">
             <div className="overflow-x-auto no-scrollbar">
@@ -142,8 +215,7 @@ export default function CreditManagement() {
                 </thead>
                 <tbody className="divide-y divide-[#e5e5e5]">
                   {reports.map((r) => {
-                    const isLocked =
-                      r.facultyStatus === "approved" || lockedReports[r._id];
+                   const isLocked = r.status === "faculty_approved" || lockedReports[r._id];
 
                     return (
                       <tr

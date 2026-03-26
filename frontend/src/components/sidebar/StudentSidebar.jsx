@@ -61,9 +61,7 @@ export default function StudentSidebar() {
             <NavLink to="/student/dashboard" className={linkClass} end>
               <span className="text-sm font-bold">Dashboard</span>
             </NavLink>
-            <NavLink to="/student/profile" className={linkClass} end>
-              <span className="text-sm font-bold">My Profile</span>
-            </NavLink>
+
             <NavLink to="/student/browse-internships" className={linkClass} end>
               <span className="text-sm font-bold">Browse Internships</span>
             </NavLink>

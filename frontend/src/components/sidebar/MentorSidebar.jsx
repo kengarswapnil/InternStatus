@@ -30,9 +30,7 @@ export default function MentorSidebar() {
             <NavLink to="/mentor/dashboard" className={linkClass} end>
               <span className="text-sm font-bold">Dashboard</span>
             </NavLink>
-            <NavLink to="/mentor/profile" className={linkClass} end>
-              <span className="text-sm font-bold">My Profile</span>
-            </NavLink>
+
             <NavLink to="/mentor/interns" className={linkClass} end>
               <span className="text-sm font-bold">Interns</span>
             </NavLink>

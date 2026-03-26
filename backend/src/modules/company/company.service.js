@@ -16,6 +16,7 @@ const EDITABLE_FIELDS = [
   "industry",
   "companySize",
   "description",
+  "emailDomain",
 ];
 
 // =============================

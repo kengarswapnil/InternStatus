@@ -4,7 +4,6 @@ import API from "../../api/api";
 
 export default function StudentDetails() {
   const { studentId } = useParams();
-  const navigate = useNavigate();
 
   const [student, setStudent] = useState(null);
   const [stats, setStats] = useState(null);

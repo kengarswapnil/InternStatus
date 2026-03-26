@@ -4,30 +4,30 @@ import { useParams } from "react-router-dom";
 
 export default function InternshipApplicants() {
   const { id } = useParams();
+
   const [data, setData] = useState([]);
   const [loadingId, setLoadingId] = useState(null);
-
-  // New state for search
   const [searchTerm, setSearchTerm] = useState("");
+  const [filterStatus, setFilterStatus] = useState("");
 
   const fetchData = async () => {
     try {
       const res = await API.get(`/applications/internship/${id}`);
-      setData(res.data.data || []);
-    } catch {
+      setData(res.data?.data || []);
+    } catch (err) {
+      console.error(err);
       alert("Failed to load applicants");
     }
   };
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [id]);
 
   const updateStatus = async (appId, status) => {
     const confirmAction = window.confirm(
-      `Are you sure you want to mark as ${status}?`,
+      `Are you sure you want to mark as ${status}?`
     );
-
     if (!confirmAction) return;
 
     setLoadingId(appId);
@@ -42,277 +42,210 @@ export default function InternshipApplicants() {
     }
   };
 
-  const renderActions = (app) => {
-    const btnBase =
-      "px-6 py-2.5 text-[11px] font-black uppercase tracking-[0.15em] rounded-[10px] transition-all duration-300 outline-none disabled:opacity-50 disabled:cursor-not-allowed border cursor-pointer";
-
-    switch (app.status) {
-      case "applied":
-        return (
-          <div className="flex gap-3 mt-6 pt-6 border-t border-[#e5e5e5]">
-            <button
-              onClick={() => updateStatus(app._id, "shortlisted")}
-              disabled={loadingId === app._id}
-              className={`${btnBase} bg-[#111] text-[#fff] border-[#111] hover:bg-[#333] hover:border-[#333] hover:-translate-y-0.5`}
-            >
-              {loadingId === app._id ? "Processing..." : "Shortlist"}
-            </button>
-            <button
-              onClick={() => updateStatus(app._id, "rejected")}
-              disabled={loadingId === app._id}
-              className={`${btnBase} bg-[#fff] text-[#111] border-[#e5e5e5] hover:bg-[#f9f9f9] hover:border-[#ccc]`}
-            >
-              Reject
-            </button>
-          </div>
-        );
-
-      case "shortlisted":
-        return (
-          <div className="flex gap-3 mt-6 pt-6 border-t border-[#e5e5e5]">
-            <button
-              onClick={() => updateStatus(app._id, "selected")}
-              disabled={loadingId === app._id}
-              className={`${btnBase} bg-[#111] text-[#fff] border-[#111] hover:bg-[#333] hover:border-[#333] hover:-translate-y-0.5`}
-            >
-              {loadingId === app._id ? "Processing..." : "Select"}
-            </button>
-            <button
-              onClick={() => updateStatus(app._id, "rejected")}
-              disabled={loadingId === app._id}
-              className={`${btnBase} bg-[#fff] text-[#111] border-[#e5e5e5] hover:bg-[#f9f9f9] hover:border-[#ccc]`}
-            >
-              Reject
-            </button>
-          </div>
-        );
-
-      case "selected":
-        return (
-          <div className="mt-6 pt-6 border-t border-[#e5e5e5]">
-            <span className="px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-[#b45309] bg-[#fffbeb] border border-[#fde68a] rounded-[8px]">
-              Waiting for student acceptance
-            </span>
-          </div>
-        );
-
-      case "offer_accepted":
-        return (
-          <div className="mt-6 pt-6 border-t border-[#e5e5e5]">
-            <span className="px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-[#166534] bg-[#f0fdf4] border border-[#bbf7d0] rounded-[8px]">
-              Offer Accepted
-            </span>
-          </div>
-        );
-
-      case "rejected":
-        return (
-          <div className="mt-6 pt-6 border-t border-[#e5e5e5]">
-            <span className="px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-[#991b1b] bg-[#fef2f2] border border-[#fecaca] rounded-[8px]">
-              Rejected
-            </span>
-          </div>
-        );
-
-      case "withdrawn":
-        return (
-          <div className="mt-6 pt-6 border-t border-[#e5e5e5]">
-            <span className="px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-[#555] bg-[#f9f9f9] border border-[#e5e5e5] rounded-[8px]">
-              Withdrawn
-            </span>
-          </div>
-        );
-
-      case "ongoing":
-        return (
-          <div className="mt-6 pt-6 border-t border-[#e5e5e5]">
-            <span className="px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-[#1d4ed8] bg-[#eff6ff] border border-[#bfdbfe] rounded-[8px]">
-              Internship Ongoing
-            </span>
-          </div>
-        );
-
-      default:
-        return (
-          <div className="mt-6 pt-6 border-t border-[#e5e5e5]">
-            <span className="px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-[#555] bg-[#f9f9f9] border border-[#e5e5e5] rounded-[8px]">
-              {app.status}
-            </span>
-          </div>
-        );
-    }
-  };
-
-  // Filter data based on search term
+  // 🔍 FILTER LOGIC
   const filteredData = data.filter((app) => {
-    const fullName = app.studentSnapshot?.fullName || "";
-    return fullName.toLowerCase().includes(searchTerm.toLowerCase());
+    const name = app.studentSnapshot?.fullName || "";
+    const matchesSearch = name
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+
+    const matchesStatus = filterStatus
+      ? app.status === filterStatus
+      : true;
+
+    return matchesSearch && matchesStatus;
   });
 
   return (
-    <div className="min-h-screen bg-[#f9f9f9] p-4 md:p-8 font-sans box-border text-[#111]">
-      <div className="max-w-5xl mx-auto">
-        <header className="mb-8 text-center md:text-left flex flex-col md:flex-row justify-between md:items-end gap-6">
-          <div>
-            <div className="text-[10px] font-bold text-[#333] opacity-60 uppercase tracking-[0.2em] mb-2">
-              Management Console
-            </div>
-            <h2 className="text-3xl md:text-4xl font-black text-[#111] m-0 tracking-tighter uppercase">
-              Applicants Pool
-            </h2>
-          </div>
+    <div className="min-h-screen bg-[#f9f9f9] p-6 font-sans text-[#111]">
+      <div className="max-w-6xl mx-auto">
 
-          {/* Search Input Area */}
-          <div className="w-full md:w-auto md:min-w-[300px]">
+        {/* HEADER */}
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+          <h2 className="text-2xl font-black uppercase tracking-tight">
+            Applicants
+          </h2>
+
+          <div className="flex gap-3 w-full md:w-auto">
+            {/* SEARCH */}
             <input
               type="text"
-              placeholder="Search by applicant name..."
+              placeholder="Search name..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-5 py-3.5 text-[13px] font-medium text-[#111] bg-[#fff] border border-[#e5e5e5] rounded-[14px] outline-none transition-all duration-300 focus:border-[#111] focus:ring-1 focus:ring-[#111] placeholder:text-[#999] shadow-sm"
+              className="px-4 py-2 border border-[#e5e5e5] rounded-[10px] text-[13px] w-full md:w-[250px]"
             />
+
+            <select
+  value={filterStatus}
+  onChange={(e) => setFilterStatus(e.target.value)}
+  className="px-4 py-2 border border-[#e5e5e5] rounded-[10px] text-[13px]"
+>
+  <option value="">All</option>
+  <option value="applied">Applied</option>
+  <option value="shortlisted">Shortlisted</option>
+  <option value="selected">Selected</option>
+  <option value="offer_accepted">Accepted</option>
+  <option value="ongoing">Ongoing</option>
+  <option value="completed">Completed</option>
+  <option value="terminated">Terminated</option>
+  <option value="rejected">Rejected</option>
+</select>
           </div>
-        </header>
+        </div>
 
-        {/* Empty States */}
-        {data.length === 0 ? (
-          <div className="bg-[#fff] p-16 rounded-[24px] border border-dashed border-[#e5e5e5] text-center shadow-sm">
-            <p className="text-[#999] m-0 text-[12px] font-bold uppercase tracking-widest">
-              No applications received yet.
-            </p>
+        {/* EMPTY STATE */}
+        {filteredData.length === 0 ? (
+          <div className="text-center py-20 text-[#999] text-[13px] font-bold">
+            No applicants found
           </div>
-        ) : filteredData.length === 0 ? (
-          <div className="bg-[#fff] p-16 rounded-[24px] border border-dashed border-[#e5e5e5] text-center shadow-sm">
-            <p className="text-[#999] m-0 text-[12px] font-bold uppercase tracking-widest">
-              No applicants found matching "{searchTerm}".
-            </p>
-          </div>
-        ) : null}
+        ) : (
+          <div className="overflow-x-auto bg-white border border-[#e5e5e5] rounded-[12px]">
+            <table className="w-full text-left border-collapse">
+              
+              {/* TABLE HEADER */}
+              <thead className="bg-[#f4f4f4] text-[11px] uppercase tracking-widest">
+                <tr>
+                  <th className="p-3">Name</th>
+                  <th className="p-3">Email</th>
+                  <th className="p-3">Resume</th>
+                  <th className="p-3">Status</th>
+                  <th className="p-3 text-right">Actions</th>
+                </tr>
+              </thead>
 
-        {/* Render Filtered Data */}
-        <div className="grid grid-cols-1 gap-6">
-          {filteredData.map((app) => {
-            const s = app.studentSnapshot || {};
+              {/* TABLE BODY */}
+              <tbody>
+                {filteredData.map((app) => {
+                  const s = app.studentSnapshot || {};
 
-            return (
-              <div
-                key={app._id}
-                className="group bg-[#fff] p-6 md:p-10 rounded-[24px] border border-[#e5e5e5] box-border transition-all duration-300 hover:border-[#111] shadow-sm"
-              >
-                <div className="flex flex-col md:flex-row md:justify-between md:items-start mb-8 gap-4">
-                  <div>
-                    <h3 className="text-[24px] font-black text-[#111] m-0 tracking-tight uppercase">
-                      {s.fullName}
-                    </h3>
-                    <p className="text-[10px] font-bold text-[#333] opacity-60 uppercase tracking-[0.2em] mt-1">
-                      Candidate Profile
-                    </p>
-                  </div>
-                  <div
-                    className={`px-3 py-1.5 text-[9px] font-black tracking-[0.2em] rounded-[8px] uppercase border ${
-                      app.status === "rejected"
-                        ? "border-[#fecaca] text-[#991b1b] bg-[#fef2f2]"
-                        : app.status === "shortlisted" ||
-                            app.status === "selected" ||
-                            app.status === "offer_accepted"
-                          ? "border-[#bbf7d0] text-[#166534] bg-[#f0fdf4]"
-                          : "border-[#e5e5e5] text-[#555] bg-[#f9f9f9]"
-                    }`}
-                  >
-                    {app.status}
-                  </div>
-                </div>
+                  return (
+                    <tr
+                      key={app._id}
+                      className="border-t border-[#eee] hover:bg-[#fafafa]"
+                    >
+                      {/* NAME */}
+                      <td className="p-3 font-bold">
+                        {s.fullName || "—"}
+                      </td>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
-                  <div className="space-y-4">
-                    <div className="flex flex-col gap-1.5">
-                      <span className="text-[10px] font-bold text-[#333] opacity-60 uppercase tracking-[0.15em]">
-                        Academic Institution
-                      </span>
-                      <span className="text-[13px] font-bold text-[#111] leading-tight">
-                        {s.collegeName}
-                      </span>
-                    </div>
+                      {/* EMAIL */}
+                      <td className="p-3 text-[13px]">
+                        {s.email || "—"}
+                      </td>
 
-                    <div className="flex flex-col gap-1.5">
-                      <span className="text-[10px] font-bold text-[#333] opacity-60 uppercase tracking-[0.15em]">
-                        Specialization
-                      </span>
-                      <span className="text-[13px] font-medium text-[#555]">
-                        <span className="font-bold text-[#111]">
-                          {s.courseName}
-                        </span>
-                        <span className="mx-1.5 opacity-40">/</span>
-                        {s.specialization}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <div className="flex flex-col gap-1.5">
-                      <span className="text-[10px] font-bold text-[#333] opacity-60 uppercase tracking-[0.15em]">
-                        Contact Channel
-                      </span>
-                      <span className="text-[13px] font-medium text-[#111] flex flex-wrap gap-x-4">
-                        <span className="break-all font-bold">{s.email}</span>
-                        <span className="text-[#555]">{s.phoneNo}</span>
-                      </span>
-                    </div>
-
-                    <div className="flex flex-col gap-1.5">
-                      <span className="text-[10px] font-bold text-[#333] opacity-60 uppercase tracking-[0.15em]">
-                        Technical Arsenal
-                      </span>
-                      <div className="flex flex-wrap gap-2 mt-1">
-                        {app.skillsSnapshot?.length ? (
-                          app.skillsSnapshot.map((skill, idx) => (
-                            <span
-                              key={idx}
-                              className="px-2.5 py-1 text-[10px] font-bold bg-[#f9f9f9] border border-[#e5e5e5] rounded-[6px] text-[#111]"
-                            >
-                              {skill}
-                            </span>
-                          ))
+                      {/* RESUME */}
+                      <td className="p-3">
+                        {app.resumeSnapshot ? (
+                          <a
+                            href={app.resumeSnapshot}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-[12px] font-bold underline"
+                          >
+                            View
+                          </a>
                         ) : (
-                          <span className="text-[#999] text-[11px] italic font-medium">
-                            No skills listed
+                          <span className="text-[#999] text-[12px]">
+                            N/A
                           </span>
                         )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                      </td>
 
-                <div className="mt-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-                  {app.resumeSnapshot && (
-                    <a
-                      href={app.resumeSnapshot}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex items-center gap-2 text-[11px] font-black text-[#111] uppercase tracking-[0.15em] hover:underline transition-all group/link"
-                    >
-                      <svg
-                        className="w-4 h-4 transition-transform group-hover/link:-translate-y-0.5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                        />
-                      </svg>
-                      Analyze Resume
-                    </a>
-                  )}
-                  {renderActions(app)}
-                </div>
-              </div>
-            );
-          })}
-        </div>
+                      {/* STATUS */}
+                      <td className="p-3 text-[12px] font-bold uppercase">
+                        {app.status}
+                      </td>
+
+                      {/* ACTIONS */}
+                    <td className="p-3 text-right">
+  <div className="flex gap-2 justify-end flex-wrap">
+
+    {/* ACTIVE PIPELINE */}
+    {app.status === "applied" && (
+      <>
+        <button
+          onClick={() => updateStatus(app._id, "shortlisted")}
+          disabled={loadingId === app._id}
+          className="px-3 py-1 bg-black text-white text-[11px] rounded"
+        >
+          Shortlist
+        </button>
+        <button
+          onClick={() => updateStatus(app._id, "rejected")}
+          className="px-3 py-1 border text-[11px] rounded"
+        >
+          Reject
+        </button>
+      </>
+    )}
+
+    {app.status === "shortlisted" && (
+      <>
+        <button
+          onClick={() => updateStatus(app._id, "selected")}
+          className="px-3 py-1 bg-black text-white text-[11px] rounded"
+        >
+          Select
+        </button>
+        <button
+          onClick={() => updateStatus(app._id, "rejected")}
+          className="px-3 py-1 border text-[11px] rounded"
+        >
+          Reject
+        </button>
+      </>
+    )}
+
+    {/* MID STATE */}
+    {app.status === "selected" && (
+      <span className="text-[11px] text-yellow-600 font-bold">
+        Waiting Acceptance
+      </span>
+    )}
+
+    {app.status === "offer_accepted" && (
+      <span className="text-[11px] text-blue-600 font-bold">
+        Ready to Start
+      </span>
+    )}
+
+    {/* ACTIVE INTERNSHIP */}
+    {app.status === "ongoing" && (
+      <span className="text-[11px] text-blue-700 font-bold">
+        In Progress
+      </span>
+    )}
+
+    {/* FINAL STATES */}
+    {app.status === "completed" && (
+      <span className="text-[11px] text-green-600 font-bold">
+        Completed
+      </span>
+    )}
+
+    {app.status === "terminated" && (
+      <span className="text-[11px] text-orange-600 font-bold">
+        Terminated
+      </span>
+    )}
+
+    {app.status === "rejected" && (
+      <span className="text-[11px] text-red-600 font-bold">
+        Rejected
+      </span>
+    )}
+
+  </div>
+</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );

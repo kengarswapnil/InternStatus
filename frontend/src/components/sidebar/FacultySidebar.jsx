@@ -30,16 +30,14 @@ export default function FacultySidebar() {
             <NavLink to="/faculty/dashboard" className={linkClass} end>
               <span className="text-sm font-bold">Dashboard</span>
             </NavLink>
-            <NavLink to="/faculty/profile" className={linkClass} end>
-              <span className="text-sm font-bold">My Profile</span>
-            </NavLink>
+
             <NavLink to="/faculty/students" className={linkClass} end>
               <span className="text-sm font-bold">Student List</span>
             </NavLink>
              <NavLink to="/faculty/invite-student" className={linkClass} end>
               <span className="text-sm font-bold">Add Student</span>
             </NavLink>
-            <NavLink to="/credits" className={linkClass} end>
+            <NavLink to="faculty/credits" className={linkClass} end>
               <span className="text-sm font-bold">Assign Credits</span>
             </NavLink>
           </>

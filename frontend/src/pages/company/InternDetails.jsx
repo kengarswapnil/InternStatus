@@ -2,6 +2,18 @@ import React, { useEffect, useState } from "react";
 import API from "../../api/api";
 import { useParams, useNavigate } from "react-router-dom";
 
+// Helper for dynamic status colors
+const getStatusStyles = (status) => {
+  if (["completed", "offer_accepted", "selected"].includes(status)) {
+    return "bg-[#f9f9f9] border-[#008000] text-[#008000]"; // Green
+  } else if (
+    ["terminated", "rejected", "revision_requested"].includes(status)
+  ) {
+    return "bg-[#fff] border-[#cc0000] text-[#cc0000]"; // Red
+  }
+  return "bg-[#111] text-[#fff] border-[#111]"; // Black (Default for ongoing, submitted, etc.)
+};
+
 export default function InternDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -101,14 +113,13 @@ export default function InternDetails() {
               Individual Performance Record
             </p>
           </div>
+          {/* Dynamic Status Color Applied Here */}
           <span
-            className={`px-3 py-1.5 rounded-[12px] text-[10px] font-black uppercase tracking-widest border ${
-              data.status === "completed"
-                ? "bg-[#f9f9f9] border-[#333] text-[#333]"
-                : "bg-[#111] text-[#fff] border-[#111]"
-            }`}
+            className={`px-3 py-1.5 rounded-[12px] text-[10px] font-black uppercase tracking-widest border ${getStatusStyles(
+              data.status,
+            )}`}
           >
-            {data.status.replace("_", " ")}
+            {data.status ? data.status.replace("_", " ") : "UNKNOWN"}
           </span>
         </header>
 

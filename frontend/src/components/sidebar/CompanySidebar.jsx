@@ -32,9 +32,7 @@ export default function CompanySidebar() {
             <NavLink to="/company/dashboard" className={linkClass} end>
               <span className="text-sm font-bold">Dashboard</span>
             </NavLink>
-             <NavLink to="/company/profile" className={linkClass} end>
-              <span className="text-sm font-bold">Profile</span>
-            </NavLink>
+
              <NavLink to="/company/invite-mentor" className={linkClass} end>
               <span className="text-sm font-bold">Add Mentor</span>
             </NavLink>
