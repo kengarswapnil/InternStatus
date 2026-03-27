@@ -216,42 +216,51 @@ export async function getStudentDashboard(userId) {
   // ─────────────────────────────────────────────
   // CURRENT INTERNSHIP + PROGRESS
   // ─────────────────────────────────────────────
+
+
   let currentInternship = null;
-  if (ongoingApplication) {
-    const start = new Date(ongoingApplication.internshipStartDate);
-    const end = ongoingApplication.internshipEndDate
-      ? new Date(ongoingApplication.internshipEndDate)
-      : (() => {
-          const d = new Date(start);
-          d.setMonth(
-            d.getMonth() + (ongoingApplication.internship?.durationMonths || 3)
-          );
-          return d;
-        })();
 
-    const totalDays = Math.max((end - start) / (1000 * 60 * 60 * 24), 1);
-    const elapsed = Math.min(
-      Math.max((today - start) / (1000 * 60 * 60 * 24), 0),
-      totalDays
-    );
-    const progress = Math.round((elapsed / totalDays) * 100);
+if (ongoingApplication) {
+  const today = new Date();
 
-        /// Task progress calculation
+  const start = new Date(ongoingApplication.internshipStartDate);
+  const end = new Date(ongoingApplication.internshipEndDate);
+
+  if (!start || !end) {
+    throw new Error("Internship dates are not properly set");
+  }
+
+  const totalDays = Math.max(
+    Math.ceil((end - start) / (1000 * 60 * 60 * 24)),
+    1
+  );
+
+  const elapsedDays = Math.min(
+    Math.max(
+      Math.ceil((today - start) / (1000 * 60 * 60 * 24)),
+      0
+    ),
+    totalDays
+  );
+
+  const progress = Math.round((elapsedDays / totalDays) * 100);
+
+          /// Task progress calculation
 //     const completedTasks = taskMap.completed || 0;
 // const totalTasks = Object.values(taskMap).reduce((a, b) => a + b, 0) || 1;
 
 // const progress = Math.round((completedTasks / totalTasks) * 100);
 
-    currentInternship = {
-      applicationId: ongoingApplication._id,
-      title: ongoingApplication.internship?.title || "N/A",
-      company: ongoingApplication.company?.name || "N/A",
-      startDate: ongoingApplication.internshipStartDate,
-      endDate: end,
-      mentor: ongoingApplication.mentor?.fullName || null,
-      progress,
-    };
-  }
+  currentInternship = {
+    applicationId: ongoingApplication._id,
+    title: ongoingApplication.internship?.title || "N/A",
+    company: ongoingApplication.company?.name || "N/A",
+    startDate: start,
+    endDate: end,
+    mentor: ongoingApplication.mentor?.fullName || null,
+    progress,
+  };
+}
 
   // ─────────────────────────────────────────────
   // PERFORMANCE
