@@ -4,6 +4,10 @@ import User from "../../models/User.js";
 import mongoose from "mongoose";
 import InternshipReport from "../../models/InternshipReport.js";
 import College from "../../models/College.js";
+import Application from "../../models/Application.js";
+import sendEmail from "../../utils/sendEmail.js";
+import Notification from "../../models/Notification.js";
+import FacultyProfile from "../../models/FacultyProfile.js";
 
 export const getCollegeStudentsService = async (user) => {
 
@@ -335,4 +339,206 @@ export const assignCreditsService = async ({
   return {
     creditsEarned: credits
   };
+};
+
+
+
+// ---------------- GET ALL AT-RISK STUDENTS ----------------
+export const getAtRiskStudentsService = async ({
+  collegeId,
+  search = "",
+  page = 1,
+  limit = 20
+}) => {
+  if (!mongoose.Types.ObjectId.isValid(collegeId)) {
+    throw new Error("Invalid collegeId");
+  }
+
+  const skip = (page - 1) * limit;
+
+  const matchStage = {
+    college: new mongoose.Types.ObjectId(collegeId),
+    status: "active"
+  };
+
+  if (search) {
+    matchStage.fullName = { $regex: search, $options: "i" };
+  }
+
+  const pipeline = [
+    { $match: matchStage },
+
+    {
+      $lookup: {
+        from: "applications",
+        let: { studentId: "$_id" },
+        pipeline: [
+          {
+            $match: {
+              $expr: { $eq: ["$student", "$$studentId"] }
+            }
+          },
+          { $limit: 1 } // ⚡ performance optimization
+        ],
+        as: "applications"
+      }
+    },
+
+    {
+      $match: {
+        applications: { $size: 0 }
+      }
+    },
+
+    {
+      $lookup: {
+        from: "users",
+        localField: "user",
+        foreignField: "_id",
+        as: "userData"
+      }
+    },
+
+    { $unwind: "$userData" },
+
+    {
+      $project: {
+        _id: 0,
+        id: "$_id",
+        name: "$fullName",
+        email: "$userData.email",
+        specialization: 1,
+        courseName: 1,
+        year: "$Year",
+        reason: { $literal: "No internship applications" }
+      }
+    },
+
+    { $sort: { name: 1 } },
+
+    {
+      $facet: {
+        data: [{ $skip: skip }, { $limit: limit }],
+        total: [{ $count: "count" }]
+      }
+    }
+  ];
+
+  const result = await StudentProfile.aggregate(pipeline);
+
+  const data = result[0]?.data || [];
+  const total = result[0]?.total[0]?.count || 0;
+
+  return {
+    data,
+    pagination: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit)
+    }
+  };
+};
+
+// ---------------- GET SINGLE AT-RISK STUDENT ----------------
+export const getAtRiskStudentByIdService = async (studentId) => {
+  if (!mongoose.Types.ObjectId.isValid(studentId)) {
+    throw new Error("Invalid studentId");
+  }
+
+  const student = await StudentProfile.findById(studentId)
+    .populate("user", "email")
+    .lean();
+
+  if (!student) return null;
+
+  const exists = await Application.exists({
+    student: student._id
+  });
+
+  if (exists) return null;
+
+  return {
+    id: student._id,
+    name: student.fullName,
+    email: student.user?.email,
+    specialization: student.specialization,
+    courseName: student.courseName,
+    year: student.Year,
+    reason: "No internship applications"
+  };
+};
+
+
+// ---------------- NOTIFY STUDENT ----------------
+export const notifyAtRiskStudentService = async ({
+  studentId,
+  message,
+  user
+}) => {
+  // ✅ Validate input
+  if (!mongoose.Types.ObjectId.isValid(studentId)) {
+    throw new Error("Invalid studentId");
+  }
+
+  if (!user || !user._id) {
+    throw new Error("Sender user missing");
+  }
+
+  if (!message || message.trim().length < 5) {
+    throw new Error("Message too short");
+  }
+
+  // ✅ Fetch student + user email
+  const student = await StudentProfile.findById(studentId)
+    .populate("user", "email")
+    .lean();
+
+  if (!student) {
+    throw new Error("Student not found");
+  }
+
+  if (!student.user || !student.user._id) {
+    throw new Error("Student user not linked properly");
+  }
+
+  if (!student.user.email) {
+    throw new Error("Student email not found");
+  }
+
+  // ✅ SEND EMAIL FIRST
+  await sendEmail({
+    to: student.user.email,
+    subject: "Internship Application Reminder",
+    html: `
+      <p>Hi ${student.fullName},</p>
+      <p>${message}</p>
+      <br/>
+      <p><b>Please apply for internships as soon as possible.</b></p>
+      <br/>
+      <p>Regards,<br/>InternStatus</p>
+    `
+  });
+
+  // ✅ STORE NOTIFICATION (NO CRASH NOW)
+  await Notification.create({
+    recipient: student.user._id,
+    recipientModel: "StudentProfile",
+
+    sender: user._id,
+    senderRole: user.role,
+
+    title: "Internship Reminder",
+    message,
+
+    type: "AT_RISK",
+    referenceId: student._id,
+    referenceModel: "StudentProfile",
+
+    channels: ["email", "in_app"],
+    status: "sent",
+    sentAt: new Date()
+  });
+
+  return { success: true };
 };

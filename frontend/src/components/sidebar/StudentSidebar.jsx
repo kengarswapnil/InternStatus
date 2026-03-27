@@ -10,34 +10,6 @@ export default function StudentSidebar() {
   const showPending = user.isRegistered && !user.isVerified;
   const showCore = user.isRegistered && user.isVerified;
 
-  const [counts, setCounts] = useState({
-    all: 0,
-    college: 0,
-    company: 0,
-  });
-
-  const fetchCounts = async () => {
-    try {
-      const res = await API.get("/admin/onboarding/pending?type=all");
-      const colleges = res.data?.data?.colleges || [];
-      const companies = res.data?.data?.companies || [];
-
-      setCounts({
-        all: colleges.length + companies.length,
-        college: colleges.length,
-        company: companies.length,
-      });
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  useEffect(() => {
-    fetchCounts();
-    const interval = setInterval(fetchCounts, 30000);
-    return () => clearInterval(interval);
-  }, []);
-
   const linkClass = ({ isActive }) =>
     `group flex flex-col items-stretch px-4 py-3 rounded-[14px] transition-all duration-300 border mb-1.5 no-underline transform ${
       isActive

@@ -240,49 +240,48 @@ export default function TaskDetails() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                     <div className="space-y-3">
-  <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest block">
-    Deliverables
-  </label>
-  <div className="flex flex-wrap gap-3">
-    {/* 1. GITHUB LINK */}
-    {sub.githubLink && (
-      <a 
-        href={sub.githubLink} 
-        target="_blank" 
-        rel="noopener noreferrer" 
-        className="px-4 py-2 bg-[#2D3436] text-white text-[10px] font-black rounded-xl hover:bg-black transition-all shadow-sm"
-      >
-        LINK: GITHUB REPO
-      </a>
-    )}
+                      <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest block">
+                        Deliverables
+                      </label>
+                      <div className="flex flex-wrap gap-3">
+                        {/* 1. GITHUB LINK */}
+                        {sub.githubLink && (
+                          <a 
+                            href={sub.githubLink} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="px-4 py-2 bg-[#2D3436] text-white text-[10px] font-black rounded-xl hover:bg-black transition-all shadow-sm"
+                          >
+                            LINK: GITHUB REPO
+                          </a>
+                        )}
 
-    {/* 2. MULTIPLE FILES (ARRAY) */}
-    {sub.files && sub.files.length > 0 && sub.files.map((f, i) => (
-      <a 
-        key={i} 
-        href={f.url || f} // Checks if 'f' is an object with .url or just a string
-        target="_blank" 
-        rel="noopener noreferrer" 
-        className="px-4 py-2 bg-[#6C5CE7] text-white text-[10px] font-black rounded-xl hover:bg-[#5b4bc4] transition-all shadow-md"
-      >
-        FILE: VIEW HERE {sub.files.length > 1 ? i + 1 : ""}
-      </a>
-    ))}
+                        {/* 2. MULTIPLE FILES (ARRAY) */}
+                        {sub.files && sub.files.length > 0 && sub.files.map((f, i) => (
+                          <a 
+                            key={i} 
+                            href={f.url || f} // Checks if 'f' is an object with .url or just a string
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="px-4 py-2 bg-[#6C5CE7] text-white text-[10px] font-black rounded-xl hover:bg-[#5b4bc4] transition-all shadow-md"
+                          >
+                            FILE: VIEW HERE {sub.files.length > 1 ? i + 1 : ""}
+                          </a>
+                        ))}
 
-    {/* 3. SINGLE FILE FALLBACK (If the API returns 'file' instead of 'files') */}
-    {!sub.files && sub.file?.url && (
-      <a 
-        href={sub.file.url} 
-        target="_blank" 
-        rel="noopener noreferrer" 
-        className="px-4 py-2 bg-[#6C5CE7] text-white text-[10px] font-black rounded-xl hover:bg-[#5b4bc4] transition-all shadow-md"
-      >
-        FILE: VIEW ATTACHMENT
-      </a>
-    )}
-  </div>
-</div>
-
+                        {/* 3. SINGLE FILE FALLBACK (If the API returns 'file' instead of 'files') */}
+                        {!sub.files && sub.file?.url && (
+                          <a 
+                            href={sub.file.url} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="px-4 py-2 bg-[#6C5CE7] text-white text-[10px] font-black rounded-xl hover:bg-[#5b4bc4] transition-all shadow-md"
+                          >
+                            FILE: VIEW ATTACHMENT
+                          </a>
+                        )}
+                      </div>
+                    </div>
                     <div className="space-y-4">
                       <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block">Mentor Feedback Details</label>
                       <div className="bg-yellow-50/40 p-5 rounded-2xl text-sm italic text-yellow-900 border border-yellow-100 min-h-[100px]">

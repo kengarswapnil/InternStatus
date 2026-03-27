@@ -91,6 +91,8 @@ import AdminUserDetails from "./pages/admin/users/AdminUserDetails";
 
 /* Protected */
 import ProtectedRoute from "./routes/ProtectedRoute";
+import AtRiskList from "./pages/college/AtRiskList";
+import AtRiskStudent from "./pages/college/AtRiskStudent";
 
 function AppContent() {
   const dispatch = useDispatch();
@@ -165,6 +167,8 @@ function AppContent() {
             <Route path="/faculty/invite-student" element={<InviteStudent />} />
              <Route path="/faculty/students/:studentId" element={<StudentDetails />} />
             <Route path="faculty/credits" element={<CreditManagement />} />
+             <Route path="/faculty/at-risk" element={<AtRiskList />} />
+    <Route path="/faculty/at-risk/:studentId" element={<AtRiskStudent />} />
           </Route>
         </Route>
 
@@ -199,19 +203,27 @@ function AppContent() {
 
         {/* COLLEGE */}
         <Route element={<ProtectedRoute role="college" />}>
-          <Route element={<CollegeLayout />}>
-            <Route path="/college/dashboard" element={<CollegeDashboard />} />
-            <Route path="/college/profile" element={<CollegeProfile />} />
-            <Route path="/college/faculty" element={<CollegeFacultyList />} />
-            <Route path="/college/students" element={<CollegeStudents />} />
-            <Route path="/college/students/:studentId" element={<StudentDetails />} />
-            <Route path="/college/invite-faculty" element={<InviteFaculty />} />
-            <Route path="/college/invite-student" element={<InviteStudent />} />
-            <Route path="/college/courses" element={<Courses />} />
-            <Route path="/student/internships" element={<StudentInternships />} />
-            <Route path="college/credits" element={<CreditManagement />} />
-          </Route>
-        </Route>
+  <Route element={<CollegeLayout />}>
+
+    <Route path="/college/dashboard" element={<CollegeDashboard />} />
+    <Route path="/college/profile" element={<CollegeProfile />} />
+    <Route path="/college/faculty" element={<CollegeFacultyList />} />
+    <Route path="/college/students" element={<CollegeStudents />} />
+    <Route path="/college/students/:studentId" element={<StudentDetails />} />
+
+    <Route path="/college/invite-faculty" element={<InviteFaculty />} />
+    <Route path="/college/invite-student" element={<InviteStudent />} />
+    <Route path="/college/courses" element={<Courses />} />
+
+    <Route path="/student/internships" element={<StudentInternships />} />
+    <Route path="college/credits" element={<CreditManagement />} />
+
+    {/* ✅ AT-RISK */}
+    <Route path="/college/at-risk" element={<AtRiskList />} />
+    <Route path="/college/at-risk/:studentId" element={<AtRiskStudent />} />
+
+  </Route>
+</Route>
 
        <Route element={<ProtectedRoute role={["college", "faculty"]} />}>
 

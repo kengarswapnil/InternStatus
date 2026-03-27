@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { logoutUser } from "../../utils/logoutUser";
+import NotificationBell from "../NotificationBell";
 
 const StudentNavBar = () => {
   const dispatch = useDispatch();
@@ -25,6 +26,10 @@ const StudentNavBar = () => {
               Student
             </span>
           </Link>
+        </div>
+
+        <div className="flex items-center gap-2 md:gap-3">
+          <NotificationBell />
         </div>
 
         <div className="flex items-center lg:justify-end relative">

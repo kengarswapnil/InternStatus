@@ -1,287 +1,312 @@
-import React, { useEffect, useState, useRef } from "react";
-import FacultyNavBar from "../../components/navbars/FacultyNavBar";
-import API from "../../api/api";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { fetchDashboard } from "../../store/dashboardSlice";
 
-const FacultyDashboard = () => {
-  const [students, setStudents] = useState([]);
-  const [selectedStudent, setSelectedStudent] = useState(null);
-  const [loading, setLoading] = useState(true);
+// ── Sub-components ──────────────────────────────────────────────────────
+const KpiCard = ({ label, value, sub, onClick, accent }) => (
+  <div
+    onClick={onClick}
+    className={`bg-white rounded-2xl shadow-sm p-5 cursor-pointer hover:shadow-md transition-shadow border-l-4 ${accent || "border-indigo-400"}`}
+  >
+    <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-1">{label}</p>
+    <p className="text-3xl font-bold text-gray-800">{value ?? "—"}</p>
+    {sub && <p className="text-xs text-gray-400 mt-1">{sub}</p>}
+  </div>
+);
 
-  const tableRef = useRef(null);
+const SectionCard = ({ title, children, action }) => (
+  <div className="bg-white rounded-2xl shadow-sm p-5 border border-gray-100">
 
-  // ================= FETCH =================
-  const fetchData = async () => {
-    try {
-      const res = await API.get("/faculty/students");
-      setStudents(res.data.data || []);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+    {/* 🔥 HEADER */}
+    <div className="flex justify-between items-center mb-4">
+      <h2 className="text-sm font-semibold uppercase tracking-widest text-gray-400">
+        {title}
+      </h2>
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  // ================= STATS =================
-  const total = students.length;
-
-  const completed = students.filter((s) => s.status === "completed").length;
-
-  const ongoing = students.filter((s) => s.status === "active").length;
-
-  const pending = students.filter((s) => s.status === "pending").length;
-
-  // ================= SCROLL =================
-  const scrollToTable = () => {
-    setTimeout(() => {
-      tableRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 100);
-  };
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-[#f9f9f9]">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-10 h-10 border-4 border-[#e5e5e5] border-t-[#111] rounded-full animate-spin"></div>
-          <p className="text-[#111] font-bold tracking-widest uppercase text-[10px] animate-pulse m-0">
-            Initializing Dashboard...
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="min-h-screen bg-[#f9f9f9] text-[#111] font-sans pb-12">
-      <div className="max-w-7xl mx-auto p-4 md:p-8 space-y-8">
-        {/* HEADER */}
-        <header className="border-b border-[#e5e5e5] pb-6">
-          <div className="text-[10px] font-bold text-[#333] opacity-60 uppercase tracking-[0.2em] mb-2">
-            Overview
-          </div>
-          <h1 className="text-3xl md:text-4xl font-black text-[#111] m-0 tracking-tighter uppercase">
-            Faculty Dashboard
-          </h1>
-        </header>
-
-        {/* ================= STATS ================= */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div
-            onClick={scrollToTable}
-            className="bg-[#fff] border border-[#e5e5e5] p-8 rounded-[24px] shadow-sm transition-all duration-300 cursor-pointer flex flex-col gap-2 hover:border-[#111] hover:-translate-y-1 hover:shadow-md"
-          >
-            <p className="text-[10px] font-bold text-[#333] opacity-60 uppercase tracking-[0.15em] m-0">
-              Total Students
-            </p>
-            <h2 className="text-[40px] font-black text-[#111] m-0 leading-none">
-              {total}
-            </h2>
-          </div>
-
-          <div
-            onClick={scrollToTable}
-            className="bg-[#fff] border border-[#e5e5e5] p-8 rounded-[24px] shadow-sm transition-all duration-300 cursor-pointer flex flex-col gap-2 hover:border-[#111] hover:-translate-y-1 hover:shadow-md"
-          >
-            <p className="text-[10px] font-bold text-[#333] opacity-60 uppercase tracking-[0.15em] m-0">
-              Completed
-            </p>
-            <h2 className="text-[40px] font-black text-[#166534] m-0 leading-none">
-              {completed}
-            </h2>
-          </div>
-
-          <div
-            onClick={scrollToTable}
-            className="bg-[#fff] border border-[#e5e5e5] p-8 rounded-[24px] shadow-sm transition-all duration-300 cursor-pointer flex flex-col gap-2 hover:border-[#111] hover:-translate-y-1 hover:shadow-md"
-          >
-            <p className="text-[10px] font-bold text-[#333] opacity-60 uppercase tracking-[0.15em] m-0">
-              Ongoing
-            </p>
-            <h2 className="text-[40px] font-black text-[#1d4ed8] m-0 leading-none">
-              {ongoing}
-            </h2>
-          </div>
-
-          <div
-            onClick={scrollToTable}
-            className="bg-[#fff] border border-[#e5e5e5] p-8 rounded-[24px] shadow-sm transition-all duration-300 cursor-pointer flex flex-col gap-2 hover:border-[#111] hover:-translate-y-1 hover:shadow-md"
-          >
-            <p className="text-[10px] font-bold text-[#333] opacity-60 uppercase tracking-[0.15em] m-0">
-              Pending
-            </p>
-            <h2 className="text-[40px] font-black text-[#991b1b] m-0 leading-none">
-              {pending}
-            </h2>
-          </div>
-        </div>
-
-        {/* ================= TABLE ================= */}
-        <div
-          ref={tableRef}
-          className="bg-[#fff] border border-[#e5e5e5] p-8 rounded-[24px] shadow-sm scroll-mt-6"
+      {/* 🔥 ACTION BUTTON */}
+      {action && (
+        <button
+          onClick={action.onClick}
+          className="text-sm text-blue-600 hover:text-blue-700 font-medium"
         >
-          <h2 className="text-[12px] font-black text-[#111] uppercase tracking-widest border-l-4 border-[#111] pl-3 m-0 mb-6">
-            Students List
-          </h2>
-
-          <div className="overflow-x-auto rounded-[14px] border border-[#e5e5e5]">
-            <table className="w-full text-left border-collapse whitespace-nowrap">
-              <thead className="bg-[#f9f9f9] border-b border-[#e5e5e5]">
-                <tr>
-                  <th className="px-6 py-4 text-[10px] font-bold text-[#333] opacity-60 uppercase tracking-widest">
-                    Name
-                  </th>
-                  <th className="px-6 py-4 text-[10px] font-bold text-[#333] opacity-60 uppercase tracking-widest">
-                    PRN
-                  </th>
-                  <th className="px-6 py-4 text-[10px] font-bold text-[#333] opacity-60 uppercase tracking-widest">
-                    Course
-                  </th>
-                  <th className="px-6 py-4 text-[10px] font-bold text-[#333] opacity-60 uppercase tracking-widest">
-                    Year
-                  </th>
-                  <th className="px-6 py-4 text-[10px] font-bold text-[#333] opacity-60 uppercase tracking-widest">
-                    Status
-                  </th>
-                </tr>
-              </thead>
-
-              <tbody className="divide-y divide-[#e5e5e5]">
-                {students.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan="5"
-                      className="px-6 py-12 text-center text-[12px] font-bold text-[#999] uppercase tracking-widest"
-                    >
-                      No Students Found
-                    </td>
-                  </tr>
-                ) : (
-                  students.map((s) => (
-                    <tr
-                      key={s._id}
-                      onClick={() => setSelectedStudent(s)}
-                      className="hover:bg-[#fcfcfc] cursor-pointer transition-colors group"
-                    >
-                      <td className="px-6 py-4 text-[13px] font-black text-[#111] group-hover:underline">
-                        {s.fullName}
-                      </td>
-                      <td className="px-6 py-4 text-[12px] font-mono font-bold text-[#555]">
-                        {s.prn || "—"}
-                      </td>
-                      <td className="px-6 py-4 text-[13px] font-medium text-[#555]">
-                        {s.courseName || "—"}
-                      </td>
-                      <td className="px-6 py-4 text-[13px] font-black text-[#111]">
-                        {s.Year || "—"}
-                      </td>
-
-                      {/* STATUS COLORS */}
-                      <td className="px-6 py-4">
-                        <span
-                          className={`inline-block px-2.5 py-1 rounded-[6px] text-[9px] font-bold uppercase tracking-widest border ${
-                            s.status === "completed"
-                              ? "bg-[#f0fdf4] text-[#166534] border-[#bbf7d0]"
-                              : s.status === "active"
-                                ? "bg-[#eff6ff] text-[#1d4ed8] border-[#bfdbfe]"
-                                : s.status === "pending"
-                                  ? "bg-[#fef2f2] text-[#991b1b] border-[#fecaca]"
-                                  : "bg-[#f9f9f9] text-[#555] border-[#e5e5e5]"
-                          }`}
-                        >
-                          {s.status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      {/* ================= MODAL ================= */}
-      {selectedStudent && (
-        <div className="fixed inset-0 bg-[#111]/40 backdrop-blur-sm flex justify-center items-center z-50 p-4">
-          <div className="bg-[#fff] p-8 rounded-[24px] w-full max-w-md shadow-2xl border border-[#e5e5e5]">
-            <div className="flex justify-between items-start border-b border-[#e5e5e5] pb-4 mb-6">
-              <h2 className="text-[18px] font-black text-[#111] m-0 uppercase tracking-tighter">
-                Student Details
-              </h2>
-              <button
-                onClick={() => setSelectedStudent(null)}
-                className="text-[10px] font-bold text-[#999] hover:text-[#111] uppercase tracking-widest bg-transparent border-none cursor-pointer outline-none"
-              >
-                Close
-              </button>
-            </div>
-
-            <div className="flex flex-col gap-4">
-              <div className="flex flex-col">
-                <span className="text-[10px] font-bold text-[#999] uppercase tracking-widest">
-                  Full Name
-                </span>
-                <span className="text-[14px] font-black text-[#111]">
-                  {selectedStudent.fullName || "—"}
-                </span>
-              </div>
-              <div className="flex flex-col">
-                <span className="text-[10px] font-bold text-[#999] uppercase tracking-widest">
-                  PRN
-                </span>
-                <span className="text-[13px] font-mono font-bold text-[#555]">
-                  {selectedStudent.prn || "—"}
-                </span>
-              </div>
-              <div className="flex flex-col">
-                <span className="text-[10px] font-bold text-[#999] uppercase tracking-widest">
-                  ABC ID
-                </span>
-                <span className="text-[13px] font-mono font-bold text-[#555]">
-                  {selectedStudent.abcId || "—"}
-                </span>
-              </div>
-              <div className="flex flex-col">
-                <span className="text-[10px] font-bold text-[#999] uppercase tracking-widest">
-                  Course
-                </span>
-                <span className="text-[13px] font-medium text-[#111]">
-                  {selectedStudent.courseName || "—"}
-                </span>
-              </div>
-              <div className="flex flex-col">
-                <span className="text-[10px] font-bold text-[#999] uppercase tracking-widest">
-                  Year
-                </span>
-                <span className="text-[13px] font-black text-[#111]">
-                  {selectedStudent.Year || "—"}
-                </span>
-              </div>
-              <div className="flex flex-col">
-                <span className="text-[10px] font-bold text-[#999] uppercase tracking-widest">
-                  Status
-                </span>
-                <span className="text-[12px] font-black uppercase tracking-widest text-[#111]">
-                  {selectedStudent.status || "—"}
-                </span>
-              </div>
-            </div>
-
-            <button
-              onClick={() => setSelectedStudent(null)}
-              className="mt-8 w-full bg-[#111] text-[#fff] font-black text-[10px] uppercase tracking-[0.15em] px-4 py-3.5 rounded-[12px] hover:bg-[#333] transition-colors outline-none cursor-pointer border-none"
-            >
-              Dismiss
-            </button>
-          </div>
-        </div>
+          {action.label} →
+        </button>
       )}
     </div>
+
+    {children}
+  </div>
+);
+
+const StatusBadge = ({ status }) => {
+  const map = {
+    ongoing: "bg-emerald-100 text-emerald-700",
+    completed: "bg-blue-100 text-blue-700",
+    selected: "bg-violet-100 text-violet-700",
+    applied: "bg-gray-100 text-gray-600",
+    terminated: "bg-red-100 text-red-600",
+    not_applied: "bg-red-100 text-red-600"
+  };
+  return (
+    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${map[status] || "bg-gray-100 text-gray-500"}`}>
+      {status}
+    </span>
   );
 };
 
-export default FacultyDashboard;
+const TableRow = ({ student, onTrack }) => (
+  <tr className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+    <td className="py-3 px-2 text-sm font-medium text-gray-800">{student.name || "Unknown"}</td>
+    <td className="py-3 px-2"><StatusBadge status={student.status} /></td>
+    <td className="py-3 px-2">
+      <div className="flex items-center gap-2">
+        <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+          <div
+            className="h-full bg-indigo-400 rounded-full"
+            style={{ width: `${student.completionPct || 0}%` }}
+          />
+        </div>
+        <span className="text-xs text-gray-500 w-8">{student.completionPct || 0}%</span>
+      </div>
+    </td>
+    <td className="py-3 px-2 text-sm text-gray-600">{student.avgScore ?? "—"}</td>
+    <td className="py-3 px-2">
+      <button
+        onClick={() => onTrack(student.applicationId)}
+        className="text-xs text-indigo-500 hover:text-indigo-700 font-medium"
+      >
+        Track →
+      </button>
+    </td>
+  </tr>
+);
+
+const ActionItem = ({ action, onClick }) => (
+  <button
+    onClick={onClick}
+    className="w-full text-left px-4 py-3 rounded-xl border border-gray-100 hover:border-indigo-200 hover:bg-indigo-50 transition-all text-sm font-medium text-gray-700 flex justify-between items-center"
+  >
+    {action.label}
+    <span className="text-indigo-400">→</span>
+  </button>
+);
+
+// ── Main Component ──────────────────────────────────────────────────────
+export default function FacultyDashboard() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { data, loading, error } = useSelector((state) => state.dashboard);
+
+  useEffect(() => {
+    dispatch(fetchDashboard());
+  }, [dispatch]);
+
+  if (loading) return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="animate-pulse text-gray-400 text-sm tracking-widest uppercase">Loading dashboard…</div>
+    </div>
+  );
+
+  if (error) return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <p className="text-red-500 text-sm">{error}</p>
+    </div>
+  );
+
+  if (!data) return null;
+
+  const { 
+    kpis = {}, 
+    pipeline = {}, 
+    taskStats = {}, 
+    studentStats = [], 
+    atRisk = [], 
+    recentActivity = [], 
+    actions = [] 
+  } = data;
+
+  return (
+    <div className="min-h-screen bg-gray-50 p-6 space-y-6">
+      {/* Header */}
+      <div>
+        <h1 className="text-2xl font-bold text-gray-800">Faculty Dashboard</h1>
+        <p className="text-sm text-gray-400 mt-0.5">Internship supervision overview</p>
+      </div>
+
+      {/* KPI Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+        <KpiCard label="Total Students" value={kpis.totalStudents} accent="border-indigo-400"
+          onClick={() => navigate("/faculty/students")} />
+        <KpiCard label="Active Internships" value={kpis.activeInternships} accent="border-emerald-400"
+          onClick={() => navigate("/faculty/students")} />
+        <KpiCard label="Pending Reviews" value={kpis.pendingTaskReviews} accent="border-amber-400"
+          onClick={() => navigate("/faculty/students")} />
+        <KpiCard
+  label="Avg Score"
+  value={
+    typeof kpis.avgStudentScore === "number" && !isNaN(kpis.avgStudentScore)
+      ? `${kpis.avgStudentScore.toFixed(1)}/10`
+      : "—"
+  }
+  sub={`${kpis.completedInternships ?? 0} completed · ${kpis.pendingApprovals ?? 0} approvals pending`}
+  accent="border-violet-400"
+/>
+      </div>
+
+      {/* Pipeline + Task Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <SectionCard title="Application Pipeline">
+          <div className="grid grid-cols-2 gap-3">
+            {Object.entries(pipeline).map(([k, v]) => (
+              <div key={k} className="bg-gray-50 rounded-xl p-3">
+                <p className="text-xs text-gray-400 capitalize">{k}</p>
+                <p className="text-xl font-bold text-gray-800">{v}</p>
+              </div>
+            ))}
+          </div>
+        </SectionCard>
+
+        <SectionCard title="Task Overview">
+          <div className="grid grid-cols-2 gap-3">
+            {[
+              ["Total", taskStats.totalTasks],
+              ["Pending", taskStats.pending],
+              ["Under Review", taskStats.under_review],
+              ["Revision", taskStats.revision_requested],
+            ].map(([label, val]) => (
+              <div key={label} className="bg-gray-50 rounded-xl p-3">
+                <p className="text-xs text-gray-400">{label}</p>
+                <p className="text-xl font-bold text-gray-800">{val ?? 0}</p>
+              </div>
+            ))}
+          </div>
+        </SectionCard>
+      </div>
+
+      {/* Student Table */}
+      <SectionCard title="Student List">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left">
+            <thead>
+              <tr className="text-xs uppercase tracking-widest text-gray-400 border-b border-gray-100">
+                <th className="pb-2 px-2">Name</th>
+                <th className="pb-2 px-2">Status</th>
+                <th className="pb-2 px-2">Progress</th>
+                <th className="pb-2 px-2">Score</th>
+                <th className="pb-2 px-2"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {studentStats.map((s, index) => (
+                <TableRow
+                  // FIX: If s.id is null, use s.applicationId or the loop index
+                  key={s.id || s.applicationId || `student-${index}`}
+                  student={s}
+                  onTrack={() => navigate(`/faculty/students/${s.studentId}`)}
+                />
+              ))}
+            </tbody>
+          </table>
+          {studentStats.length === 0 && (
+            <p className="text-sm text-gray-400 text-center py-6">No students assigned.</p>
+          )}
+        </div>
+      </SectionCard>
+
+     {/* At-Risk + Recent Activity */}
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+<SectionCard
+  title="At-Risk Students"
+  action={{
+    label: "Review",
+    onClick: () => navigate("/faculty/at-risk"), // adjust if needed
+  }}
+>
+  {atRisk && atRisk.length > 0 ? (
+    <div className="space-y-2">
+
+      {atRisk.slice(0, 5).map((student, index) => (
+        <div
+          key={student.id || `atrisk-${index}`}
+          className="bg-red-50 border border-red-200 rounded-lg p-3 cursor-pointer hover:bg-red-100 transition"
+         onClick={() => {
+  const id = student.id || student.studentId;
+
+  if (id) {
+    navigate(`/faculty/at-risk/${id}`);
+  }
+}}
+        >
+          <p className="font-medium text-gray-800">
+            {student.name}
+          </p>
+
+          <p className="text-sm text-red-600 mt-1">
+            {student.reason}
+          </p>
+        </div>
+      ))}
+
+      {/* 🔥 MORE COUNT */}
+      {atRisk.length > 5 && (
+        <p className="text-sm text-gray-500 text-center mt-3">
+          +{atRisk.length - 5} more
+        </p>
+      )}
+
+    </div>
+  ) : (
+    <p className="text-green-600 text-sm font-medium">
+      ✓ All students on track
+    </p>
+  )}
+</SectionCard>
+ 
+  {/* 🔵 RECENT ACTIVITY */}
+  <SectionCard title="Recent Activity">
+    <div className="space-y-4">
+
+      {recentActivity.length === 0 && (
+        <p className="text-sm text-gray-400">No recent activity.</p>
+      )}
+
+      {recentActivity.map((a, index) => (
+        <div key={index} className="flex items-start gap-3">
+
+          {/* 🔵 Dot */}
+          <div className={`w-2 h-2 rounded-full mt-2 ${
+            a.type === "approval" ? "bg-green-500" :
+            a.type === "submission" ? "bg-blue-500" :
+            a.type === "application" ? "bg-purple-500" :
+            a.type === "warning" ? "bg-red-500" :
+            "bg-gray-400"
+          }`} />
+
+          {/* 📄 Content */}
+          <div className="flex-1 border-b border-gray-100 pb-3 last:border-0">
+            
+            {/* ✅ LABEL FIX */}
+            <p className="text-sm text-gray-700 font-medium">
+              {a.label}
+            </p>
+
+            {/* ✅ DATE FIX (was wrong before) */}
+            <p className="text-xs text-gray-400 mt-1">
+              {a.time
+                ? new Date(a.time).toLocaleDateString("en-IN")
+                : "—"}
+            </p>
+
+          </div>
+        </div>
+      ))}
+    </div>
+  </SectionCard>
+
+</div>
+      
+    </div>
+  );
+}

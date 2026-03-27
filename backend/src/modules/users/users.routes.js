@@ -8,7 +8,7 @@ import { getSetupData, setupAccount } from "./faculty.controller.js";
 import { authenticate } from "../../middleware/auth.js";
 import { authorizeRoles } from "../../middleware/role.js";
 import { upload } from "../../middleware/upload.js";
-import { getMyProfile } from "./user.controller.js";
+import { getMyProfile, getUnreadCount, getUserNotifications, markAllNotificationsRead, markNotificationRead } from "./users.controller.js";
 
 const router = express.Router();
 
@@ -68,5 +68,13 @@ router.patch(
   upload.single("resume"),   // ✅ REQUIRED FOR FILE
   updateStudentProfile
 );
+
+router.get("/notifications", authenticate, getUserNotifications);
+
+router.get("/notifications/unread-count", authenticate, getUnreadCount);
+
+router.patch("/notifications/:id/read", authenticate, markNotificationRead);
+
+router.patch("/notifications/read-all", authenticate, markAllNotificationsRead);
 
 export default router;

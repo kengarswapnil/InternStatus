@@ -17,8 +17,11 @@ import { authorizeRoles } from "../../middleware/role.js";
 
 import {
   assignCredits,
+  getAtRiskStudentById,
+  getAtRiskStudents,
   getCollegeStudents,
   getStudentReports,
+  notifyAtRiskStudent,
   removeStudentFromCollege,
   searchStudent,
   updateCollegeStudent
@@ -143,6 +146,34 @@ router.post(
 );
 
 /*
+  ================= AT-RISK STUDENTS =================
+*/
+
+// GET ALL AT-RISK STUDENTS
+router.get(
+  "/at-risk",
+  authenticate,
+  authorizeRoles("college", "faculty"),
+  getAtRiskStudents
+);
+
+// GET SINGLE AT-RISK STUDENT
+router.get(
+  "/at-risk/:studentId",
+  authenticate,
+  authorizeRoles("college", "faculty"),
+  getAtRiskStudentById
+);
+
+// NOTIFY AT-RISK STUDENT
+router.post(
+  "/at-risk/notify",
+  authenticate,
+  authorizeRoles("college", "faculty"),
+  notifyAtRiskStudent
+);
+
+/*
   ================= ADMIN ACCESS =================
 */
 router.get(
@@ -158,5 +189,7 @@ router.patch(
   authorizeRoles("admin"),
   updateCollegeProfile
 );
+
+
 
 export default router;

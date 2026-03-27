@@ -3,12 +3,21 @@ import generateOTP from "../../utils/generateOTP.js";
 import generateToken from "../../utils/generateToken.js";
 import bcrypt from "bcrypt";
 import sendEmail from "../../utils/sendEmail.js";
+import College from "../../models/College.js";
+import Company from "../../models/Company.js";
+import mongoose from "mongoose";
+import CollegeOnboarding from "../../models/CollegeOnboarding.js";
+import CompanyOnboarding from "../../models/CompanyOnboarding.js";
+import StudentProfile from "../../models/StudentProfile.js";
+import FacultyProfile from "../../models/FacultyProfile.js";
+import MentorProfile from "../../models/MentorProfile.js";
+
 
 //
 // LOGIN
 //
-export const loginService = async ({ email, password }) => {
 
+export const loginService = async ({ email, password }) => {
   if (!email || !password) {
     throw new Error("Email and password are required");
   }
@@ -22,6 +31,7 @@ export const loginService = async ({ email, password }) => {
     throw new Error("Invalid credentials");
   }
 
+  // ✅ USER CHECK
   if (user.accountStatus !== "active") {
     throw new Error("Account is not active");
   }
@@ -34,6 +44,63 @@ export const loginService = async ({ email, password }) => {
     throw new Error("Password not set");
   }
 
+  let org = null;
+
+  // 🔥 RESOLVE BASED ON referenceModel
+  switch (user.referenceModel) {
+    case "College":
+      org = await College.findById(user.referenceId).select("status");
+      break;
+
+    case "Company":
+      org = await Company.findById(user.referenceId).select("status");
+      break;
+
+    case "StudentProfile": {
+      const student = await StudentProfile.findById(user.referenceId)
+        .select("college");
+
+      if (!student) throw new Error("Student profile not found");
+
+      org = await College.findById(student.college).select("status");
+      break;
+    }
+
+    case "FacultyProfile": {
+      const faculty = await FacultyProfile.findById(user.referenceId)
+        .select("college");
+
+      if (!faculty) throw new Error("Faculty profile not found");
+
+      org = await College.findById(faculty.college).select("status");
+      break;
+    }
+
+    case "MentorProfile": {
+      const mentor = await MentorProfile.findById(user.referenceId)
+        .select("company");
+
+      if (!mentor) throw new Error("Mentor profile not found");
+
+      org = await Company.findById(mentor.company).select("status");
+      break;
+    }
+
+    default:
+      throw new Error("Invalid reference model");
+  }
+
+  console.log("ORG FOUND:", org);
+
+  if (!org) {
+    throw new Error("Organization not found");
+  }
+
+  if (org.status !== "active") {
+    throw new Error("Organization is inactive. Access denied.");
+  }
+
+  // 🔐 PASSWORD CHECK
   const isMatch = await user.comparePassword(normalizedPassword);
 
   if (!isMatch) {
@@ -55,8 +122,6 @@ export const loginService = async ({ email, password }) => {
     user: userObj
   };
 };
-
-
 //
 // SET PASSWORD (ACCOUNT SETUP)
 //

@@ -14,6 +14,7 @@ import { uploadToCloudinary } from "../../utils/uploadToCloudinary.js";
 import FacultyEmploymentHistory from "../../models/FacultyEmploymentHistory.js";
 import MentorEmploymentHistory from "../../models/MentorEmploymentHistory.js";
 import StudentAcademicHistory from "../../models/StudentAcademicHistory.js";
+import Notification from "../../models/Notification.js";
 
 
 // =====================================================
@@ -921,4 +922,83 @@ export const setupAccountService = async ({ body, files }) => {
   } finally {
     session.endSession();
   }
+};
+
+
+
+
+
+
+// ---------------- GET NOTIFICATIONS ----------------
+export const getUserNotificationsService = async ({
+  userId,
+  page = 1,
+  limit = 10
+}) => {
+  const skip = (page - 1) * limit;
+
+  const [data, total] = await Promise.all([
+    Notification.find({ recipient: userId })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean(),
+
+    Notification.countDocuments({ recipient: userId })
+  ]);
+
+  return {
+    data,
+    pagination: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit)
+    }
+  };
+};
+
+// ---------------- UNREAD COUNT ----------------
+export const getUnreadCountService = async (userId) => {
+  const count = await Notification.countDocuments({
+    recipient: userId,
+    isRead: false
+  });
+
+  return { count };
+};
+
+// ---------------- MARK ONE AS READ ----------------
+export const markNotificationReadService = async (notificationId, userId) => {
+  if (!mongoose.Types.ObjectId.isValid(notificationId)) {
+    throw new Error("Invalid notificationId");
+  }
+
+  const notification = await Notification.findOneAndUpdate(
+    { _id: notificationId, recipient: userId },
+    {
+      isRead: true,
+      readAt: new Date()
+    },
+    { new: true }
+  );
+
+  if (!notification) {
+    throw new Error("Notification not found");
+  }
+
+  return notification;
+};
+
+// ---------------- MARK ALL AS READ ----------------
+export const markAllNotificationsReadService = async (userId) => {
+  await Notification.updateMany(
+    { recipient: userId, isRead: false },
+    {
+      isRead: true,
+      readAt: new Date()
+    }
+  );
+
+  return { success: true };
 };

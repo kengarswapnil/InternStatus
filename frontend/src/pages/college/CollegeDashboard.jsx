@@ -1,12 +1,94 @@
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { fetchDashboard } from '../../store/dashboardSlice';
-import { 
-  Users, Briefcase, Award, AlertCircle, 
-  ArrowUpRight, Clock, CheckCircle, ChevronRight 
-} from 'lucide-react';
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { fetchDashboard } from "../../store/dashboardSlice";
 
+// ─────────────────────────────────────────────────────────────────────
+// KPI CARD COMPONENT
+// ─────────────────────────────────────────────────────────────────────
+const KpiCard = ({ label, value, unit = "", trend = null }) => (
+  <div className="bg-white rounded-2xl shadow-sm p-5 border border-gray-100">
+    <p className="text-gray-500 text-sm font-medium">{label}</p>
+    <div className="mt-2 flex items-baseline gap-2">
+      <h3 className="text-3xl font-bold text-gray-800">{value}</h3>
+      {unit && <span className="text-gray-400 text-sm">{unit}</span>}
+    </div>
+    {trend && (
+      <p
+        className={`mt-2 text-xs font-medium ${
+          trend > 0 ? "text-green-600" : "text-red-600"
+        }`}
+      >
+        {trend > 0 ? "↑" : "↓"} {Math.abs(trend)}%
+      </p>
+    )}
+  </div>
+);
+
+// ─────────────────────────────────────────────────────────────────────
+// SECTION CARD COMPONENT
+// ─────────────────────────────────────────────────────────────────────
+const SectionCard = ({ title, children, action }) => (
+  <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
+    <div className="flex justify-between items-center mb-5">
+      <h2 className="text-lg font-bold text-gray-800">{title}</h2>
+      {action && (
+        <button
+          onClick={action.onClick}
+          className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+        >
+          {action.label} →
+        </button>
+      )}
+    </div>
+    {children}
+  </div>
+);
+
+// ─────────────────────────────────────────────────────────────────────
+// PIPELINE BAR COMPONENT
+// ─────────────────────────────────────────────────────────────────────
+const PipelineBar = ({ label, value, total, color }) => {
+  const percentage = total > 0 ? (value / total) * 100 : 0;
+  return (
+    <div className="mb-3">
+      <div className="flex justify-between mb-1">
+        <span className="text-sm font-medium text-gray-700">{label}</span>
+        <span className="text-sm text-gray-600">
+          {value} ({Math.round(percentage)}%)
+        </span>
+      </div>
+      <div className="w-full bg-gray-200 rounded-full h-2">
+        <div
+          className={`h-2 rounded-full ${color}`}
+          style={{ width: `${percentage}%` }}
+        ></div>
+      </div>
+    </div>
+  );
+};
+
+// ─────────────────────────────────────────────────────────────────────
+// TABLE ROW COMPONENT
+// ─────────────────────────────────────────────────────────────────────
+const TableRow = ({ cells, onClick, danger = false }) => (
+  <tr
+    onClick={onClick}
+    className={`border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition ${
+      danger ? "bg-red-50" : ""
+    }`}
+  >
+    {cells.map((cell, i) => (
+      <td key={i} className="px-4 py-3 text-sm text-gray-700">
+        {cell}
+      </td>
+    ))}
+  </tr>
+);
+
+// ─────────────────────────────────────────────────────────────────────
+// COLLEGE DASHBOARD MAIN COMPONENT
+// ─────────────────────────────────────────────────────────────────────
 const CollegeDashboard = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -14,223 +96,296 @@ const CollegeDashboard = () => {
 
   useEffect(() => {
     dispatch(fetchDashboard());
-  }, []);
+  }, [dispatch]);
 
-  if (loading) return <div className="flex h-screen items-center justify-center bg-gray-50">
-    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-  </div>;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+        <div className="text-gray-600">Loading dashboard...</div>
+      </div>
+    );
+  }
 
-  if (error) return <div className="p-10 text-red-500 font-medium">Error: {error}</div>;
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+        <div className="text-red-600">Error: {error}</div>
+      </div>
+    );
+  }
 
   const {
-  kpis = {},
-  pipeline = {},
-  specializations = [],
-  facultyEngagement = { topFaculty: [], inactiveFaculty: [] },
-  atRisk = [],
-  credits = {},
-  recentActivity = [],
-  actionQueue = []
-} = data || {};
+    kpis = {},
+    pipeline = {},
+    specializationStats = [],
+    facultyStats = {},
+    atRisk = [],
+    recentActivity = [],
+    actions = [],
+  } = data || {};
 
+  const totalApps =
+    (pipeline.applied || 0) +
+    (pipeline.shortlisted || 0) +
+    (pipeline.selected || 0) +
+    (pipeline.ongoing || 0) +
+    (pipeline.completed || 0) +
+    (pipeline.rejected || 0);
 
+  // ─────────────────────────────────────────────────────────────────────
+  // RENDER
+  // ─────────────────────────────────────────────────────────────────────
   return (
-    <div className="p-8 bg-gray-50 min-h-screen font-sans text-gray-900">
-      {/* HEADER SECTION */}
-      <div className="flex justify-between items-end mb-8">
-        <div>
-          <h1 className="text-3xl font-black tracking-tight text-gray-900">Institutional Overview</h1>
-          <p className="text-gray-500 font-medium">Real-time placement and academic compliance data.</p>
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* HEADER */}
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold text-gray-900">College Dashboard</h1>
+          <p className="text-gray-500 mt-1">Monitor students, faculty & placements</p>
         </div>
-        <div className="flex gap-3">
-          {actionQueue.map((action, idx) => (
-            <button 
-              key={idx}
-              onClick={() => navigate(action.route)}
-              className="flex items-center gap-2 bg-white border border-gray-200 px-4 py-2 rounded-xl shadow-sm hover:shadow-md transition-all text-sm font-bold text-gray-700"
-            >
-              {action.label}
-              <span className="bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full text-xs">{action.count}</span>
-            </button>
-          ))}
+
+        {/* KPI SECTION */}
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
+          <KpiCard
+            label="Total Students"
+            value={kpis.totalStudents || 0}
+            trend={100}
+          />
+          <KpiCard
+            label="Active Students"
+            value={kpis.activeStudents || 0}
+            unit="enrolled"
+          />
+          <KpiCard
+            label="Placement Rate"
+            value={`${kpis.placementRate || 0}%`}
+            trend={kpis.placementRate > 50 ? 10 : -5}
+          />
+          <KpiCard
+            label="Avg Student Score"
+            value={kpis.avgStudentScore || 0}
+            unit="/10"
+          />
         </div>
-      </div>
 
-      {/* KPI GRID */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
-        <KpiCard title="Total Students" value={kpis.totalStudents} sub={`${kpis.activeStudents} Active`} icon={<Users className="text-blue-600" />} color="blue" />
-        <KpiCard title="Placement Rate" value={`${kpis.placementRate}%`} sub={`${kpis.studentsWithInternships} Placed`} icon={<Briefcase className="text-green-600" />} color="green" />
-        <KpiCard title="Credits Earned" value={credits.totalCredits} sub={`${credits.completed} Verified`} icon={<Award className="text-purple-600" />} color="purple" />
-        <KpiCard title="Avg Score" value={kpis.avgStudentScore} sub="Out of 10.0" icon={<CheckCircle className="text-yellow-600" />} color="yellow" />
-      </div>
+        {/* SECONDARY KPI */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          <KpiCard
+            label="With Internships"
+            value={kpis.studentsWithInternships || 0}
+          />
+          <KpiCard
+            label="Completed"
+            value={kpis.completedInternships || 0}
+          />
+          <KpiCard
+            label="Faculty (Active/Total)"
+            value={`${kpis.activeFaculty || 0}/${kpis.totalFaculty || 0}`}
+          />
+        </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-        
-        {/* LEFT COLUMN: CRITICAL INTERVENTIONS */}
-        <div className="xl:col-span-2 space-y-8">
-          
-          {/* SPECIALIZATION TABLE */}
-          <SectionCard title="Departmental Performance" subtitle="Sorted by placement efficiency">
-            <div className="overflow-x-auto">
+        {/* PIPELINE SECTION */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <SectionCard
+            title="Application Pipeline"
+            action={{
+              label: "View All",
+              onClick: () => navigate("/college/students"),
+            }}
+          >
+            <PipelineBar
+              label="Applied"
+              value={pipeline.applied || 0}
+              total={totalApps}
+              color="bg-blue-400"
+            />
+            <PipelineBar
+              label="Shortlisted"
+              value={pipeline.shortlisted || 0}
+              total={totalApps}
+              color="bg-purple-400"
+            />
+            <PipelineBar
+              label="Selected"
+              value={pipeline.selected || 0}
+              total={totalApps}
+              color="bg-amber-400"
+            />
+            <PipelineBar
+              label="Ongoing"
+              value={pipeline.ongoing || 0}
+              total={totalApps}
+              color="bg-cyan-400"
+            />
+            <PipelineBar
+              label="Completed"
+              value={pipeline.completed || 0}
+              total={totalApps}
+              color="bg-green-400"
+            />
+            <PipelineBar
+              label="Rejected"
+              value={pipeline.rejected || 0}
+              total={totalApps}
+              color="bg-red-400"
+            />
+            <div className="mt-4 pt-4 border-t border-gray-100">
+              <p className="text-sm text-gray-600">
+                <span className="font-bold text-gray-800">
+                  {pipeline.conversionRate || 0}%
+                </span>{" "}
+                conversion rate
+              </p>
+            </div>
+          </SectionCard>
+
+          {/* SPECIALIZATION STATS */}
+          <SectionCard
+            title="By Specialization"
+            action={{
+              label: "View All",
+              onClick: () => navigate("/college/courses"),
+            }}
+          >
+            {specializationStats.length > 0 ? (
               <table className="w-full text-left">
-                <thead className="border-b border-gray-100 text-xs uppercase text-gray-400 font-bold">
-                  <tr>
-                    <th className="pb-4 px-2">Specialization</th>
-                    <th className="pb-4">Total</th>
-                    <th className="pb-4">Placed</th>
-                    <th className="pb-4">Success Rate</th>
-                    <th className="pb-4 text-right">Avg Score</th>
+                <thead>
+                  <tr className="border-b border-gray-200">
+                    <th className="px-4 py-2 text-xs font-semibold text-gray-500">
+                      Specialization
+                    </th>
+                    <th className="px-4 py-2 text-xs font-semibold text-gray-500">
+                      Placed
+                    </th>
+                    <th className="px-4 py-2 text-xs font-semibold text-gray-500">
+                      Rate
+                    </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-50">
-                  {specializations.map((spec, i) => (
-                    <tr key={i} className="hover:bg-gray-50 transition-colors group cursor-pointer" onClick={() => navigate('/college/courses')}>
-                      <td className="py-4 px-2 font-bold text-gray-800">{spec.specialization}</td>
-                      <td className="py-4 text-gray-500">{spec.totalStudents}</td>
-                      <td className="py-4 font-semibold">{spec.placedStudents}</td>
-                      <td className="py-4">
-                        <div className="flex items-center gap-2">
-                          <div className="flex-1 h-1.5 bg-gray-100 rounded-full max-w-[100px]">
-                            <div className="h-full bg-blue-600 rounded-full" style={{ width: `${spec.placementRate}%` }}></div>
-                          </div>
-                          <span className="text-xs font-bold">{spec.placementRate.toFixed(0)}%</span>
-                        </div>
-                      </td>
-                      <td className="py-4 text-right font-mono text-blue-600 font-bold">{spec.avgScore.toFixed(1)}</td>
-                    </tr>
+                <tbody>
+                  {specializationStats.slice(0, 5).map((spec, idx) => (
+                    <TableRow
+                      key={idx}
+                      cells={[
+                        spec.specialization || "N/A",
+                        `${spec.placed}/${spec.total}`,
+                        `${spec.placementRate}%`,
+                      ]}
+                    />
                   ))}
                 </tbody>
               </table>
-            </div>
+            ) : (
+              <p className="text-gray-500 text-sm">No data available</p>
+            )}
+          </SectionCard>
+        </div>
+
+        {/* FACULTY & AT-RISK */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* TOP FACULTY */}
+          <SectionCard
+            title="Top Faculty"
+            action={{
+              label: "Manage",
+              onClick: () => navigate("/college/faculty"),
+            }}
+          >
+            {facultyStats.top5 && facultyStats.top5.length > 0 ? (
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="border-b border-gray-200">
+                    <th className="px-4 py-2 text-xs font-semibold text-gray-500">
+                      Name
+                    </th>
+                    <th className="px-4 py-2 text-xs font-semibold text-gray-500">
+                      Students
+                    </th>
+                    <th className="px-4 py-2 text-xs font-semibold text-gray-500">
+                      Active
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {facultyStats.top5.map((fac) => (
+                    <TableRow
+                      key={fac.id}
+                      cells={[
+                        fac.name,
+                        fac.studentsCount,
+                        fac.activeInternships,
+                      ]}
+                    />
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <p className="text-gray-500 text-sm">No faculty data</p>
+            )}
           </SectionCard>
 
-          {/* FACULTY ENGAGEMENT */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <SectionCard title="Top Performing Faculty">
-              <div className="space-y-4">
-                {facultyEngagement.topFaculty.map((f, i) => (
-                  <div key={i} className="flex justify-between items-center p-3 rounded-xl bg-gray-50 border border-gray-100">
-                    <div>
-                      <p className="font-bold text-sm">{f.fullName}</p>
-                      <p className="text-xs text-gray-500">{f.activeInternships} Ongoing Internships</p>
-                    </div>
-                    <span className="text-lg font-black text-gray-300">#{i + 1}</span>
+          {/* AT-RISK STUDENTS */}
+          <SectionCard
+            title="At-Risk Students"
+            action={{
+              label: "Review",
+             onClick:() => navigate("/college/at-risk"),
+            }}
+          >
+            {atRisk && atRisk.length > 0 ? (
+              <div className="space-y-2">
+                {atRisk.slice(0, 5).map((student) => (
+                  <div
+                    key={student.id}
+                    className="bg-red-50 border border-red-200 rounded-lg p-3 cursor-pointer hover:bg-red-100 transition"
+                    onClick={() => navigate(`/college/at-risk/${student.id}`)}
+                  >
+                    <p className="font-medium text-gray-800">{student.name}</p>
+                    <p className="text-sm text-red-600 mt-1">{student.reason}</p>
                   </div>
                 ))}
-              </div>
-            </SectionCard>
-            <SectionCard title="Inactive Faculty">
-              <div className="space-y-4">
-                {facultyEngagement.inactiveFaculty.length > 0 ? (
-                  facultyEngagement.inactiveFaculty.map((f, i) => (
-                    <div key={i} className="flex justify-between items-center p-3 rounded-xl border border-dashed border-gray-200">
-                      <p className="font-medium text-sm text-gray-600">{f.fullName}</p>
-                      <StatusBadge status="unassigned" />
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-sm text-gray-400 italic">All faculty currently assigned.</p>
+                {atRisk.length > 5 && (
+                  <p className="text-sm text-gray-500 text-center mt-3">
+                    +{atRisk.length - 5} more
+                  </p>
                 )}
               </div>
-            </SectionCard>
-          </div>
-        </div>
-
-        {/* RIGHT COLUMN: ACTION & ACTIVITY */}
-        <div className="space-y-8">
-          
-          {/* AT-RISK HIGHLIGHT */}
-          <div className="bg-red-50 border border-red-200 rounded-2xl p-6 shadow-sm">
-            <div className="flex items-center gap-2 text-red-600 mb-4">
-              <AlertCircle size={20} />
-              <h3 className="font-black uppercase tracking-wider text-xs">High Risk: Requires Action</h3>
-            </div>
-            <div className="space-y-3">
-              {atRisk.map((s, i) => (
-                <div 
-                  key={i} 
-                  className="bg-white p-3 rounded-xl shadow-sm flex justify-between items-center cursor-pointer hover:translate-x-1 transition-transform border border-red-100"
-                  onClick={() => navigate(`/college/students`)}
-                >
-                  <div>
-                    <p className="text-sm font-bold text-gray-800">{s.name}</p>
-                    <p className="text-[10px] text-red-500 font-semibold uppercase">{s.reason}</p>
-                  </div>
-                  <ChevronRight size={14} className="text-gray-300" />
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* RECENT ACTIVITY */}
-          <SectionCard title="Recent Activity">
-            <div className="space-y-6 relative before:absolute before:left-2 before:top-2 before:bottom-2 before:w-px before:bg-gray-100">
-              {recentActivity.map((act, i) => (
-                <div key={i} className="relative pl-8 group cursor-pointer" onClick={() => navigate(`/academic-internship-track/${act.id}`)}>
-                  <div className="absolute left-0 top-1.5 w-4 h-4 rounded-full bg-white border-2 border-blue-500 z-10"></div>
-                  <p className="text-xs text-gray-400 font-bold mb-1">{new Date(act.date).toLocaleDateString()}</p>
-                  <p className="text-sm text-gray-800">
-                    <span className="font-bold">{act.student}</span> moved to <span className="text-blue-600 font-bold">{act.type}</span>
-                  </p>
-                </div>
-              ))}
-            </div>
+            ) : (
+              <p className="text-green-600 text-sm font-medium">
+                ✓ All students on track
+              </p>
+            )}
           </SectionCard>
         </div>
+
+        {/* RECENT ACTIVITY */}
+        <SectionCard title="Recent Activity">
+          {recentActivity && recentActivity.length > 0 ? (
+            <div className="space-y-3">
+              {recentActivity.slice(0, 8).map((activity, idx) => (
+                <div
+                  key={idx}
+                  className="flex items-start gap-3 pb-3 border-b border-gray-100 last:border-0"
+                >
+                  <div className="w-2 h-2 rounded-full bg-blue-500 mt-1.5 flex-shrink-0"></div>
+                  <div>
+                    <p className="text-sm text-gray-700">{activity.label}</p>
+                    <p className="text-xs text-gray-400 mt-0.5">
+                      {new Date(activity.time).toLocaleDateString()}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-500 text-sm">No recent activity</p>
+          )}
+        </SectionCard>
+
+        {/* QUICK ACTIONS */}
+       
       </div>
     </div>
-  );
-};
-
-/* SHARED UI COMPONENTS */
-
-const KpiCard = ({ title, value, sub, icon, color }) => {
-  const navigate = useNavigate();
-  const colors = {
-    blue: 'bg-blue-50 text-blue-600',
-    green: 'bg-green-50 text-green-600',
-    purple: 'bg-purple-50 text-purple-600',
-    yellow: 'bg-yellow-50 text-yellow-600'
-  };
-  
-  return (
-    <div 
-      onClick={() => navigate('/college/students')}
-      className="bg-white rounded-2xl shadow-sm p-6 hover:shadow-md transition-all cursor-pointer border border-transparent hover:border-gray-200"
-    >
-      <div className="flex justify-between items-start mb-4">
-        <div className={`p-3 rounded-xl ${colors[color]}`}>{icon}</div>
-        <ArrowUpRight size={16} className="text-gray-300" />
-      </div>
-      <h3 className="text-gray-500 text-xs font-bold uppercase tracking-widest">{title}</h3>
-      <div className="flex items-baseline gap-2 mt-1">
-        <span className="text-3xl font-black text-gray-900">{value}</span>
-        <span className="text-xs font-medium text-gray-400">{sub}</span>
-      </div>
-    </div>
-  );
-};
-
-const SectionCard = ({ title, subtitle, children }) => (
-  <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
-    <div className="mb-6">
-      <h3 className="text-lg font-black text-gray-800">{title}</h3>
-      {subtitle && <p className="text-xs text-gray-400 font-medium">{subtitle}</p>}
-    </div>
-    {children}
-  </div>
-);
-
-const StatusBadge = ({ status }) => {
-  const styles = {
-    unassigned: 'bg-gray-100 text-gray-500',
-    active: 'bg-green-100 text-green-600',
-    pending: 'bg-yellow-100 text-yellow-600'
-  };
-  return (
-    <span className={`px-2 py-1 rounded-md text-[10px] font-black uppercase tracking-tight ${styles[status] || styles.active}`}>
-      {status}
-    </span>
   );
 };
 
