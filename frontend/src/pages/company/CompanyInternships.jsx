@@ -9,10 +9,10 @@ const StatusBadge = ({ status }) => {
   const isOpen = status === "open";
   return (
     <span
-      className={`px-2.5 py-1 rounded-[10px] text-[9px] font-black uppercase tracking-widest border ${
+      className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-[0.15em] border-2 transition-all duration-300 ${
         isOpen
-          ? "bg-[#f9f9f9] border-[#008000] text-[#008000]"
-          : "bg-[#fff] border-[#cc0000] text-[#cc0000]"
+          ? "bg-[#f9f9f9] border-[#008000] text-[#008000] shadow-[0_4px_12px_rgba(0,128,0,0.1)]"
+          : "bg-[#fff] border-[#cc0000] text-[#cc0000] shadow-[0_4px_12px_rgba(204,0,0,0.1)]"
       }`}
     >
       {status ? status : "UNKNOWN"}
@@ -86,8 +86,9 @@ export default function CompanyInternships() {
 
   if (loading) {
     return (
-      <div className="h-full bg-[#f9f9f9] flex items-center justify-center font-sans">
-        <p className="text-[14px] font-bold text-[#333] animate-pulse m-0">
+      <div className="h-screen bg-[#FFFFFF] flex flex-col items-center justify-center font-['Nunito']">
+        <div className="w-10 h-10 border-4 border-[#6C5CE7]/20 border-t-[#6C5CE7] rounded-full animate-spin mb-4" />
+        <p className="text-[14px] font-black text-[#2D3436] tracking-[0.2em] uppercase animate-pulse">
           Syncing Internships...
         </p>
       </div>
@@ -95,213 +96,220 @@ export default function CompanyInternships() {
   }
 
   return (
-    <div className="h-full bg-[#f9f9f9] text-[#333] font-sans">
-      <main className="max-w-6xl mx-auto w-full px-4 md:px-6 py-6 flex flex-col gap-6">
+    <div className="min-h-screen bg-[#FFFFFF] text-[#2D3436] font-['Nunito'] pb-12 transition-all">
+      <main className="max-w-7xl mx-auto w-full px-4 md:px-8 py-10 flex flex-col gap-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+        
         {/* Header */}
-        <header className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-[#e5e5e5] pb-4">
+        <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-[#F5F6FA] pb-8">
           <div className="flex flex-col gap-1">
-            <h1 className="text-[23px] font-black text-[#333] m-0 tracking-tight leading-tight">
+            <h1 className="text-[32px] font-black text-[#2D3436] m-0 tracking-tight leading-none">
               My Internships
             </h1>
-            <p className="text-[13px] font-bold text-[#333] opacity-60 m-0 uppercase tracking-widest">
+            <p className="text-[12px] font-black text-[#6C5CE7] m-0 uppercase tracking-[0.25em] opacity-80">
               Internship Posting Management
             </p>
           </div>
-          <div className="text-[11px] font-black text-[#111] bg-[#fff] border border-[#e5e5e5] px-3 py-1.5 rounded-[10px] uppercase tracking-widest">
-            Total Postings: {data.length}
+          <div className="inline-flex items-center gap-3 text-[12px] font-black text-[#2D3436] bg-[#F5F6FA] px-5 py-3 rounded-2xl border border-transparent hover:border-[#6C5CE7]/20 transition-all uppercase tracking-widest shadow-sm">
+            Total Postings: <span className="text-[#6C5CE7]">{data.length}</span>
           </div>
         </header>
 
         {/* Error State */}
         {error && (
-          <div className="px-5 py-3 text-[11px] font-bold text-[#cc0000] bg-[#fff] border border-[#cc0000] rounded-[14px] uppercase tracking-widest text-center">
+          <div className="px-6 py-4 text-[12px] font-black text-[#cc0000] bg-[#cc0000]/5 border-2 border-[#cc0000]/20 rounded-2xl uppercase tracking-widest text-center animate-shake">
             {error}
           </div>
         )}
 
         {/* Filters Bar */}
         {data.length > 0 && (
-          <div className="flex flex-col md:flex-row gap-4">
-            <input
-              type="text"
-              placeholder="Search by internship title..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="flex-1 px-4 py-3 text-[13px] bg-[#fff] border border-[#e5e5e5] rounded-[14px] outline-none focus:border-[#333] transition-colors"
-            />
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full md:w-56 px-4 py-3 text-[11px] font-bold text-[#333] bg-[#fff] border border-[#e5e5e5] rounded-[14px] outline-none focus:border-[#333] transition-colors appearance-none uppercase tracking-widest"
-            >
-              {uniqueStatuses.map((status) => (
-                <option key={status} value={status}>
-                  {status === "ALL" ? "All Statuses" : status}
-                </option>
-              ))}
-            </select>
+          <div className="flex flex-col md:flex-row gap-4 animate-in fade-in slide-in-from-left-4 duration-500 delay-150">
+            <div className="relative flex-1 group">
+              <input
+                type="text"
+                placeholder="Search by internship title..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-12 pr-4 py-4 text-[14px] text-[#2D3436] bg-[#F5F6FA] border-2 border-transparent rounded-[20px] outline-none transition-all group-focus-within:bg-white group-focus-within:border-[#6C5CE7]/30 group-focus-within:shadow-[0_10px_30px_rgba(108,92,231,0.06)]"
+              />
+              <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#2D3436] opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            </div>
+            
+            <div className="relative w-full md:w-64 group">
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="w-full px-5 py-4 text-[12px] font-black text-[#2D3436] bg-[#F5F6FA] border-2 border-transparent rounded-[20px] outline-none transition-all group-focus-within:bg-white group-focus-within:border-[#6C5CE7]/30 appearance-none uppercase tracking-widest cursor-pointer"
+              >
+                {uniqueStatuses.map((status) => (
+                  <option key={status} value={status}>
+                    {status === "ALL" ? "All Statuses" : status}
+                  </option>
+                ))}
+              </select>
+              <svg className="absolute right-5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#2D3436] opacity-30 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" strokeWidth="3"/></svg>
+            </div>
           </div>
         )}
 
         {/* Data Handling */}
         {data.length === 0 && !error ? (
-          <div className="bg-[#fff] border-2 border-dashed border-[#e5e5e5] rounded-[20px] p-20 text-center">
-            <p className="text-[13px] font-bold text-[#333] opacity-40 m-0 uppercase tracking-widest">
+          <div className="bg-[#FFFFFF] border-4 border-dashed border-[#F5F6FA] rounded-[40px] p-24 text-center">
+            <div className="w-20 h-20 bg-[#F5F6FA] rounded-full flex items-center justify-center mx-auto mb-6">
+              <svg className="w-10 h-10 text-[#6C5CE7] opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4" strokeWidth="2.5" strokeLinecap="round"/></svg>
+            </div>
+            <p className="text-[14px] font-black text-[#2D3436] opacity-40 m-0 uppercase tracking-[0.3em]">
               No internships posted yet.
             </p>
           </div>
         ) : filteredData.length === 0 ? (
-          <div className="bg-[#fff] border border-[#e5e5e5] rounded-[20px] p-20 text-center">
-            <p className="text-[13px] font-bold text-[#333] opacity-40 m-0 uppercase tracking-widest">
-              No internships match your search filters.
+          <div className="bg-[#FFFFFF] border border-[#F5F6FA] rounded-[32px] p-20 text-center shadow-sm">
+            <p className="text-[13px] font-black text-[#2D3436] opacity-30 m-0 uppercase tracking-widest mb-6">
+              No results match your criteria.
             </p>
             <button
               onClick={() => {
                 setSearchTerm("");
                 setStatusFilter("ALL");
               }}
-              className="mt-4 px-4 py-2 bg-[#f9f9f9] border border-[#e5e5e5] text-[#333] text-[10px] font-black uppercase tracking-widest rounded-[10px] hover:border-[#333] transition-colors cursor-pointer"
+              className="px-8 py-3 bg-[#6C5CE7] text-white text-[11px] font-black uppercase tracking-widest rounded-2xl hover:shadow-[0_15px_30px_rgba(108,92,231,0.3)] transition-all cursor-pointer active:scale-95"
             >
-              Clear Filters
+              Reset Filters
             </button>
           </div>
         ) : (
-          <div className="bg-[#fff] border border-[#e5e5e5] rounded-[20px] shadow-sm overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="border-b border-[#e5e5e5] bg-[#f9f9f9]">
-                  <th className="p-5 text-[10px] font-bold opacity-40 uppercase tracking-widest whitespace-nowrap">
-                    Internship Title
-                  </th>
-                  <th className="p-5 text-[10px] font-bold opacity-40 uppercase tracking-widest whitespace-nowrap">
-                    Deadline
-                  </th>
-                  <th className="p-5 text-[10px] font-bold opacity-40 uppercase tracking-widest whitespace-nowrap">
-                    Status
-                  </th>
-                  <th className="p-5 text-[10px] font-bold opacity-40 uppercase tracking-widest text-right whitespace-nowrap">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredData.map((item) => {
-                  const isExpanded = expandedId === item._id;
-                  const isOpen = item.status === "open";
+          <div className="bg-[#FFFFFF] border border-[#F5F6FA] rounded-[32px] shadow-[0_30px_60px_rgba(108,92,231,0.04)] overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-[#F5F6FA]/50">
+                    <th className="p-6 text-[11px] font-black text-[#2D3436] opacity-40 uppercase tracking-[0.2em] whitespace-nowrap">
+                      Internship Opportunity
+                    </th>
+                    <th className="p-6 text-[11px] font-black text-[#2D3436] opacity-40 uppercase tracking-[0.2em] whitespace-nowrap">
+                      Closing Date
+                    </th>
+                    <th className="p-6 text-[11px] font-black text-[#2D3436] opacity-40 uppercase tracking-[0.2em] whitespace-nowrap">
+                      Current Status
+                    </th>
+                    <th className="p-6 text-[11px] font-black text-[#2D3436] opacity-40 uppercase tracking-[0.2em] text-right whitespace-nowrap">
+                      Management
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#F5F6FA]">
+                  {filteredData.map((item) => {
+                    const isExpanded = expandedId === item._id;
+                    const isOpen = item.status === "open";
 
-                  return (
-                    <React.Fragment key={item._id}>
-                      {/* Main Row */}
-                      <tr
-                        className={`border-b border-[#e5e5e5] transition-colors hover:bg-[#fafafa] ${isExpanded ? "bg-[#fafafa]" : ""}`}
-                      >
-                        <td className="p-5 align-middle">
-                          <span className="text-[15px] font-black text-[#333] m-0 leading-tight block">
-                            {item.title}
-                          </span>
-                        </td>
-                        <td className="p-5 align-middle whitespace-nowrap">
-                          <span className="text-[12px] font-bold text-[#111]">
-                            {item.applicationDeadline
-                              ? new Date(
-                                  item.applicationDeadline,
-                                ).toLocaleDateString("en-IN", {
-                                  day: "2-digit",
-                                  month: "short",
-                                  year: "numeric",
-                                })
-                              : "—"}
-                          </span>
-                        </td>
-                        <td className="p-5 align-middle whitespace-nowrap">
-                          <StatusBadge status={item.status} />
-                        </td>
-                        <td className="p-5 align-middle text-right whitespace-nowrap">
-                          <div className="flex justify-end gap-2">
-                            <button
-                              onClick={() =>
-                                navigate(
-                                  `/company/internship/${item._id}/applicants`,
-                                )
-                              }
-                              className="px-4 py-2 bg-[#111] text-[#fff] text-[10px] font-black uppercase tracking-widest rounded-[10px] hover:opacity-80 transition-opacity cursor-pointer"
-                            >
-                              Applicants
-                            </button>
-                            <button
-                              onClick={() => toggleExpand(item._id)}
-                              className="px-4 py-2 bg-[#fff] border border-[#e5e5e5] text-[#333] text-[10px] font-black uppercase tracking-widest rounded-[10px] hover:border-[#333] transition-all cursor-pointer"
-                            >
-                              {isExpanded ? "Less" : "Show More"}
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-
-                      {/* Expanded Info Drawer */}
-                      {isExpanded && (
-                        <tr className="bg-[#fcfcfc] border-b border-[#e5e5e5]">
-                          <td colSpan={4} className="p-5">
-                            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                              {/* Left Stats */}
-                              <div className="flex gap-8">
-                                <div className="flex flex-col gap-0.5">
-                                  <span className="text-[9px] font-bold text-[#333] opacity-40 uppercase tracking-widest">
-                                    Positions Available
-                                  </span>
-                                  <span className="text-[13px] font-black text-[#111]">
-                                    {item.positions}
-                                  </span>
-                                </div>
-                                <div className="flex flex-col gap-0.5">
-                                  <span className="text-[9px] font-bold text-[#333] opacity-40 uppercase tracking-widest">
-                                    Max Applicants
-                                  </span>
-                                  <span className="text-[13px] font-black text-[#111]">
-                                    {item.maxApplicants}
-                                  </span>
-                                </div>
-                              </div>
-
-                              {/* Right Actions */}
-                              <div className="flex flex-wrap gap-2 w-full md:w-auto pt-4 md:pt-0 border-t border-[#e5e5e5] md:border-none">
-                                <button
-                                  onClick={() =>
-                                    navigate(
-                                      `/company/internship/${item._id}/edit`,
-                                    )
-                                  }
-                                  className="px-4 py-2 bg-[#f9f9f9] border border-[#333] text-[#333] text-[10px] font-black uppercase tracking-widest rounded-[10px] hover:bg-[#333] hover:text-[#fff] transition-all cursor-pointer"
-                                >
-                                  Edit Details
-                                </button>
-                                <button
-                                  disabled={loadingId === item._id}
-                                  onClick={() =>
-                                    toggleStatus(item._id, item.status)
-                                  }
-                                  className={`px-4 py-2 text-[10px] font-black uppercase tracking-widest rounded-[10px] transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed border ${
-                                    isOpen
-                                      ? "text-[#cc0000] bg-[#fff] border-[#cc0000] hover:bg-[#cc0000] hover:text-[#fff]"
-                                      : "text-[#008000] bg-[#fff] border-[#008000] hover:bg-[#008000] hover:text-[#fff]"
-                                  }`}
-                                >
-                                  {loadingId === item._id
-                                    ? "..."
-                                    : isOpen
-                                      ? "Close Posting"
-                                      : "Open Posting"}
-                                </button>
-                              </div>
+                    return (
+                      <React.Fragment key={item._id}>
+                        {/* Main Row */}
+                        <tr
+                          className={`transition-all duration-300 hover:bg-[#F5F6FA]/30 ${isExpanded ? "bg-[#F5F6FA]/40 shadow-inner" : ""}`}
+                        >
+                          <td className="p-6 align-middle">
+                            <span className="text-[16px] font-black text-[#2D3436] tracking-tight block group-hover:text-[#6C5CE7] transition-colors">
+                              {item.title}
+                            </span>
+                          </td>
+                          <td className="p-6 align-middle whitespace-nowrap">
+                            <span className="text-[13px] font-black text-[#2D3436]/80 bg-[#F5F6FA] px-3 py-1 rounded-lg">
+                              {item.applicationDeadline
+                                ? new Date(item.applicationDeadline).toLocaleDateString("en-IN", {
+                                    day: "2-digit",
+                                    month: "short",
+                                    year: "numeric",
+                                  })
+                                : "—"}
+                            </span>
+                          </td>
+                          <td className="p-6 align-middle whitespace-nowrap">
+                            <StatusBadge status={item.status} />
+                          </td>
+                          <td className="p-6 align-middle text-right whitespace-nowrap">
+                            <div className="flex justify-end gap-3">
+                              <button
+                                onClick={() => navigate(`/company/internship/${item._id}/applicants`)}
+                                className="px-5 py-2.5 bg-[#2D3436] text-[#FFFFFF] text-[11px] font-black uppercase tracking-widest rounded-xl hover:bg-[#6C5CE7] transition-all cursor-pointer shadow-md active:scale-95"
+                              >
+                                View Applicants
+                              </button>
+                              <button
+                                onClick={() => toggleExpand(item._id)}
+                                className={`px-5 py-2.5 text-[11px] font-black uppercase tracking-widest rounded-xl transition-all cursor-pointer active:scale-95 border-2 ${
+                                  isExpanded 
+                                    ? "bg-[#6C5CE7] text-white border-[#6C5CE7]" 
+                                    : "bg-white text-[#2D3436] border-[#F5F6FA] hover:border-[#6C5CE7]/30 shadow-sm"
+                                }`}
+                              >
+                                {isExpanded ? "Minimize" : "Actions"}
+                              </button>
                             </div>
                           </td>
                         </tr>
-                      )}
-                    </React.Fragment>
-                  );
-                })}
-              </tbody>
-            </table>
+
+                        {/* Expanded Info Drawer */}
+                        {isExpanded && (
+                          <tr className="bg-[#F5F6FA]/20 animate-in slide-in-from-top-4 duration-500">
+                            <td colSpan={4} className="p-8">
+                              <div className="bg-white rounded-3xl p-6 border border-[#F5F6FA] shadow-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
+                                {/* Left Stats */}
+                                <div className="flex gap-12">
+                                  <div className="flex flex-col gap-1">
+                                    <span className="text-[10px] font-black text-[#6C5CE7] uppercase tracking-widest">
+                                      Open Positions
+                                    </span>
+                                    <span className="text-[20px] font-black text-[#2D3436]">
+                                      {item.positions}
+                                    </span>
+                                  </div>
+                                  <div className="flex flex-col gap-1">
+                                    <span className="text-[10px] font-black text-[#6C5CE7] uppercase tracking-widest">
+                                      Applicant Cap
+                                    </span>
+                                    <span className="text-[20px] font-black text-[#2D3436]">
+                                      {item.maxApplicants}
+                                    </span>
+                                  </div>
+                                </div>
+
+                                {/* Right Actions */}
+                                <div className="flex flex-wrap gap-3 w-full md:w-auto pt-6 md:pt-0 border-t border-[#F5F6FA] md:border-none">
+                                  <button
+                                    onClick={() => navigate(`/company/internship/${item._id}/edit`)}
+                                    className="flex-1 md:flex-none px-6 py-3 bg-white border-2 border-[#2D3436] text-[#2D3436] text-[11px] font-black uppercase tracking-widest rounded-2xl hover:bg-[#2D3436] hover:text-white transition-all cursor-pointer"
+                                  >
+                                    Edit Details
+                                  </button>
+                                  <button
+                                    disabled={loadingId === item._id}
+                                    onClick={() => toggleStatus(item._id, item.status)}
+                                    className={`flex-1 md:flex-none px-6 py-3 text-[11px] font-black uppercase tracking-widest rounded-2xl transition-all cursor-pointer disabled:opacity-50 border-2 ${
+                                      isOpen
+                                        ? "text-[#cc0000] bg-white border-[#cc0000] hover:bg-[#cc0000] hover:text-white shadow-[0_10px_20px_rgba(204,0,0,0.1)]"
+                                        : "text-[#008000] bg-white border-[#008000] hover:bg-[#008000] hover:text-white shadow-[0_10px_20px_rgba(0,128,0,0.1)]"
+                                    }`}
+                                  >
+                                    {loadingId === item._id ? (
+                                      <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mx-auto" />
+                                    ) : isOpen ? (
+                                      "Deactivate Posting"
+                                    ) : (
+                                      "Reactivate Posting"
+                                    )}
+                                  </button>
+                                </div>
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+                      </React.Fragment>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </main>

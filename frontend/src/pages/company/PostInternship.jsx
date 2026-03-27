@@ -7,13 +7,15 @@ export default function PostInternship() {
     description: "",
     startDate: "",
     applicationDeadline: "",
-    durationMonths: 1,
+    durationMonths: "1",
+    customDuration: "", // Logic for 'Other' duration
     mode: "remote",
     skillsRequired: "",
     locations: "",
     positions: 1,
     maxApplicants: "",
     stipendType: "paid",
+    customStipendType: "", // Logic for 'Other' stipend
     stipendAmount: "",
   });
 
@@ -36,9 +38,19 @@ export default function PostInternship() {
     setSuccess("");
 
     try {
+      // Determine final values based on "Other" selections
+      const finalDuration = form.durationMonths === "other" 
+        ? Number(form.customDuration) 
+        : Number(form.durationMonths);
+      
+      const finalStipendType = form.stipendType === "other" 
+        ? form.customStipendType 
+        : form.stipendType;
+
       const payload = {
         ...form,
-        durationMonths: Number(form.durationMonths),
+        durationMonths: finalDuration,
+        stipendType: finalStipendType,
         positions: Number(form.positions),
         maxApplicants: form.maxApplicants ? Number(form.maxApplicants) : null,
         skillsRequired: form.skillsRequired
@@ -62,13 +74,15 @@ export default function PostInternship() {
         description: "",
         startDate: "",
         applicationDeadline: "",
-        durationMonths: 1,
+        durationMonths: "1",
+        customDuration: "",
         mode: "remote",
         skillsRequired: "",
         locations: "",
         positions: 1,
         maxApplicants: "",
         stipendType: "paid",
+        customStipendType: "",
         stipendAmount: "",
       });
     } catch (err) {
@@ -79,35 +93,40 @@ export default function PostInternship() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f9f9f9] text-[#333] flex flex-col font-sans pb-10">
-      <main className="max-w-4xl mx-auto w-full p-4 md:p-6 flex flex-col gap-6">
-        <div className="bg-[#fff] border border-[#e5e5e5] p-6 md:p-10 rounded-[20px] shadow-sm">
-          <header className="mb-8 border-b border-[#e5e5e5] pb-4">
-            <h2 className="text-[23px] font-black m-0 tracking-tight text-[#333]">
-              Post Internship
-            </h2>
-            <p className="text-[13px] font-bold text-[#333] opacity-60 m-0 mt-1 uppercase tracking-widest">
-              Create New Opportunity
-            </p>
+    <div className="min-h-screen bg-[#FFFFFF] text-[#2D3436] flex flex-col font-['Nunito'] pb-12">
+      <main className="max-w-4xl mx-auto w-full p-4 md:p-8 flex flex-col gap-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <div className="bg-[#FFFFFF] border border-[#F5F6FA] p-8 md:p-12 rounded-[32px] shadow-[0_15px_40px_rgba(0,0,0,0.02)]">
+          <header className="mb-10 border-b border-[#F5F6FA] pb-6 flex items-center justify-between">
+            <div>
+              <h2 className="text-[28px] font-black m-0 tracking-tight text-[#2D3436]">
+                Post Internship
+              </h2>
+              <p className="text-[12px] font-black text-[#6C5CE7] m-0 mt-1 uppercase tracking-[0.2em]">
+                Create New Opportunity
+              </p>
+            </div>
+            <div className="hidden md:block w-12 h-12 bg-[#6C5CE7]/10 rounded-2xl flex items-center justify-center text-[#6C5CE7]">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" />
+              </svg>
+            </div>
           </header>
 
           {error && (
-            <div className="mb-6 px-4 py-3 text-[12px] font-bold text-[#cc0000] bg-[#fff] border border-[#cc0000] rounded-[14px] uppercase tracking-widest text-center">
+            <div className="mb-8 px-5 py-4 text-[12px] font-black text-[#FF7675] bg-[#FF7675]/10 border border-[#FF7675]/20 rounded-2xl uppercase tracking-widest text-center">
               {error}
             </div>
           )}
           {success && (
-            <div className="mb-6 px-4 py-3 text-[12px] font-bold text-[#008000] bg-[#fff] border border-[#008000] rounded-[14px] uppercase tracking-widest text-center">
+            <div className="mb-8 px-5 py-4 text-[12px] font-black text-[#55EFC4] bg-[#55EFC4]/10 border border-[#55EFC4]/20 rounded-2xl uppercase tracking-widest text-center">
               {success}
             </div>
           )}
 
-          <form
-            className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5"
-            onSubmit={handleSubmit}
-          >
-            <div className="flex flex-col gap-1.5 md:col-span-2">
-              <label className="text-[11px] font-bold text-[#333] opacity-60 uppercase tracking-widest">
+          <form className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6" onSubmit={handleSubmit}>
+            {/* Title */}
+            <div className="flex flex-col gap-2 md:col-span-2 group">
+              <label className="text-[11px] font-black text-[#2D3436] opacity-40 uppercase tracking-widest ml-1 transition-opacity group-focus-within:opacity-100">
                 Internship Title
               </label>
               <input
@@ -116,12 +135,13 @@ export default function PostInternship() {
                 value={form.title}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 text-[13px] text-[#333] bg-[#fff] border border-[#333] rounded-[14px] outline-none"
+                className="w-full px-5 py-4 text-[14px] text-[#2D3436] bg-[#F5F6FA] border-2 border-transparent rounded-2xl outline-none transition-all focus:bg-white focus:border-[#6C5CE7]/30"
               />
             </div>
 
-            <div className="flex flex-col gap-1.5 md:col-span-2">
-              <label className="text-[11px] font-bold text-[#333] opacity-60 uppercase tracking-widest">
+            {/* Description */}
+            <div className="flex flex-col gap-2 md:col-span-2 group">
+              <label className="text-[11px] font-black text-[#2D3436] opacity-40 uppercase tracking-widest ml-1 transition-opacity group-focus-within:opacity-100">
                 Job Description
               </label>
               <textarea
@@ -130,13 +150,14 @@ export default function PostInternship() {
                 value={form.description}
                 onChange={handleChange}
                 required
-                rows={4}
-                className="w-full px-4 py-3 text-[13px] text-[#333] bg-[#fff] border border-[#333] rounded-[14px] outline-none resize-y"
+                rows={5}
+                className="w-full px-5 py-4 text-[14px] text-[#2D3436] bg-[#F5F6FA] border-2 border-transparent rounded-2xl outline-none resize-none transition-all focus:bg-white focus:border-[#6C5CE7]/30"
               />
             </div>
 
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[11px] font-bold text-[#333] opacity-60 uppercase tracking-widest">
+            {/* Start Date */}
+            <div className="flex flex-col gap-2 group">
+              <label className="text-[11px] font-black text-[#2D3436] opacity-40 uppercase tracking-widest ml-1 transition-opacity group-focus-within:opacity-100">
                 Start Date
               </label>
               <input
@@ -145,12 +166,13 @@ export default function PostInternship() {
                 value={form.startDate}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 text-[13px] text-[#333] bg-[#fff] border border-[#333] rounded-[14px] outline-none uppercase"
+                className="w-full px-5 py-4 text-[14px] text-[#2D3436] bg-[#F5F6FA] border-2 border-transparent rounded-2xl outline-none transition-all focus:bg-white focus:border-[#6C5CE7]/30"
               />
             </div>
 
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[11px] font-bold text-[#333] opacity-60 uppercase tracking-widest">
+            {/* Deadline */}
+            <div className="flex flex-col gap-2 group">
+              <label className="text-[11px] font-black text-[#2D3436] opacity-40 uppercase tracking-widest ml-1 transition-opacity group-focus-within:opacity-100">
                 Application Deadline
               </label>
               <input
@@ -159,47 +181,77 @@ export default function PostInternship() {
                 value={form.applicationDeadline}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 text-[13px] text-[#333] bg-[#fff] border border-[#333] rounded-[14px] outline-none uppercase"
+                className="w-full px-5 py-4 text-[14px] text-[#2D3436] bg-[#F5F6FA] border-2 border-transparent rounded-2xl outline-none transition-all focus:bg-white focus:border-[#6C5CE7]/30"
               />
             </div>
 
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[11px] font-bold text-[#333] opacity-60 uppercase tracking-widest">
+            {/* Duration */}
+            <div className="flex flex-col gap-2 group">
+              <label className="text-[11px] font-black text-[#2D3436] opacity-40 uppercase tracking-widest ml-1">
                 Duration
               </label>
-              <select
-                name="durationMonths"
-                value={form.durationMonths}
-                onChange={handleChange}
-                className="w-full px-4 py-3 text-[13px] text-[#333] bg-[#fff] border border-[#333] rounded-[14px] outline-none cursor-pointer appearance-none"
-              >
-                {[1, 2, 3, 4, 5, 6, 9, 12].map((m) => (
-                  <option key={m} value={m}>
-                    {m} Month{m > 1 ? "s" : ""}
-                  </option>
-                ))}
-              </select>
+              <div className="relative">
+                <select
+                  name="durationMonths"
+                  value={form.durationMonths}
+                  onChange={handleChange}
+                  className="w-full px-5 py-4 text-[14px] text-[#2D3436] bg-[#F5F6FA] border-2 border-transparent rounded-2xl outline-none cursor-pointer appearance-none transition-all focus:bg-white focus:border-[#6C5CE7]/30"
+                >
+                  {[1, 2, 3, 4, 5, 6].map((m) => (
+                    <option key={m} value={m}>{m} Month{m > 1 ? "s" : ""}</option>
+                  ))}
+                  <option value="other">Other (Specify Months)</option>
+                </select>
+                <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none opacity-30">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" strokeWidth="3"/></svg>
+                </div>
+              </div>
             </div>
 
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[11px] font-bold text-[#333] opacity-60 uppercase tracking-widest">
+            {/* Custom Duration (Conditional) */}
+            {form.durationMonths === "other" && (
+              <div className="flex flex-col gap-2 group animate-in slide-in-from-left-2 duration-300">
+                <label className="text-[11px] font-black text-[#6C5CE7] uppercase tracking-widest ml-1">
+                  Specify Months
+                </label>
+                <input
+                  type="number"
+                  name="customDuration"
+                  placeholder="e.g. 8"
+                  value={form.customDuration}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-5 py-4 text-[14px] text-[#2D3436] bg-[#F5F6FA] border-2 border-[#6C5CE7]/20 rounded-2xl outline-none transition-all focus:bg-white focus:border-[#6C5CE7]"
+                />
+              </div>
+            )}
+
+            {/* Mode */}
+            <div className="flex flex-col gap-2 group">
+              <label className="text-[11px] font-black text-[#2D3436] opacity-40 uppercase tracking-widest ml-1 transition-opacity group-focus-within:opacity-100">
                 Mode
               </label>
-              <select
-                name="mode"
-                value={form.mode}
-                onChange={handleChange}
-                className="w-full px-4 py-3 text-[13px] text-[#333] bg-[#fff] border border-[#333] rounded-[14px] outline-none cursor-pointer appearance-none"
-              >
-                <option value="remote">Remote</option>
-                <option value="onsite">Onsite</option>
-                <option value="hybrid">Hybrid</option>
-              </select>
+              <div className="relative">
+                <select
+                  name="mode"
+                  value={form.mode}
+                  onChange={handleChange}
+                  className="w-full px-5 py-4 text-[14px] text-[#2D3436] bg-[#F5F6FA] border-2 border-transparent rounded-2xl outline-none cursor-pointer appearance-none transition-all focus:bg-white focus:border-[#6C5CE7]/30"
+                >
+                  <option value="remote">Remote</option>
+                  <option value="onsite">Onsite</option>
+                  <option value="hybrid">Hybrid</option>
+                </select>
+                <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none opacity-30">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" strokeWidth="3"/></svg>
+                </div>
+              </div>
             </div>
 
+            {/* Locations (Conditional) */}
             {form.mode !== "remote" && (
-              <div className="flex flex-col gap-1.5 md:col-span-2">
-                <label className="text-[11px] font-bold text-[#333] opacity-60 uppercase tracking-widest">
+              <div className="flex flex-col gap-2 md:col-span-2 group animate-in slide-in-from-top-2 duration-300">
+                <label className="text-[11px] font-black text-[#2D3436] opacity-40 uppercase tracking-widest ml-1">
                   Office Locations
                 </label>
                 <input
@@ -208,27 +260,29 @@ export default function PostInternship() {
                   value={form.locations}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 text-[13px] text-[#333] bg-[#fff] border border-[#333] rounded-[14px] outline-none"
+                  className="w-full px-5 py-4 text-[14px] text-[#2D3436] bg-[#F5F6FA] border-2 border-transparent rounded-2xl outline-none transition-all focus:bg-white focus:border-[#6C5CE7]/30"
                 />
               </div>
             )}
 
-            <div className="flex flex-col gap-1.5 md:col-span-2">
-              <label className="text-[11px] font-bold text-[#333] opacity-60 uppercase tracking-widest">
+            {/* Required Skills */}
+            <div className="flex flex-col gap-2 md:col-span-2 group">
+              <label className="text-[11px] font-black text-[#2D3436] opacity-40 uppercase tracking-widest ml-1 transition-opacity group-focus-within:opacity-100">
                 Required Skills
               </label>
               <input
                 name="skillsRequired"
-                placeholder="React, Node.js, SQL"
+                placeholder="React, Node.js, SQL (separated by comma)"
                 value={form.skillsRequired}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 text-[13px] text-[#333] bg-[#fff] border border-[#333] rounded-[14px] outline-none"
+                className="w-full px-5 py-4 text-[14px] text-[#2D3436] bg-[#F5F6FA] border-2 border-transparent rounded-2xl outline-none transition-all focus:bg-white focus:border-[#6C5CE7]/30"
               />
             </div>
 
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[11px] font-bold text-[#333] opacity-60 uppercase tracking-widest">
+            {/* Positions */}
+            <div className="flex flex-col gap-2 group">
+              <label className="text-[11px] font-black text-[#2D3436] opacity-40 uppercase tracking-widest ml-1 transition-opacity group-focus-within:opacity-100">
                 Positions
               </label>
               <input
@@ -238,44 +292,70 @@ export default function PostInternship() {
                 value={form.positions}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 text-[13px] text-[#333] bg-[#fff] border border-[#333] rounded-[14px] outline-none"
+                className="w-full px-5 py-4 text-[14px] text-[#2D3436] bg-[#F5F6FA] border-2 border-transparent rounded-2xl outline-none transition-all focus:bg-white focus:border-[#6C5CE7]/30"
               />
             </div>
 
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[11px] font-bold text-[#333] opacity-60 uppercase tracking-widest">
+            {/* Max Applicants */}
+            <div className="flex flex-col gap-2 group">
+              <label className="text-[11px] font-black text-[#2D3436] opacity-40 uppercase tracking-widest ml-1 transition-opacity group-focus-within:opacity-100">
                 Max Applicants
               </label>
               <input
                 type="number"
                 name="maxApplicants"
                 min="1"
-                placeholder="Optional"
+                placeholder="Unlimited if empty"
                 value={form.maxApplicants}
                 onChange={handleChange}
-                className="w-full px-4 py-3 text-[13px] text-[#333] bg-[#fff] border border-[#333] rounded-[14px] outline-none"
+                className="w-full px-5 py-4 text-[14px] text-[#2D3436] bg-[#F5F6FA] border-2 border-transparent rounded-2xl outline-none transition-all focus:bg-white focus:border-[#6C5CE7]/30"
               />
             </div>
 
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[11px] font-bold text-[#333] opacity-60 uppercase tracking-widest">
+            {/* Stipend Type */}
+            <div className="flex flex-col gap-2 group">
+              <label className="text-[11px] font-black text-[#2D3436] opacity-40 uppercase tracking-widest ml-1">
                 Stipend Type
               </label>
-              <select
-                name="stipendType"
-                value={form.stipendType}
-                onChange={handleChange}
-                className="w-full px-4 py-3 text-[13px] text-[#333] bg-[#fff] border border-[#333] rounded-[14px] outline-none cursor-pointer appearance-none"
-              >
-                <option value="paid">Paid</option>
-                <option value="unpaid">Unpaid</option>
-                <option value="performance_based">Performance Based</option>
-              </select>
+              <div className="relative">
+                <select
+                  name="stipendType"
+                  value={form.stipendType}
+                  onChange={handleChange}
+                  className="w-full px-5 py-4 text-[14px] text-[#2D3436] bg-[#F5F6FA] border-2 border-transparent rounded-2xl outline-none cursor-pointer appearance-none transition-all focus:bg-white focus:border-[#6C5CE7]/30"
+                >
+                  <option value="paid">Paid</option>
+                  <option value="unpaid">Unpaid</option>
+                  <option value="performance_based">Performance Based</option>
+                  <option value="other">Other (Custom Type)</option>
+                </select>
+                <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none opacity-30">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" strokeWidth="3"/></svg>
+                </div>
+              </div>
             </div>
 
-            {form.stipendType === "paid" && (
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[11px] font-bold text-[#333] opacity-60 uppercase tracking-widest">
+            {/* Custom Stipend Type (Conditional) */}
+            {form.stipendType === "other" && (
+              <div className="flex flex-col gap-2 group animate-in slide-in-from-left-2 duration-300">
+                <label className="text-[11px] font-black text-[#6C5CE7] uppercase tracking-widest ml-1">
+                  Specify Stipend Type
+                </label>
+                <input
+                  name="customStipendType"
+                  placeholder="e.g. Travel Allowance Only"
+                  value={form.customStipendType}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-5 py-4 text-[14px] text-[#2D3436] bg-[#F5F6FA] border-2 border-[#6C5CE7]/20 rounded-2xl outline-none transition-all focus:bg-white focus:border-[#6C5CE7]"
+                />
+              </div>
+            )}
+
+            {/* Stipend Amount (Only if Paid OR other is chosen) */}
+            {(form.stipendType === "paid" || form.stipendType === "other") && (
+              <div className="flex flex-col gap-2 group animate-in slide-in-from-top-2 duration-300 md:col-span-2">
+                <label className="text-[11px] font-black text-[#2D3436] opacity-40 uppercase tracking-widest ml-1">
                   Monthly Stipend (INR)
                 </label>
                 <input
@@ -286,18 +366,28 @@ export default function PostInternship() {
                   value={form.stipendAmount}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 text-[13px] text-[#333] bg-[#fff] border border-[#333] rounded-[14px] outline-none"
+                  className="w-full px-5 py-4 text-[14px] text-[#2D3436] bg-[#F5F6FA] border-2 border-transparent rounded-2xl outline-none transition-all focus:bg-white focus:border-[#6C5CE7]/30"
                 />
               </div>
             )}
 
-            <div className="md:col-span-2 pt-6 border-t border-[#f9f9f9] mt-2">
+            {/* Submit */}
+            <div className="md:col-span-2 pt-10 mt-4 border-t border-[#F5F6FA]">
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-4 text-[14px] font-black text-[#fff] bg-[#111] border-none rounded-[14px] cursor-pointer hover:opacity-80 transition-opacity disabled:opacity-30 uppercase tracking-widest flex items-center justify-center gap-2"
+                className="w-full py-5 text-[14px] font-black text-[#FFFFFF] bg-[#6C5CE7] border-none rounded-[20px] cursor-pointer hover:shadow-[0_20px_40px_rgba(108,92,231,0.2)] hover:-translate-y-1 active:scale-95 transition-all duration-300 disabled:opacity-30 disabled:translate-y-0 uppercase tracking-[0.2em] flex items-center justify-center gap-3 shadow-lg shadow-[#6C5CE7]/10"
               >
-                {loading ? "Processing..." : "Publish Internship"}
+                {loading ? (
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                ) : (
+                  <>
+                    Publish Internship
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                  </>
+                )}
               </button>
             </div>
           </form>

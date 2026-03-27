@@ -89,7 +89,7 @@ export default function EditInternship() {
 
       await API.patch(`/internships/${id}`, payload);
       alert("Internship updated successfully");
-      navigate("/company/internships");
+      navigate("/company/company-internships");
     } catch (err) {
       alert(err.response?.data?.message);
     } finally {
@@ -99,44 +99,55 @@ export default function EditInternship() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#f9f9f9] flex items-center justify-center">
-        <p className="text-[14px] font-bold text-[#333] animate-pulse m-0">
-          Loading Details...
-        </p>
+      <div className="min-h-screen bg-[#FFFFFF] flex items-center justify-center font-['Nunito']">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-[#6C5CE7]/20 border-t-[#6C5CE7] rounded-full animate-spin" />
+          <p className="text-[14px] font-black text-[#2D3436] tracking-widest uppercase">
+            Fetching Details...
+          </p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#f9f9f9] text-[#333] font-sans pb-10">
-      <main className="max-w-3xl mx-auto w-full px-4 md:px-6 py-6 flex flex-col gap-6">
-        <div className="bg-[#fff] border border-[#e5e5e5] p-6 md:p-8 rounded-[20px] shadow-sm">
-          <header className="mb-8 border-b border-[#e5e5e5] pb-4">
-            <h2 className="text-[23px] font-black m-0 tracking-tight">
-              Edit Internship Listing
-            </h2>
-            <p className="text-[13px] font-bold opacity-60 m-0 mt-1 uppercase tracking-widest">
-              Modify Active Opportunity
-            </p>
+    <div className="min-h-screen bg-[#FFFFFF] text-[#2D3436] font-['Nunito'] pb-12 transition-all duration-500">
+      <main className="max-w-4xl mx-auto w-full px-4 md:px-8 py-10 flex flex-col gap-8 animate-in fade-in slide-in-from-bottom-6 duration-700">
+        <div className="bg-[#FFFFFF] border border-[#F5F6FA] p-8 md:p-12 rounded-[32px] shadow-[0_20px_50px_rgba(108,92,231,0.04)]">
+          <header className="mb-10 border-b border-[#F5F6FA] pb-6 flex items-center justify-between">
+            <div>
+              <h2 className="text-[28px] font-black m-0 tracking-tight text-[#2D3436]">
+                Edit Internship Listing
+              </h2>
+              <p className="text-[12px] font-black text-[#6C5CE7] m-0 mt-1 uppercase tracking-[0.2em]">
+                Modify Active Opportunity
+              </p>
+            </div>
+            <div className="hidden md:flex w-12 h-12 bg-[#6C5CE7]/10 rounded-2xl items-center justify-center text-[#6C5CE7]">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+            </div>
           </header>
 
           {closed && (
-            <div className="mb-6 px-4 py-3 text-[12px] font-bold text-[#cc0000] bg-[#fff] border border-[#cc0000] rounded-[14px] uppercase tracking-widest leading-relaxed">
+            <div className="mb-8 px-6 py-4 text-[12px] font-black text-[#FF7675] bg-[#FF7675]/10 border border-[#FF7675]/20 rounded-2xl uppercase tracking-widest text-center animate-pulse">
               This internship is closed and cannot be edited.
             </div>
           )}
 
           {locked && !closed && (
-            <div className="mb-6 px-4 py-3 text-[12px] font-bold text-[#b45309] bg-[#fff] border border-[#b45309] rounded-[14px] uppercase tracking-widest leading-relaxed">
+            <div className="mb-8 px-6 py-4 text-[12px] font-black text-[#fdcb6e] bg-[#fdcb6e]/10 border border-[#fdcb6e]/20 rounded-2xl uppercase tracking-widest text-center leading-loose">
               Applications active. Restricted fields: Positions must be at least{" "}
-              {selectedCount}. Stipend cannot be decreased.
+              <span className="text-[#e17055]">{selectedCount}</span>. Stipend cannot be decreased.
             </div>
           )}
 
-          <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[11px] font-bold opacity-60 uppercase tracking-widest">
-                Title
+          <form className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6" onSubmit={handleSubmit}>
+            {/* Title */}
+            <div className="flex flex-col gap-2 md:col-span-2 group">
+              <label className="text-[11px] font-black text-[#2D3436] opacity-40 uppercase tracking-widest ml-1 transition-opacity group-focus-within:opacity-100">
+                Internship Title
               </label>
               <input
                 name="title"
@@ -144,59 +155,61 @@ export default function EditInternship() {
                 onChange={handleChange}
                 required
                 disabled={closed}
-                className="w-full px-4 py-3 text-[13px] text-[#333] bg-[#fff] border border-[#333] rounded-[14px] outline-none disabled:opacity-40"
+                className="w-full px-5 py-4 text-[14px] text-[#2D3436] bg-[#F5F6FA] border-2 border-transparent rounded-2xl outline-none transition-all focus:bg-white focus:border-[#6C5CE7]/30 disabled:opacity-30 disabled:cursor-not-allowed"
               />
             </div>
 
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[11px] font-bold opacity-60 uppercase tracking-widest">
-                Description
+            {/* Description */}
+            <div className="flex flex-col gap-2 md:col-span-2 group">
+              <label className="text-[11px] font-black text-[#2D3436] opacity-40 uppercase tracking-widest ml-1 transition-opacity group-focus-within:opacity-100">
+                Detailed Description
               </label>
               <textarea
                 name="description"
                 value={form.description}
                 onChange={handleChange}
                 disabled={closed}
-                rows={4}
-                className="w-full px-4 py-3 text-[13px] text-[#333] bg-[#fff] border border-[#333] rounded-[14px] outline-none resize-y disabled:opacity-40"
+                rows={5}
+                className="w-full px-5 py-4 text-[14px] text-[#2D3436] bg-[#F5F6FA] border-2 border-transparent rounded-2xl outline-none resize-none transition-all focus:bg-white focus:border-[#6C5CE7]/30 disabled:opacity-30 disabled:cursor-not-allowed"
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[11px] font-bold opacity-60 uppercase tracking-widest">
-                  Positions
-                </label>
-                <input
-                  type="number"
-                  min={selectedCount || 1}
-                  name="positions"
-                  value={form.positions}
-                  onChange={handleChange}
-                  disabled={closed}
-                  className="w-full px-4 py-3 text-[13px] text-[#333] bg-[#fff] border border-[#333] rounded-[14px] outline-none disabled:opacity-40"
-                />
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[11px] font-bold opacity-60 uppercase tracking-widest">
-                  Max Applicants
-                </label>
-                <input
-                  type="number"
-                  min="1"
-                  name="maxApplicants"
-                  value={form.maxApplicants}
-                  onChange={handleChange}
-                  disabled={closed}
-                  className="w-full px-4 py-3 text-[13px] text-[#333] bg-[#fff] border border-[#333] rounded-[14px] outline-none disabled:opacity-40"
-                />
-              </div>
+            {/* Positions */}
+            <div className="flex flex-col gap-2 group">
+              <label className="text-[11px] font-black text-[#2D3436] opacity-40 uppercase tracking-widest ml-1 transition-opacity group-focus-within:opacity-100">
+                Positions Available
+              </label>
+              <input
+                type="number"
+                min={selectedCount || 1}
+                name="positions"
+                value={form.positions}
+                onChange={handleChange}
+                disabled={closed}
+                className="w-full px-5 py-4 text-[14px] text-[#2D3436] bg-[#F5F6FA] border-2 border-transparent rounded-2xl outline-none transition-all focus:bg-white focus:border-[#6C5CE7]/30 disabled:opacity-30"
+              />
             </div>
 
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[11px] font-bold opacity-60 uppercase tracking-widest">
-                Application Deadline
+            {/* Max Applicants */}
+            <div className="flex flex-col gap-2 group">
+              <label className="text-[11px] font-black text-[#2D3436] opacity-40 uppercase tracking-widest ml-1 transition-opacity group-focus-within:opacity-100">
+                Max Applicants Cap
+              </label>
+              <input
+                type="number"
+                min="1"
+                name="maxApplicants"
+                value={form.maxApplicants}
+                onChange={handleChange}
+                disabled={closed}
+                className="w-full px-5 py-4 text-[14px] text-[#2D3436] bg-[#F5F6FA] border-2 border-transparent rounded-2xl outline-none transition-all focus:bg-white focus:border-[#6C5CE7]/30 disabled:opacity-30"
+              />
+            </div>
+
+            {/* Deadline */}
+            <div className="flex flex-col gap-2 md:col-span-2 group">
+              <label className="text-[11px] font-black text-[#2D3436] opacity-40 uppercase tracking-widest ml-1 transition-opacity group-focus-within:opacity-100">
+                New Application Deadline
               </label>
               <input
                 type="date"
@@ -204,50 +217,61 @@ export default function EditInternship() {
                 value={form.applicationDeadline}
                 onChange={handleChange}
                 disabled={closed}
-                className="w-full px-4 py-3 text-[13px] text-[#333] bg-[#fff] border border-[#333] rounded-[14px] outline-none disabled:opacity-40 uppercase tracking-widest"
+                className="w-full px-5 py-4 text-[14px] text-[#2D3436] bg-[#F5F6FA] border-2 border-transparent rounded-2xl outline-none transition-all focus:bg-white focus:border-[#6C5CE7]/30 disabled:opacity-30"
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[11px] font-bold opacity-60 uppercase tracking-widest">
-                  Mode
-                </label>
+            {/* Mode */}
+            <div className="flex flex-col gap-2 group">
+              <label className="text-[11px] font-black text-[#2D3436] opacity-40 uppercase tracking-widest ml-1 transition-opacity group-focus-within:opacity-100">
+                Work Mode
+              </label>
+              <div className="relative">
                 <select
                   name="mode"
                   value={form.mode}
                   onChange={handleChange}
                   disabled={locked || closed}
-                  className="w-full px-4 py-3 text-[13px] text-[#333] bg-[#fff] border border-[#333] rounded-[14px] outline-none cursor-pointer disabled:opacity-40 appearance-none"
+                  className="w-full px-5 py-4 text-[14px] text-[#2D3436] bg-[#F5F6FA] border-2 border-transparent rounded-2xl outline-none cursor-pointer appearance-none transition-all focus:bg-white focus:border-[#6C5CE7]/30 disabled:opacity-30"
                 >
                   <option value="remote">Remote</option>
                   <option value="onsite">Onsite</option>
                   <option value="hybrid">Hybrid</option>
                 </select>
+                <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none opacity-30">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" strokeWidth="3"/></svg>
+                </div>
               </div>
+            </div>
 
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[11px] font-bold opacity-60 uppercase tracking-widest">
-                  Stipend Type
-                </label>
+            {/* Stipend Type */}
+            <div className="flex flex-col gap-2 group">
+              <label className="text-[11px] font-black text-[#2D3436] opacity-40 uppercase tracking-widest ml-1 transition-opacity group-focus-within:opacity-100">
+                Compensation Type
+              </label>
+              <div className="relative">
                 <select
                   name="stipendType"
                   value={form.stipendType}
                   onChange={handleChange}
                   disabled={locked || closed}
-                  className="w-full px-4 py-3 text-[13px] text-[#333] bg-[#fff] border border-[#333] rounded-[14px] outline-none cursor-pointer disabled:opacity-40 appearance-none"
+                  className="w-full px-5 py-4 text-[14px] text-[#2D3436] bg-[#F5F6FA] border-2 border-transparent rounded-2xl outline-none cursor-pointer appearance-none transition-all focus:bg-white focus:border-[#6C5CE7]/30 disabled:opacity-30"
                 >
                   <option value="paid">Paid</option>
                   <option value="unpaid">Unpaid</option>
                   <option value="performance_based">Performance Based</option>
                 </select>
+                <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none opacity-30">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" strokeWidth="3"/></svg>
+                </div>
               </div>
             </div>
 
+            {/* Stipend Amount */}
             {form.stipendType === "paid" && (
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[11px] font-bold opacity-60 uppercase tracking-widest">
-                  Stipend Amount (INR/mo)
+              <div className="flex flex-col gap-2 md:col-span-2 group animate-in slide-in-from-top-2 duration-300">
+                <label className="text-[11px] font-black text-[#2D3436] opacity-40 uppercase tracking-widest ml-1 transition-opacity group-focus-within:opacity-100">
+                  Monthly Stipend (INR)
                 </label>
                 <input
                   type="number"
@@ -256,24 +280,35 @@ export default function EditInternship() {
                   value={form.stipendAmount}
                   onChange={handleChange}
                   disabled={closed}
-                  className="w-full px-4 py-3 text-[13px] text-[#333] bg-[#fff] border border-[#333] rounded-[14px] outline-none disabled:opacity-40"
+                  className="w-full px-5 py-4 text-[14px] text-[#2D3436] bg-[#F5F6FA] border-2 border-transparent rounded-2xl outline-none transition-all focus:bg-white focus:border-[#6C5CE7]/30 disabled:opacity-30"
                 />
               </div>
             )}
 
-            <div className="pt-6 border-t border-[#f9f9f9] mt-2 flex justify-between items-center">
+            {/* Actions */}
+            <div className="md:col-span-2 pt-10 mt-6 border-t border-[#F5F6FA] flex flex-col-reverse md:flex-row gap-4 justify-between items-center">
               <button
                 type="button"
-                onClick={() => navigate("/company/internships")}
-                className="px-6 py-3 text-[12px] font-bold text-[#333] bg-[#f9f9f9] border border-[#e5e5e5] rounded-[14px] hover:bg-[#e5e5e5] transition-colors uppercase tracking-widest cursor-pointer"
+                onClick={() => navigate("/company/company-internships")}
+                className="w-full md:w-auto px-8 py-4 text-[13px] font-black text-[#2D3436] bg-[#F5F6FA] border-none rounded-2xl hover:bg-[#6C5CE7]/5 transition-all uppercase tracking-widest cursor-pointer active:scale-95"
               >
-                Cancel
+                Cancel Changes
               </button>
+              
               <button
                 disabled={saving || closed}
-                className="px-8 py-3 text-[12px] font-black text-[#fff] bg-[#111] border-none rounded-[14px] cursor-pointer hover:opacity-80 transition-opacity disabled:opacity-30 uppercase tracking-widest"
+                className="w-full md:w-auto px-10 py-4 text-[13px] font-black text-[#FFFFFF] bg-[#6C5CE7] border-none rounded-2xl cursor-pointer hover:shadow-[0_20px_40px_rgba(108,92,231,0.25)] hover:-translate-y-1 active:scale-95 transition-all duration-300 disabled:opacity-30 disabled:translate-y-0 uppercase tracking-widest flex items-center justify-center gap-3"
               >
-                {saving ? "Processing..." : "Update Listing"}
+                {saving ? (
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                ) : (
+                  <>
+                    Update Listing
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+                    </svg>
+                  </>
+                )}
               </button>
             </div>
           </form>
