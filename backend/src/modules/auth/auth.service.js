@@ -90,8 +90,6 @@ export const loginService = async ({ email, password }) => {
       throw new Error("Invalid reference model");
   }
 
-  console.log("ORG FOUND:", org);
-
   if (!org) {
     throw new Error("Organization not found");
   }

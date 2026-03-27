@@ -17,10 +17,13 @@ API.interceptors.response.use(
       const path = window.location.pathname;
 
       const isPublic =
+        path.startsWith("/") ||   // ✅ ADD THIS
         path.startsWith("/login") ||
         path.startsWith("/admin/login") ||
         path.startsWith("/setup-account") ||
-        path.startsWith("/reset-password");
+        path.startsWith("/reset-password") ||
+         path.startsWith("/college/register") ||   // ✅ ADD THIS
+  path.startsWith("/company/register");    
 
       // ✅ avoid infinite redirect loop
       if (!isPublic) {

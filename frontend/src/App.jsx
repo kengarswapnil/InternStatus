@@ -25,6 +25,8 @@ import AdminLogin from "./pages/admin/AdminLogin";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import ResetPassword from "./pages/auth/ResetPassword";
 import SetPassword from "./pages/SetPassword";
+import CollegeRegister from "./pages/college/CollegeRegister";
+import CompanyRegister from "./pages/company/CompanyRegister";
 
 /* Student */
 import StudentDashboard from "./pages/students/StudentDashboard";
@@ -74,6 +76,8 @@ import Courses from "./pages/college/Courses";
 import AcademicInternshipTrack from "./pages/college/AcademicInternshipTrack";
 import StudentInternships from "./pages/college/StudentInternship";
 import CreditManagement from "./pages/college/CreditManagement";
+import AtRiskList from "./pages/college/AtRiskList";
+import AtRiskStudent from "./pages/college/AtRiskStudent";
 
 /* Admin */
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -91,8 +95,6 @@ import AdminUserDetails from "./pages/admin/users/AdminUserDetails";
 
 /* Protected */
 import ProtectedRoute from "./routes/ProtectedRoute";
-import AtRiskList from "./pages/college/AtRiskList";
-import AtRiskStudent from "./pages/college/AtRiskStudent";
 
 function AppContent() {
   const dispatch = useDispatch();
@@ -101,7 +103,6 @@ function AppContent() {
   useEffect(() => {
     const initAuth = async () => {
       try {
-        // ✅ COOKIE-BASED AUTH → always call
         const res = await API.get("/users/profile");
 
         dispatch(
@@ -111,9 +112,7 @@ function AppContent() {
           })
         );
       } catch (err) {
-        if (err.response?.status === 401) {
-          dispatch(removeUser());
-        }
+        dispatch(removeUser());
       } finally {
         setLoading(false);
       }
@@ -122,23 +121,20 @@ function AppContent() {
     initAuth();
   }, [dispatch]);
 
-
-  if (loading) {
-    return (
-      <div className="h-screen flex items-center justify-center">
-        Loading...
-      </div>
-    );
-  }
+  // 🔴 CRITICAL FIX: DO NOT RENDER ROUTES UNTIL AUTH READY
+  if (loading) return null;
 
   return (
     <BrowserRouter>
       <Routes>
 
-        {/* PUBLIC */}
+        {/* PUBLIC ROUTES */}
         <Route element={<MainLayout />}>
+          <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/college/register" element={<CollegeRegister />} />
+          <Route path="/company/register" element={<CompanyRegister />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/setup-account" element={<SetPassword />} />
@@ -165,10 +161,10 @@ function AppContent() {
             <Route path="/faculty/profile" element={<FacultyProfile />} />
             <Route path="/faculty/students" element={<FacultyStudents />} />
             <Route path="/faculty/invite-student" element={<InviteStudent />} />
-             <Route path="/faculty/students/:studentId" element={<StudentDetails />} />
-            <Route path="faculty/credits" element={<CreditManagement />} />
-             <Route path="/faculty/at-risk" element={<AtRiskList />} />
-    <Route path="/faculty/at-risk/:studentId" element={<AtRiskStudent />} />
+            <Route path="/faculty/students/:studentId" element={<StudentDetails />} />
+            <Route path="/faculty/credits" element={<CreditManagement />} />
+            <Route path="/faculty/at-risk" element={<AtRiskList />} />
+            <Route path="/faculty/at-risk/:studentId" element={<AtRiskStudent />} />
           </Route>
         </Route>
 
@@ -192,7 +188,7 @@ function AppContent() {
             <Route path="/company/mentors" element={<CompanyMentorList />} />
             <Route path="/company/invite-mentor" element={<InviteMentor />} />
             <Route path="/company/post-internship" element={<PostInternship />} />
-            <Route path="/company/company-internships" element={<CompanyInternships />} />
+            <Route path="/company/internships" element={<CompanyInternships />} />
             <Route path="/company/internship/:id/applicants" element={<InternshipApplicants />} />
             <Route path="/company/internship/:id/edit" element={<EditInternship />} />
             <Route path="/company/interns" element={<CompanyInterns />} />
@@ -203,47 +199,26 @@ function AppContent() {
 
         {/* COLLEGE */}
         <Route element={<ProtectedRoute role="college" />}>
-  <Route element={<CollegeLayout />}>
+          <Route element={<CollegeLayout />}>
+            <Route path="/college/dashboard" element={<CollegeDashboard />} />
+            <Route path="/college/profile" element={<CollegeProfile />} />
+            <Route path="/college/faculty" element={<CollegeFacultyList />} />
+            <Route path="/college/students" element={<CollegeStudents />} />
+            <Route path="/college/students/:studentId" element={<StudentDetails />} />
+            <Route path="/college/invite-faculty" element={<InviteFaculty />} />
+            <Route path="/college/invite-student" element={<InviteStudent />} />
+            <Route path="/college/courses" element={<Courses />} />
+            <Route path="/college/internships" element={<StudentInternships />} />
+            <Route path="/college/credits" element={<CreditManagement />} />
+            <Route path="/college/at-risk" element={<AtRiskList />} />
+            <Route path="/college/at-risk/:studentId" element={<AtRiskStudent />} />
+          </Route>
+        </Route>
 
-    <Route path="/college/dashboard" element={<CollegeDashboard />} />
-    <Route path="/college/profile" element={<CollegeProfile />} />
-    <Route path="/college/faculty" element={<CollegeFacultyList />} />
-    <Route path="/college/students" element={<CollegeStudents />} />
-    <Route path="/college/students/:studentId" element={<StudentDetails />} />
-
-    <Route path="/college/invite-faculty" element={<InviteFaculty />} />
-    <Route path="/college/invite-student" element={<InviteStudent />} />
-    <Route path="/college/courses" element={<Courses />} />
-
-    <Route path="/student/internships" element={<StudentInternships />} />
-    <Route path="college/credits" element={<CreditManagement />} />
-
-    {/* ✅ AT-RISK */}
-    <Route path="/college/at-risk" element={<AtRiskList />} />
-    <Route path="/college/at-risk/:studentId" element={<AtRiskStudent />} />
-
-  </Route>
-</Route>
-
-       <Route element={<ProtectedRoute role={["college", "faculty"]} />}>
-
-  {/* COLLEGE */}
-  <Route element={<CollegeLayout />}>
-    <Route
-      path="/academic-internship-track/:applicationId"
-      element={<AcademicInternshipTrack />}
-    />
-  </Route>
-
-  {/* FACULTY */}
-  <Route element={<FacultyLayout />}>
-    <Route
-      path="/academic-internship-track/:applicationId"
-      element={<AcademicInternshipTrack />}
-    />
-  </Route>
-
-</Route>
+        {/* SHARED TRACK */}
+        <Route element={<ProtectedRoute role={["college", "faculty"]} />}>
+          <Route path="/academic-internship-track/:applicationId" element={<AcademicInternshipTrack />} />
+        </Route>
 
         {/* ADMIN */}
         <Route element={<ProtectedRoute role="admin" />}>
@@ -264,8 +239,6 @@ function AppContent() {
             <Route path="users/:id" element={<AdminUserDetails />} />
           </Route>
         </Route>
-
-        <Route path="/" element={<Home />} />
 
       </Routes>
     </BrowserRouter>

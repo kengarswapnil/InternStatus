@@ -142,142 +142,153 @@ export default function CompanyRegister() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0B0F19] p-4 md:p-8 font-sans box-border text-white selection:bg-fuchsia-500/30 selection:text-fuchsia-200 relative overflow-hidden">
-      {/* Ambient Backgrounds */}
-      <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-violet-600/20 rounded-full blur-[120px] pointer-events-none mix-blend-screen"></div>
-      <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-fuchsia-600/10 rounded-full blur-[120px] pointer-events-none mix-blend-screen"></div>
-
-      <div className="w-full max-w-2xl bg-white/5 backdrop-blur-xl p-8 md:p-12 rounded-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] border border-white/10 box-border relative z-10 transition-all duration-300 hover:border-white/20">
-        <h2 className="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-white/60 mt-0 mb-10 text-center tracking-tight">
-          Company Registration
-        </h2>
+    <div className="min-h-screen flex items-center justify-center bg-[#FFFFFF] p-4 sm:p-6 md:p-10 font-['Nunito'] text-[#2D3436] selection:bg-[#6C5CE7]/20">
+      
+      {/* Decorative background element for "Stunning Vibe" */}
+      <div className="fixed top-0 left-0 w-full h-1 bg-[#6C5CE7]"></div>
+      
+      <div className="w-full max-w-3xl bg-white p-6 sm:p-10 md:p-14 rounded-[32px] shadow-[0_20px_50px_rgba(108,92,231,0.1)] border border-[#F5F6FA] animate-in fade-in slide-in-from-bottom-6 duration-700">
+        
+        <header className="mb-10 text-left">
+          <h2 className="text-3xl md:text-4xl font-black text-[#2D3436] tracking-tight mb-3">
+            Company <span className="text-[#6C5CE7]">Register</span>
+          </h2>
+          <p className="text-[#2D3436]/50 font-bold text-xs uppercase tracking-[0.2em]">
+            Company Registration Portal
+          </p>
+        </header>
 
         {error && (
-          <div className="mb-6 px-5 py-4 text-[11px] font-bold text-red-300 bg-red-500/10 border border-red-500/30 rounded-xl uppercase tracking-widest text-center">
+          <div className="mb-8 px-5 py-4 text-sm font-bold text-red-600 bg-red-50 border border-red-100 rounded-2xl animate-shake">
             {error}
           </div>
         )}
         {success && (
-          <div className="mb-6 px-5 py-4 text-[11px] font-bold text-emerald-300 bg-emerald-500/10 border border-emerald-500/30 rounded-xl uppercase tracking-widest text-center">
+          <div className="mb-8 px-5 py-4 text-sm font-bold text-[#6C5CE7] bg-[#6C5CE7]/5 border border-[#6C5CE7]/20 rounded-2xl animate-in fade-in duration-500">
             {success}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* User Details */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="flex flex-col gap-2">
-              <label className="text-[10px] font-bold text-white/60 uppercase tracking-widest">
-                Your Name
+            <div className="flex flex-col gap-2 group">
+              <label className="text-[11px] font-black text-[#2D3436]/40 uppercase tracking-widest ml-1 group-focus-within:text-[#6C5CE7] transition-colors">
+                Your Full Name
               </label>
               <input
                 name="requesterName"
-                placeholder="John Doe"
+                placeholder="Ex: Jane Cooper"
                 value={form.requesterName}
                 onChange={handleChange}
                 required
-                className="w-full px-5 py-4 text-sm text-white bg-[#0B0F19]/50 border border-white/10 rounded-xl outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all duration-300 placeholder:text-white/20 box-border"
+                className="w-full px-5 py-4 text-[14px] font-bold text-[#2D3436] bg-[#F5F6FA] border-2 border-transparent rounded-2xl outline-none focus:border-[#6C5CE7] focus:bg-white transition-all duration-300"
               />
             </div>
 
-            <div className="flex flex-col gap-2">
-              <label className="text-[10px] font-bold text-white/60 uppercase tracking-widest">
+            <div className="flex flex-col gap-2 group">
+              <label className="text-[11px] font-black text-[#2D3436]/40 uppercase tracking-widest ml-1 group-focus-within:text-[#6C5CE7] transition-colors">
                 Official Email
               </label>
               <input
                 name="requesterEmail"
                 type="email"
-                placeholder="john@company.com"
+                placeholder="jane@company.com"
                 value={form.requesterEmail}
                 onChange={handleChange}
                 required
-                className="w-full px-5 py-4 text-sm text-white bg-[#0B0F19]/50 border border-white/10 rounded-xl outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all duration-300 placeholder:text-white/20 box-border"
+                className="w-full px-5 py-4 text-[14px] font-bold text-[#2D3436] bg-[#F5F6FA] border-2 border-transparent rounded-2xl outline-none focus:border-[#6C5CE7] focus:bg-white transition-all duration-300"
               />
             </div>
           </div>
 
-          <div className="flex flex-col gap-2">
-            <label className="text-[10px] font-bold text-white/60 uppercase tracking-widest">
+          {/* Company Selection */}
+          <div className="flex flex-col gap-2 group">
+            <label className="text-[11px] font-black text-[#2D3436]/40 uppercase tracking-widest ml-1 group-focus-within:text-[#6C5CE7] transition-colors">
               Select Company
             </label>
-            <select
-              name="selectedCompany"
-              value={form.selectedCompany}
-              onChange={handleChange}
-              className="w-full px-5 py-4 text-sm text-white bg-[#0B0F19]/50 border border-white/10 rounded-xl outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all duration-300 box-border appearance-none cursor-pointer [&>option]:bg-[#0B0F19]"
-            >
-              <option value="" disabled className="text-white/40">
-                Select Company
-              </option>
-              {companies.map((c) => (
-                <option key={c._id} value={c._id}>
-                  {c.name}
-                </option>
-              ))}
-              <option value="other">Other (Not Listed)</option>
-            </select>
+            <div className="relative">
+              <select
+                name="selectedCompany"
+                value={form.selectedCompany}
+                onChange={handleChange}
+                className="w-full px-5 py-4 text-[14px] font-bold text-[#2D3436] bg-[#F5F6FA] border-2 border-transparent rounded-2xl outline-none focus:border-[#6C5CE7] focus:bg-white transition-all duration-300 appearance-none cursor-pointer"
+              >
+                <option value="" disabled>Choose an existing company</option>
+                {companies.map((c) => (
+                  <option key={c._id} value={c._id}>{c.name}</option>
+                ))}
+                <option value="other">New Company (Add manually)</option>
+              </select>
+              <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-[#6C5CE7] font-bold">
+                ↓
+              </div>
+            </div>
           </div>
 
           {isOther && (
-            <div className="flex flex-col gap-2 p-5 bg-[#0B0F19]/30 rounded-2xl border border-fuchsia-500/20 shadow-inner">
-              <label className="text-[10px] font-bold text-fuchsia-400 uppercase tracking-widest">
+            <div className="flex flex-col gap-2 p-6 bg-[#6C5CE7]/5 rounded-[24px] border-2 border-dashed border-[#6C5CE7]/20 animate-in slide-in-from-top-4 duration-500">
+              <label className="text-[11px] font-black text-[#6C5CE7] uppercase tracking-widest">
                 New Company Name
               </label>
               <input
                 name="companyName"
-                placeholder="Enter Company Name"
+                placeholder="Full Registered Name"
                 value={form.companyName}
                 onChange={handleChange}
                 required
-                className="w-full px-5 py-4 text-sm text-white bg-[#0B0F19]/80 border border-white/10 rounded-xl outline-none focus:border-fuchsia-500 focus:ring-1 focus:ring-fuchsia-500 transition-all duration-300 placeholder:text-white/20 box-border"
+                className="w-full px-5 py-4 text-[14px] font-bold text-[#2D3436] bg-white border-2 border-transparent rounded-xl outline-none focus:border-[#6C5CE7] transition-all"
               />
             </div>
           )}
 
-          <div className="flex flex-col md:flex-row gap-5">
-            <div className="flex flex-col gap-2 flex-1">
-              <label className="text-[10px] font-bold text-white/60 uppercase tracking-widest">
+          {/* Address Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+            <div className="flex flex-col gap-2 group">
+              <label className="text-[11px] font-black text-[#2D3436]/40 uppercase tracking-widest ml-1 group-focus-within:text-[#6C5CE7] transition-colors">
                 City
               </label>
               <input
                 name="city"
-                placeholder="e.g. Pune"
+                placeholder="Pune"
                 value={form.city}
                 onChange={handleChange}
                 required
-                className="w-full px-5 py-4 text-sm text-white bg-[#0B0F19]/50 border border-white/10 rounded-xl outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all duration-300 placeholder:text-white/20 box-border"
+                className="w-full px-5 py-4 text-[14px] font-bold text-[#2D3436] bg-[#F5F6FA] border-2 border-transparent rounded-2xl outline-none focus:border-[#6C5CE7] focus:bg-white transition-all duration-300"
               />
             </div>
-            <div className="flex flex-col gap-2 flex-1">
-              <label className="text-[10px] font-bold text-white/60 uppercase tracking-widest">
+            <div className="flex flex-col gap-2 group">
+              <label className="text-[11px] font-black text-[#2D3436]/40 uppercase tracking-widest ml-1 group-focus-within:text-[#6C5CE7] transition-colors">
                 State
               </label>
               <input
                 name="state"
-                placeholder="e.g. Maharashtra"
+                placeholder="Maharashtra"
                 value={form.state}
                 onChange={handleChange}
                 required
-                className="w-full px-5 py-4 text-sm text-white bg-[#0B0F19]/50 border border-white/10 rounded-xl outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all duration-300 placeholder:text-white/20 box-border"
+                className="w-full px-5 py-4 text-[14px] font-bold text-[#2D3436] bg-[#F5F6FA] border-2 border-transparent rounded-2xl outline-none focus:border-[#6C5CE7] focus:bg-white transition-all duration-300"
               />
             </div>
-            <div className="flex flex-col gap-2 flex-1">
-              <label className="text-[10px] font-bold text-white/60 uppercase tracking-widest">
+            <div className="flex flex-col gap-2 group">
+              <label className="text-[11px] font-black text-[#2D3436]/40 uppercase tracking-widest ml-1 group-focus-within:text-[#6C5CE7] transition-colors">
                 Country
               </label>
               <input
                 name="country"
-                placeholder="e.g. India"
+                placeholder="India"
                 value={form.country}
                 onChange={handleChange}
                 required
-                className="w-full px-5 py-4 text-sm text-white bg-[#0B0F19]/50 border border-white/10 rounded-xl outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all duration-300 placeholder:text-white/20 box-border"
+                className="w-full px-5 py-4 text-[14px] font-bold text-[#2D3436] bg-[#F5F6FA] border-2 border-transparent rounded-2xl outline-none focus:border-[#6C5CE7] focus:bg-white transition-all duration-300"
               />
             </div>
           </div>
 
-          <div className="flex flex-col md:flex-row gap-5">
-            <div className="flex flex-col gap-2 flex-1">
-              <label className="text-[10px] font-bold text-white/60 uppercase tracking-widest">
+          {/* Online Presence */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="flex flex-col gap-2 group">
+              <label className="text-[11px] font-black text-[#2D3436]/40 uppercase tracking-widest ml-1 group-focus-within:text-[#6C5CE7] transition-colors">
                 Website
               </label>
               <input
@@ -285,72 +296,81 @@ export default function CompanyRegister() {
                 placeholder="https://company.com"
                 value={form.website}
                 onChange={handleChange}
-                className="w-full px-5 py-4 text-sm text-white bg-[#0B0F19]/50 border border-white/10 rounded-xl outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all duration-300 placeholder:text-white/20 box-border"
+                className="w-full px-5 py-4 text-[14px] font-bold text-[#2D3436] bg-[#F5F6FA] border-2 border-transparent rounded-2xl outline-none focus:border-[#6C5CE7] focus:bg-white transition-all duration-300"
               />
             </div>
-            <div className="flex flex-col gap-2 flex-1">
-              <label className="text-[10px] font-bold text-white/60 uppercase tracking-widest">
+            <div className="flex flex-col gap-2 group">
+              <label className="text-[11px] font-black text-[#2D3436]/40 uppercase tracking-widest ml-1 group-focus-within:text-[#6C5CE7] transition-colors">
                 Email Domain
               </label>
               <input
                 name="emailDomain"
-                placeholder="e.g. company.com"
+                placeholder="company.com"
                 value={form.emailDomain}
                 onChange={handleChange}
-                className="w-full px-5 py-4 text-sm text-white bg-[#0B0F19]/50 border border-white/10 rounded-xl outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all duration-300 placeholder:text-white/20 box-border"
+                className="w-full px-5 py-4 text-[14px] font-bold text-[#2D3436] bg-[#F5F6FA] border-2 border-transparent rounded-2xl outline-none focus:border-[#6C5CE7] focus:bg-white transition-all duration-300"
               />
             </div>
           </div>
 
-          <div className="flex flex-col md:flex-row gap-5">
-            <div className="flex flex-col gap-2 flex-1">
-              <label className="text-[10px] font-bold text-white/60 uppercase tracking-widest">
+          {/* Industry Details */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="flex flex-col gap-2 group">
+              <label className="text-[11px] font-black text-[#2D3436]/40 uppercase tracking-widest ml-1 group-focus-within:text-[#6C5CE7] transition-colors">
                 Industry
               </label>
               <input
                 name="industry"
-                placeholder="e.g. Software"
+                placeholder="Software / Fintech"
                 value={form.industry}
                 onChange={handleChange}
-                className="w-full px-5 py-4 text-sm text-white bg-[#0B0F19]/50 border border-white/10 rounded-xl outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all duration-300 placeholder:text-white/20 box-border"
+                className="w-full px-5 py-4 text-[14px] font-bold text-[#2D3436] bg-[#F5F6FA] border-2 border-transparent rounded-2xl outline-none focus:border-[#6C5CE7] focus:bg-white transition-all duration-300"
               />
             </div>
-            <div className="flex flex-col gap-2 flex-1">
-              <label className="text-[10px] font-bold text-white/60 uppercase tracking-widest">
-                Company Size
+            <div className="flex flex-col gap-2 group">
+              <label className="text-[11px] font-black text-[#2D3436]/40 uppercase tracking-widest ml-1 group-focus-within:text-[#6C5CE7] transition-colors">
+                Size
               </label>
               <input
                 name="companySize"
                 placeholder="e.g. 50-200"
                 value={form.companySize}
                 onChange={handleChange}
-                className="w-full px-5 py-4 text-sm text-white bg-[#0B0F19]/50 border border-white/10 rounded-xl outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all duration-300 placeholder:text-white/20 box-border"
+                className="w-full px-5 py-4 text-[14px] font-bold text-[#2D3436] bg-[#F5F6FA] border-2 border-transparent rounded-2xl outline-none focus:border-[#6C5CE7] focus:bg-white transition-all duration-300"
               />
             </div>
           </div>
 
-          <div className="flex flex-col gap-3 mt-4 p-6 bg-[#0B0F19]/30 rounded-2xl border border-white/5 border-dashed">
-            <label className="text-[10px] font-bold text-white/60 uppercase tracking-widest text-center">
-              Verification Document
+          {/* Upload Area */}
+          <div className="flex flex-col gap-3 p-8 bg-[#F5F6FA] rounded-[24px] border-2 border-dashed border-[#6C5CE7]/10 hover:border-[#6C5CE7]/40 transition-all duration-300 group cursor-pointer text-center relative overflow-hidden">
+            <label className="text-[11px] font-black text-[#2D3436]/40 uppercase tracking-widest group-hover:text-[#6C5CE7] transition-colors">
+              Registration Document (PDF/Image)
             </label>
             <input
               type="file"
               name="verificationDocument"
               onChange={handleChange}
               required
-              className="block w-full text-sm text-white/70 file:mr-4 file:py-3 file:px-5 file:rounded-xl file:border-0 file:text-[10px] file:font-bold file:uppercase file:tracking-widest file:bg-white/5 file:text-white/80 hover:file:bg-white/10 hover:file:text-white transition-all cursor-pointer box-border outline-none file:cursor-pointer"
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
             />
+            <div className="flex flex-col items-center gap-2">
+              <span className="text-2xl">📄</span>
+              <p className="text-[13px] font-black text-[#2D3436]/60">
+                {form.verificationDocument ? form.verificationDocument.name : "Drag & drop or browse files"}
+              </p>
+            </div>
           </div>
 
-          <div className="pt-8 border-t border-white/10 mt-2">
+          {/* Action Button */}
+          <div className="pt-6">
             <button
               disabled={loading}
-              className="w-full py-4 text-xs font-bold text-white bg-gradient-to-r from-violet-600 to-fuchsia-600 border-none rounded-xl cursor-pointer transition-all duration-300 hover:shadow-[0_8px_20px_-6px_rgba(217,70,239,0.5)] hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-widest flex items-center justify-center gap-3 outline-none"
+              className="w-full py-5 text-sm font-black text-white bg-[#6C5CE7] rounded-2xl shadow-[0_12px_24px_-8px_rgba(108,92,231,0.5)] hover:shadow-[0_18px_32px_-8px_rgba(108,92,231,0.6)] hover:-translate-y-1 active:translate-y-0 disabled:opacity-50 disabled:translate-y-0 transition-all duration-300 uppercase tracking-[0.2em] flex items-center justify-center gap-4"
             >
               {loading && (
-                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                <span className="w-5 h-5 border-3 border-white/30 border-t-white rounded-full animate-spin"></span>
               )}
-              {loading ? "Submitting..." : "Submit Registration"}
+              {loading ? "Processing..." : "Submit Registration"}
             </button>
           </div>
         </form>
