@@ -1,158 +1,143 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import API from "../../../api/api";
 
-export default function VerifiedOnboardings() {
-  const navigate = useNavigate();
+export default function OnboardingDetails() {
+  const { type, id } = useParams();
 
-  const [filter, setFilter] = useState("all");
-  const [search, setSearch] = useState("");
-
-  const [colleges, setColleges] = useState([]);
-  const [companies, setCompanies] = useState([]);
-
-  const [counts, setCounts] = useState({
-    all: 0,
-    college: 0,
-    company: 0,
-  });
-
+  const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  /* ================= FETCH ================= */
-
-  const fetchData = async () => {
+  const fetchDetails = async () => {
     try {
       setLoading(true);
 
-      const res = await API.get(`/admin/onboarding/verified?type=${filter}`);
+      const res = await API.get(`/admin/onboarding/${type}/${id}`);
+      setData(res.data?.data || null);
 
-      const collegeList = res.data?.data?.colleges || [];
-      const companyList = res.data?.data?.companies || [];
-
-      setColleges(collegeList);
-      setCompanies(companyList);
-
-      setCounts({
-        all: collegeList.length + companyList.length,
-        college: collegeList.length,
-        company: companyList.length,
-      });
     } catch (err) {
-      console.error(err);
+      console.error("Details fetch error:", err);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchData();
-  }, [filter]);
+    fetchDetails();
+  }, [type, id]);
 
-  /* ================= MERGE ================= */
+  if (loading) return <div className="p-6">Loading...</div>;
+  if (!data) return <div className="p-6">No data found</div>;
 
-  const list = [
-    ...colleges.map((c) => ({ ...c, type: "college" })),
-    ...companies.map((c) => ({ ...c, type: "company" })),
-  ];
-
-  /* ================= SEARCH ================= */
-
-  const filteredList = list.filter(
-    (item) =>
-      item.requesterName?.toLowerCase().includes(search.toLowerCase()) ||
-      item.requesterEmail?.toLowerCase().includes(search.toLowerCase()) ||
-      item.collegeName?.toLowerCase().includes(search.toLowerCase()) ||
-      item.companyName?.toLowerCase().includes(search.toLowerCase()),
-  );
-
-  /* ================= UI ================= */
+  const isCollege = type === "college";
 
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-semibold mb-4">Verified Onboardings</h2>
+    <div className="p-6 max-w-5xl">
 
-      {/* FILTER BUTTONS */}
-      <div className="flex gap-3 mb-4">
-        <button
-          onClick={() => setFilter("all")}
-          className={`px-4 py-2 rounded ${
-            filter === "all" ? "bg-blue-600 text-white" : "bg-gray-200"
-          }`}
-        >
-          All
-        </button>
+      <h2 className="text-2xl font-semibold mb-6">
+        Onboarding Details
+      </h2>
 
-        <button
-          onClick={() => setFilter("college")}
-          className={`px-4 py-2 rounded ${
-            filter === "college" ? "bg-blue-600 text-white" : "bg-gray-200"
-          }`}
-        >
-          Colleges
-        </button>
+      {/* REQUESTER INFO */}
+      <div className="bg-white border rounded p-4 mb-6">
+        <h3 className="font-semibold mb-3">Requester Information</h3>
 
-        <button
-          onClick={() => setFilter("company")}
-          className={`px-4 py-2 rounded ${
-            filter === "company" ? "bg-blue-600 text-white" : "bg-gray-200"
-          }`}
-        >
-          Companies
-        </button>
+        <p><strong>Name:</strong> {data.requesterName}</p>
+        <p><strong>Email:</strong> {data.requesterEmail}</p>
+        <p><strong>Phone:</strong> {data.requesterPhone || "—"}</p>
       </div>
 
-      {/* SEARCH */}
-      <input
-        type="text"
-        placeholder="Search..."
-        className="border px-3 py-2 rounded mb-5 w-full max-w-md"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
 
-      {/* LIST */}
-      {loading ? (
-        <p>Loading...</p>
-      ) : filteredList.length === 0 ? (
-        <p>No verified onboardings</p>
-      ) : (
-        <div className="grid gap-4">
-          {filteredList.map((item) => (
-            <div
-              key={item._id}
-              className="border p-4 rounded shadow-sm bg-white"
-            >
-              <div className="flex justify-between">
-                <div>
-                  <p className="font-semibold">
-                    {item.type === "college"
-                      ? item.collegeName
-                      : item.companyName}
-                  </p>
+      {/* ORGANIZATION INFO */}
+      <div className="bg-white border rounded p-4 mb-6">
+        <h3 className="font-semibold mb-3">
+          {isCollege ? "College Information" : "Company Information"}
+        </h3>
 
-                  <p className="text-sm text-gray-600">{item.requesterEmail}</p>
+        {isCollege ? (
+          <>
+            <p><strong>Name:</strong> {data.collegeName}</p>
+            <p><strong>Location:</strong> {data.location}</p>
+            <p><strong>Website:</strong> {data.website || "—"}</p>
+            <p><strong>Email Domain:</strong> {data.emailDomain || "—"}</p>
+          </>
+        ) : (
+          <>
+            <p><strong>Name:</strong> {data.companyName}</p>
+            <p><strong>Industry:</strong> {data.industry || "—"}</p>
+            <p><strong>Company Size:</strong> {data.companySize || "—"}</p>
+            <p><strong>Website:</strong> {data.website || "—"}</p>
+            <p><strong>Email Domain:</strong> {data.emailDomain || "—"}</p>
 
-                  <p className="text-xs text-gray-500 mt-1">
-                    Type: {item.type}
-                  </p>
-                </div>
-
-                <div>
-                  <button
-                    onClick={() =>
-                      navigate(`/admin/onboarding/${item.type}/${item._id}`)
-                    }
-                    className="px-3 py-1 bg-gray-200 rounded"
-                  >
-                    View Details
-                  </button>
-                </div>
+            {data.locations?.length > 0 && (
+              <div className="mt-2">
+                <strong>Locations:</strong>
+                <ul className="list-disc ml-5">
+                  {data.locations.map((loc, i) => (
+                    <li key={i}>
+                      {loc.city}, {loc.state}, {loc.country}
+                    </li>
+                  ))}
+                </ul>
               </div>
-            </div>
-          ))}
-        </div>
-      )}
+            )}
+          </>
+        )}
+      </div>
+
+
+      {/* DOCUMENT */}
+      <div className="bg-white border rounded p-4 mb-6">
+        <h3 className="font-semibold mb-3">Verification Document</h3>
+
+        {data.verificationDocumentUrl ? (
+          <a
+            href={data.verificationDocumentUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="text-blue-600 underline"
+          >
+            View Document
+          </a>
+        ) : (
+          <p>No document</p>
+        )}
+      </div>
+
+
+      {/* APPROVAL INFO */}
+      <div className="bg-white border rounded p-4 mb-6">
+        <h3 className="font-semibold mb-3">Approval Information</h3>
+
+        <p><strong>Status:</strong> {data.status}</p>
+
+        {data.reviewedBy && (
+          <p><strong>Reviewed By:</strong> {data.reviewedBy.email}</p>
+        )}
+
+        {data.reviewedAt && (
+          <p>
+            <strong>Reviewed At:</strong>{" "}
+            {new Date(data.reviewedAt).toLocaleString()}
+          </p>
+        )}
+      </div>
+
+
+      {/* CREATED ACCOUNT */}
+      <div className="bg-white border rounded p-4">
+        <h3 className="font-semibold mb-3">Created Account</h3>
+
+        {data.createdUser ? (
+          <>
+            <p><strong>Email:</strong> {data.createdUser.email}</p>
+            <p><strong>Role:</strong> {data.createdUser.role}</p>
+          </>
+        ) : (
+          <p>No account created yet</p>
+        )}
+      </div>
+
     </div>
   );
 }

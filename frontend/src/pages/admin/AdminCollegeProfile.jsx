@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import API from "../../api/api";
-import AdminNavBar from "../../components/navbars/AdminNavBar"; // Added assuming it fits here
+import AdminNavBar from "../../components/navbars/AdminNavBar";
 
 export default function AdminCollegeProfile() {
   const { id } = useParams();
@@ -56,10 +56,10 @@ export default function AdminCollegeProfile() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#f9f9f9] flex flex-col">
+      <div className="min-h-screen bg-[#FFFFFF] flex flex-col font-['Nunito'] transition-all duration-300">
         <AdminNavBar />
         <div className="flex-grow flex items-center justify-center">
-          <p className="text-[14px] font-bold text-[#333] animate-pulse m-0">
+          <p className="text-[14px] font-black tracking-widest uppercase text-[#6C5CE7] animate-pulse m-0">
             Loading College...
           </p>
         </div>
@@ -69,11 +69,11 @@ export default function AdminCollegeProfile() {
 
   if (!college) {
     return (
-      <div className="min-h-screen bg-[#f9f9f9] flex flex-col">
+      <div className="min-h-screen bg-[#FFFFFF] flex flex-col font-['Nunito'] transition-all duration-300">
         <AdminNavBar />
         <div className="flex-grow flex items-center justify-center p-4">
-          <div className="bg-[#fff] border-2 border-dashed border-[#e5e5e5] rounded-[20px] p-10 text-center">
-            <p className="text-[13px] font-bold text-[#333] opacity-60 m-0">
+          <div className="bg-[#F5F6FA] border-2 border-dashed border-[#A29BFE] border-opacity-30 rounded-[24px] p-10 text-center shadow-sm">
+            <p className="text-[13px] font-black uppercase tracking-widest text-[#2D3436] opacity-60 m-0">
               College not found.
             </p>
           </div>
@@ -90,24 +90,24 @@ export default function AdminCollegeProfile() {
     .toUpperCase();
 
   return (
-    <div className="min-h-screen bg-[#f9f9f9] text-[#333] flex flex-col">
+    <div className="min-h-screen bg-[#FFFFFF] text-[#2D3436] flex flex-col font-['Nunito'] transition-all duration-300">
       <AdminNavBar />
 
-      <div className="max-w-6xl mx-auto w-full p-4 md:p-6 flex flex-col md:flex-row gap-4">
+      <div className="max-w-6xl mx-auto w-full p-4 md:p-6 flex flex-col md:flex-row gap-6 lg:gap-8 mt-4 animate-fade-in-up">
         {/* Tighter Sidebar Profile Info */}
-        <aside className="w-full md:w-[300px] flex-shrink-0 bg-[#fff] p-6 rounded-[20px] shadow-sm border border-[#e5e5e5] h-max flex flex-col gap-4">
-          <div className="flex flex-col items-center gap-3">
-            <div className="w-20 h-20 bg-[#f9f9f9] border border-[#e5e5e5] rounded-full flex items-center justify-center text-[24px] font-black text-[#333]">
+        <aside className="w-full md:w-[320px] flex-shrink-0 bg-[#FFFFFF] p-6 lg:p-8 rounded-[24px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(108,92,231,0.08)] transition-all duration-500 border border-[#F5F6FA] h-max flex flex-col gap-6">
+          <div className="flex flex-col items-center gap-4">
+            <div className="w-24 h-24 bg-[#F5F6FA] border border-transparent rounded-[24px] flex items-center justify-center text-[28px] font-black text-[#6C5CE7] shadow-sm transform hover:rotate-3 transition-transform duration-300">
               {abbr}
             </div>
 
-            <div className="text-center">
-              <h2 className="text-[18px] font-black text-[#333] m-0 mb-1 leading-tight">
+            <div className="text-center w-full">
+              <h2 className="text-[20px] font-black text-[#6C5CE7] m-0 mb-2 leading-tight tracking-tight">
                 {college.name || "College"}
               </h2>
               {college.website && (
                 <a
-                  className="text-[13px] font-bold text-[#111] underline hover:opacity-70 transition-opacity"
+                  className="text-[13px] font-black text-[#2D3436] opacity-80 underline decoration-[#6C5CE7] decoration-2 underline-offset-4 hover:opacity-100 hover:text-[#6C5CE7] transition-all duration-300 inline-block truncate w-full px-2"
                   href={college.website}
                   target="_blank"
                   rel="noreferrer"
@@ -118,39 +118,39 @@ export default function AdminCollegeProfile() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-3 pt-4 border-t border-[#e5e5e5]">
-            <div className="flex flex-col">
-              <span className="text-[11px] font-bold text-[#333] opacity-50 uppercase tracking-widest">
+          <div className="flex flex-col gap-4 pt-6 border-t border-[#F5F6FA]">
+            <div className="flex flex-col gap-1 p-3 bg-[#F5F6FA] rounded-[16px] hover:bg-opacity-70 transition-colors">
+              <span className="text-[10px] font-black text-[#6C5CE7] uppercase tracking-widest">
                 College ID
               </span>
-              <span className="text-[13px] font-mono font-bold text-[#333] break-all">
+              <span className="text-[13px] font-mono font-bold text-[#2D3436] break-all">
                 {id}
               </span>
             </div>
-            <div className="flex flex-col">
-              <span className="text-[11px] font-bold text-[#333] opacity-50 uppercase tracking-widest">
+            <div className="flex flex-col gap-1 p-3 bg-[#F5F6FA] rounded-[16px] hover:bg-opacity-70 transition-colors">
+              <span className="text-[10px] font-black text-[#6C5CE7] uppercase tracking-widest">
                 Phone
               </span>
-              <span className="text-[13px] font-bold text-[#333]">
+              <span className="text-[13px] font-bold text-[#2D3436]">
                 {college.phone || "—"}
               </span>
             </div>
-            <div className="flex flex-col">
-              <span className="text-[11px] font-bold text-[#333] opacity-50 uppercase tracking-widest">
+            <div className="flex flex-col gap-1 p-3 bg-[#F5F6FA] rounded-[16px] hover:bg-opacity-70 transition-colors">
+              <span className="text-[10px] font-black text-[#6C5CE7] uppercase tracking-widest">
                 Address
               </span>
-              <span className="text-[13px] font-bold text-[#333] leading-snug">
+              <span className="text-[13px] font-bold text-[#2D3436] leading-relaxed">
                 {college.address || "—"}
               </span>
             </div>
           </div>
 
           {college.description && (
-            <div className="pt-4 border-t border-[#e5e5e5] flex flex-col gap-1">
-              <span className="text-[11px] font-bold text-[#333] opacity-50 uppercase tracking-widest">
+            <div className="pt-6 border-t border-[#F5F6FA] flex flex-col gap-2">
+              <span className="text-[11px] font-black text-[#6C5CE7] uppercase tracking-widest px-1">
                 About
               </span>
-              <p className="text-[13px] text-[#333] leading-snug m-0 opacity-80">
+              <p className="text-[13px] text-[#2D3436] font-medium leading-relaxed m-0 opacity-80 px-1">
                 {college.description}
               </p>
             </div>
@@ -158,12 +158,12 @@ export default function AdminCollegeProfile() {
         </aside>
 
         {/* Tighter Main Form */}
-        <main className="flex-1 bg-[#fff] p-6 md:p-8 rounded-[20px] shadow-sm border border-[#e5e5e5]">
-          <header className="mb-6 flex flex-col gap-1 border-b border-[#e5e5e5] pb-4">
-            <h1 className="text-[23px] font-black text-[#333] m-0 tracking-tight">
+        <main className="flex-1 bg-[#FFFFFF] p-6 lg:p-8 rounded-[24px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(108,92,231,0.08)] transition-all duration-500 border border-[#F5F6FA]">
+          <header className="mb-8 flex flex-col gap-2 border-b border-[#F5F6FA] pb-6">
+            <h1 className="text-[26px] font-black text-[#6C5CE7] m-0 tracking-tight">
               Edit College
             </h1>
-            <p className="text-[13px] text-[#333] opacity-70 m-0">
+            <p className="text-[14px] font-bold text-[#2D3436] opacity-60 m-0">
               Modify this institution's details
             </p>
           </header>
@@ -171,22 +171,22 @@ export default function AdminCollegeProfile() {
           <form
             onSubmit={handleSubmit}
             noValidate
-            className="flex flex-col gap-5"
+            className="flex flex-col gap-6"
           >
             {error && (
-              <div className="px-4 py-3 text-[13px] font-bold text-[#cc0000] bg-[#fff] border border-[#cc0000] rounded-[14px]">
+              <div className="px-5 py-4 text-[13px] font-bold text-rose-600 bg-rose-50 border border-rose-200 rounded-[16px] animate-pulse shadow-sm">
                 {error}
               </div>
             )}
             {success && (
-              <div className="px-4 py-3 text-[13px] font-bold text-[#008000] bg-[#fff] border border-[#008000] rounded-[14px]">
+              <div className="px-5 py-4 text-[13px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-200 rounded-[16px] shadow-sm">
                 {success}
               </div>
             )}
 
             <div className="flex flex-col gap-1.5">
               <label
-                className="text-[13px] font-bold text-[#333]"
+                className="text-[11px] font-black text-[#2D3436] opacity-60 uppercase tracking-widest px-1"
                 htmlFor="name"
               >
                 College Name
@@ -198,14 +198,14 @@ export default function AdminCollegeProfile() {
                 onChange={handleChange}
                 placeholder="e.g. MIT College of Engineering"
                 required
-                className="w-full px-4 py-3 text-[13px] text-[#333] bg-[#fff] border border-[#333] rounded-[14px] outline-none"
+                className="w-full px-5 py-3.5 text-[14px] font-bold text-[#2D3436] bg-[#F5F6FA] border border-transparent rounded-[16px] outline-none transition-all duration-300 hover:border-[#6C5CE7] focus:border-[#6C5CE7] focus:ring-1 focus:ring-[#6C5CE7] placeholder-[#2D3436] placeholder-opacity-40"
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="flex flex-col gap-1.5">
                 <label
-                  className="text-[13px] font-bold text-[#333]"
+                  className="text-[11px] font-black text-[#2D3436] opacity-60 uppercase tracking-widest px-1"
                   htmlFor="website"
                 >
                   Website
@@ -217,12 +217,12 @@ export default function AdminCollegeProfile() {
                   onChange={handleChange}
                   placeholder="https://yourcollege.edu"
                   type="url"
-                  className="w-full px-4 py-3 text-[13px] text-[#333] bg-[#fff] border border-[#333] rounded-[14px] outline-none"
+                  className="w-full px-5 py-3.5 text-[14px] font-bold text-[#2D3436] bg-[#F5F6FA] border border-transparent rounded-[16px] outline-none transition-all duration-300 hover:border-[#6C5CE7] focus:border-[#6C5CE7] focus:ring-1 focus:ring-[#6C5CE7] placeholder-[#2D3436] placeholder-opacity-40"
                 />
               </div>
               <div className="flex flex-col gap-1.5">
                 <label
-                  className="text-[13px] font-bold text-[#333]"
+                  className="text-[11px] font-black text-[#2D3436] opacity-60 uppercase tracking-widest px-1"
                   htmlFor="phone"
                 >
                   Phone
@@ -233,14 +233,14 @@ export default function AdminCollegeProfile() {
                   value={college.phone || ""}
                   onChange={handleChange}
                   placeholder="+91 98765 43210"
-                  className="w-full px-4 py-3 text-[13px] text-[#333] bg-[#fff] border border-[#333] rounded-[14px] outline-none"
+                  className="w-full px-5 py-3.5 text-[14px] font-bold text-[#2D3436] bg-[#F5F6FA] border border-transparent rounded-[16px] outline-none transition-all duration-300 hover:border-[#6C5CE7] focus:border-[#6C5CE7] focus:ring-1 focus:ring-[#6C5CE7] placeholder-[#2D3436] placeholder-opacity-40"
                 />
               </div>
             </div>
 
             <div className="flex flex-col gap-1.5">
               <label
-                className="text-[13px] font-bold text-[#333]"
+                className="text-[11px] font-black text-[#2D3436] opacity-60 uppercase tracking-widest px-1"
                 htmlFor="address"
               >
                 Address
@@ -251,13 +251,13 @@ export default function AdminCollegeProfile() {
                 value={college.address || ""}
                 onChange={handleChange}
                 placeholder="123 University Road, City, State"
-                className="w-full px-4 py-3 text-[13px] text-[#333] bg-[#fff] border border-[#333] rounded-[14px] outline-none"
+                className="w-full px-5 py-3.5 text-[14px] font-bold text-[#2D3436] bg-[#F5F6FA] border border-transparent rounded-[16px] outline-none transition-all duration-300 hover:border-[#6C5CE7] focus:border-[#6C5CE7] focus:ring-1 focus:ring-[#6C5CE7] placeholder-[#2D3436] placeholder-opacity-40"
               />
             </div>
 
             <div className="flex flex-col gap-1.5">
               <label
-                className="text-[13px] font-bold text-[#333]"
+                className="text-[11px] font-black text-[#2D3436] opacity-60 uppercase tracking-widest px-1"
                 htmlFor="description"
               >
                 Description
@@ -265,21 +265,28 @@ export default function AdminCollegeProfile() {
               <textarea
                 id="description"
                 name="description"
-                rows={4}
+                rows={5}
                 value={college.description || ""}
                 onChange={handleChange}
                 placeholder="Write a brief description of the institution..."
-                className="w-full px-4 py-3 text-[13px] text-[#333] bg-[#fff] border border-[#333] rounded-[14px] outline-none resize-y"
+                className="w-full px-5 py-4 text-[14px] font-bold text-[#2D3436] bg-[#F5F6FA] border border-transparent rounded-[16px] outline-none resize-y transition-all duration-300 hover:border-[#6C5CE7] focus:border-[#6C5CE7] focus:ring-1 focus:ring-[#6C5CE7] placeholder-[#2D3436] placeholder-opacity-40"
               />
             </div>
 
-            <div className="pt-2 flex justify-end">
+            <div className="pt-4 flex justify-end border-t border-[#F5F6FA]">
               <button
                 type="submit"
                 disabled={saving}
-                className="w-full md:w-auto px-8 py-3 text-[14px] font-bold text-[#fff] bg-[#111] border-none rounded-[14px] cursor-pointer hover:opacity-80 transition-opacity disabled:opacity-50"
+                className="w-full md:w-auto px-10 py-4 text-[13px] font-black uppercase tracking-widest text-[#FFFFFF] bg-[#6C5CE7] border-none rounded-[16px] cursor-pointer hover:bg-opacity-90 hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none shadow-md flex items-center justify-center gap-2"
               >
-                {saving ? "Saving..." : "Save Changes"}
+                {saving ? (
+                  <>
+                    <div className="w-4 h-4 rounded-full border-2 border-[#FFFFFF] border-t-transparent animate-spin"></div>
+                    Saving...
+                  </>
+                ) : (
+                  "Save Changes"
+                )}
               </button>
             </div>
           </form>

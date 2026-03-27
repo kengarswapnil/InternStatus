@@ -32,26 +32,26 @@ export default function AdminSidebar() {
   }, []);
 
   const linkClass = ({ isActive }) =>
-    `group flex flex-col items-stretch px-3 py-2.5 rounded-[14px] transition-all duration-300 border mb-1 no-underline ${
+    `group flex flex-col items-stretch px-4 py-3 rounded-[14px] transition-all duration-300 border mb-1.5 no-underline transform ${
       isActive
-        ? "bg-[#111] border-[#111] text-[#fff]"
-        : "bg-transparent border-transparent text-[#333] hover:bg-[#f9f9f9] hover:border-[#e5e5e5]"
+        ? "bg-[#6C5CE7] border-[#6C5CE7] text-[#FFFFFF] shadow-md shadow-[#6C5CE7]/20"
+        : "bg-transparent border-transparent text-[#2D3436] hover:bg-[#F5F6FA] hover:text-[#6C5CE7] hover:translate-x-1"
     }`;
 
   return (
-    <aside className="w-60 h-screen top-0 bg-[#fff] border-r border-[#e5e5e5] flex flex-col flex-none z-50 overflow-hidden">
-      <div className="h-16 flex items-center px-4 border-b border-[#e5e5e5] shrink-0">
+    <aside className="w-60 h-screen top-0 bg-[#FFFFFF] border-r border-[#F5F6FA] flex flex-col flex-none z-50 overflow-hidden font-['Nunito'] shadow-sm transition-all duration-300">
+      <div className="h-16 flex items-center px-5 border-b border-[#F5F6FA] shrink-0 bg-[#FFFFFF]">
         <div className="flex flex-col">
-          <h2 className="text-[20px] font-black m-0 tracking-tighter text-[#333]">
+          <h2 className="text-[20px] font-black m-0 tracking-tighter text-[#6C5CE7] transition-colors duration-300">
             CORE ADMIN
           </h2>
-          <span className="text-[10px] font-bold text-[#333] opacity-60 uppercase tracking-[0.2em] mt-0.5">
+          <span className="text-[10px] font-bold text-[#2D3436] opacity-60 uppercase tracking-[0.2em] mt-0.5">
             Command Center
           </span>
         </div>
       </div>
 
-      <nav className="flex-1 overflow-y-auto no-scrollbar p-3 flex flex-col gap-1">
+      <nav className="flex-1 overflow-y-auto no-scrollbar p-4 flex flex-col gap-1.5">
         <NavLink to="/admin/dashboard" className={linkClass}>
           <span className="text-[13px] font-bold">Dashboard</span>
         </NavLink>
@@ -64,23 +64,23 @@ export default function AdminSidebar() {
           <div className="flex justify-between items-center">
             <span className="text-[13px] font-bold">Pending Requests</span>
             {counts.all > 0 && (
-              <span className="bg-[#111] text-[#fff] text-[10px] font-bold px-2 py-0.5 rounded-full">
+              <span className="bg-[#FFFFFF] text-[#6C5CE7] text-[10px] font-black px-2 py-0.5 rounded-full shadow-sm">
                 {counts.all}
               </span>
             )}
           </div>
 
           <div
-            className={`overflow-hidden transition-all duration-500 ${counts.all > 0 ? "max-h-20 mt-2 opacity-100" : "max-h-0 opacity-0"}`}
+            className={`overflow-hidden transition-all duration-500 ease-in-out ${counts.all > 0 ? "max-h-20 mt-3 opacity-100" : "max-h-0 opacity-0"}`}
           >
-            <div className="flex flex-col gap-1.5 pl-2 border-l-2 border-[#e5e5e5] ml-1">
-              <div className="flex justify-between items-center text-[11px] font-bold text-[#333] opacity-70">
-                Colleges{" "}
-                <span className="font-black opacity-100">{counts.college}</span>
+            <div className="flex flex-col gap-2 pl-3 border-l-2 border-[#FFFFFF] ml-1 opacity-90">
+              <div className="flex justify-between items-center text-[11px] font-bold">
+                Colleges
+                <span className="font-black">{counts.college}</span>
               </div>
-              <div className="flex justify-between items-center text-[11px] font-bold text-[#333] opacity-70">
-                Companies{" "}
-                <span className="font-black opacity-100">{counts.company}</span>
+              <div className="flex justify-between items-center text-[11px] font-bold">
+                Companies
+                <span className="font-black">{counts.company}</span>
               </div>
             </div>
           </div>
@@ -90,7 +90,7 @@ export default function AdminSidebar() {
           <span className="text-[13px] font-bold">Verified Onboarding</span>
         </NavLink>
 
-        <div className="h-px bg-[#e5e5e5] my-2 mx-2" />
+        <div className="h-px bg-[#F5F6FA] my-3 mx-2 transition-all duration-300" />
 
         <NavLink to="/admin/colleges" className={linkClass}>
           <span className="text-[13px] font-bold">Colleges</span>
@@ -101,9 +101,8 @@ export default function AdminSidebar() {
         </NavLink>
       </nav>
 
-      {/* Change this section at the bottom of your file */}
-      <div className="p-3 pb-25 border-t border-[#e5e5e5] shrink-0 bg-[#fff]">
-        <button className="w-full py-2.5 rounded-[14px] bg-[#f9f9f9] border border-[#e5e5e5] text-[12px] font-bold text-[#cc0000] cursor-pointer hover:bg-[#e5e5e5] transition-colors">
+      <div className="p-4 pb-8 border-t border-[#F5F6FA] shrink-0 bg-[#FFFFFF]">
+        <button className="w-full py-3 rounded-[14px] bg-[#F5F6FA] border border-transparent text-[12px] font-bold text-[#cc0000] cursor-pointer hover:bg-[#cc0000] hover:text-[#FFFFFF] transition-all duration-300 shadow-sm hover:shadow-md transform hover:-translate-y-0.5">
           System Logout
         </button>
       </div>

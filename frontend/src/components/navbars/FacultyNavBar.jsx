@@ -13,15 +13,15 @@ const FacultyNavBar = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-50 w-full bg-black border-b border-gray-800 box-border transition-all">
+    <nav className="sticky top-0 z-50 w-full bg-[#FFFFFF] border-b border-[#F5F6FA] font-['Nunito'] shadow-sm box-border transition-all duration-300">
       <div className="px-6 py-4 flex flex-col xl:flex-row xl:justify-between xl:items-center gap-5">
         <div className="flex flex-wrap items-center gap-2 md:gap-3 text-sm font-medium flex-1">
           <Link
             to="/faculty/dashboard"
-            className="text-[23px] font-black tracking-tighter text-blue-500 mr-2 xl:mr-6 whitespace-nowrap no-underline flex items-center"
+            className="text-[23px] font-black tracking-tighter text-[#6C5CE7] mr-2 xl:mr-6 whitespace-nowrap no-underline flex items-center transition-all duration-300 hover:opacity-80"
           >
             Intersatus
-            <span className="text-[14px] font-bold text-gray-400 ml-3 tracking-wide uppercase">
+            <span className="text-[14px] font-bold text-[#2D3436] opacity-50 ml-3 tracking-wide uppercase">
               Faculty
             </span>
           </Link>
@@ -30,17 +30,17 @@ const FacultyNavBar = () => {
         <div className="flex items-center xl:justify-end relative">
           <button
             onClick={() => setIsProfileOpen(!isProfileOpen)}
-            className="w-10 h-10 rounded-full bg-gray-900 border border-gray-800 flex items-center justify-center text-white font-bold text-[14px] hover:bg-gray-800 transition-colors focus:outline-none cursor-pointer"
+            className="w-10 h-10 rounded-full bg-[#F5F6FA] border-2 border-transparent flex items-center justify-center text-[#2D3436] font-bold text-[14px] hover:bg-[#6C5CE7] hover:text-[#FFFFFF] hover:shadow-md transform hover:-translate-y-0.5 transition-all duration-300 focus:outline-none cursor-pointer"
           >
             F
           </button>
 
           {isProfileOpen && (
-            <div className="absolute right-0 top-full mt-2 w-48 bg-gray-900 border border-gray-800 rounded-[14px] shadow-sm z-50 overflow-hidden flex flex-col">
+            <div className="absolute right-0 top-full mt-2 w-48 bg-[#FFFFFF] border border-[#F5F6FA] rounded-[14px] shadow-lg z-50 overflow-hidden flex flex-col transform transition-all duration-300 origin-top-right">
               <Link
                 to="/faculty/profile"
                 onClick={() => setIsProfileOpen(false)}
-                className="px-4 py-3 text-[13px] font-bold text-white hover:bg-gray-800 no-underline border-b border-gray-800"
+                className="px-4 py-3 text-[13px] font-bold text-[#2D3436] hover:bg-[#F5F6FA] hover:text-[#6C5CE7] transition-colors duration-200 no-underline border-b border-[#F5F6FA]"
               >
                 Profile
               </Link>
@@ -49,7 +49,7 @@ const FacultyNavBar = () => {
                   setIsProfileOpen(false);
                   handleLogout();
                 }}
-                className="px-4 py-3 text-[13px] font-bold text-red-500 hover:bg-gray-800 text-left border-none bg-transparent cursor-pointer"
+                className="px-4 py-3 text-[13px] font-bold text-[#cc0000] hover:bg-[#F5F6FA] transition-colors duration-200 text-left border-none bg-transparent cursor-pointer"
               >
                 Logout
               </button>

@@ -72,21 +72,21 @@ const Signup = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#f9f9f9] flex items-center justify-center p-4 font-sans">
-      <div className="w-full max-w-[360px] bg-[#fff] p-8 rounded-[20px] border border-[#e5e5e5] shadow-sm flex flex-col gap-3">
-        <h2 className="text-[23px] font-black text-[#333] text-center m-0 mb-4">
+    <div className="min-h-screen bg-[#FFFFFF] flex items-center justify-center p-4 font-['Nunito'] transition-all duration-300">
+      <div className="w-full max-w-[360px] bg-[#FFFFFF] p-8 rounded-[20px] border border-[#F5F6FA] shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(108,92,231,0.08)] transition-shadow duration-500 flex flex-col gap-3">
+        <h2 className="text-[23px] font-black text-[#6C5CE7] text-center m-0 mb-4 tracking-tight">
           Create Account
         </h2>
 
         {error && (
-          <div className="px-4 py-3 text-[13px] font-bold text-[#cc0000] bg-[#fff] border border-[#cc0000] rounded-[14px]">
+          <div className="px-4 py-3 text-[13px] font-bold text-rose-600 bg-rose-50 border border-rose-200 rounded-[14px] animate-pulse shadow-sm">
             {error}
           </div>
         )}
 
         <div className="flex flex-col gap-4">
           <div className="relative flex flex-col gap-1.5">
-            <label className="text-[13px] font-bold text-[#333]">
+            <label className="text-[13px] font-bold text-[#2D3436] opacity-80">
               Account Type
             </label>
 
@@ -94,13 +94,13 @@ const Signup = () => {
               type="button"
               onClick={() => setIsRoleOpen((prev) => !prev)}
               disabled={submitting}
-              className="w-full px-4 py-3 text-[13px] bg-[#fff] border border-[#333] rounded-[14px] outline-none flex justify-between items-center text-left"
+              className="w-full px-4 py-3 text-[13px] font-bold bg-[#F5F6FA] border border-transparent hover:border-[#6C5CE7] focus:border-[#6C5CE7] focus:ring-1 focus:ring-[#6C5CE7] rounded-[14px] outline-none flex justify-between items-center text-left transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
-              <span className="text-[#333]">{role || "Select Role"}</span>
+              <span className="text-[#2D3436]">{role || "Select Role"}</span>
             </button>
 
             {isRoleOpen && (
-              <div className="absolute top-full left-0 mt-2 w-full bg-[#fff] border border-[#333] rounded-[14px] z-50 overflow-hidden">
+              <div className="absolute top-full left-0 mt-2 w-full bg-[#FFFFFF] border border-[#F5F6FA] rounded-[14px] shadow-lg z-50 overflow-hidden transform origin-top animate-fade-in-down">
                 {["Student", "Faculty", "Company"].map((r) => (
                   <button
                     key={r}
@@ -109,7 +109,7 @@ const Signup = () => {
                       setRole(r);
                       setIsRoleOpen(false);
                     }}
-                    className="w-full text-left px-4 py-3 text-[13px] font-medium text-[#333] hover:bg-[#f9f9f9] border-none cursor-pointer"
+                    className="w-full text-left px-4 py-3 text-[13px] font-bold text-[#2D3436] hover:bg-[#F5F6FA] hover:text-[#6C5CE7] transition-colors duration-200 border-none cursor-pointer"
                   >
                     {r}
                   </button>
@@ -119,7 +119,7 @@ const Signup = () => {
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label className="text-[13px] font-bold text-[#333]">
+            <label className="text-[13px] font-bold text-[#2D3436] opacity-80">
               Email Address
             </label>
             <input
@@ -128,12 +128,12 @@ const Signup = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={submitting}
-              className="w-full px-4 py-3 text-[13px] text-[#333] bg-[#fff] border border-[#333] rounded-[14px] outline-none"
+              className="w-full px-4 py-3 text-[13px] font-bold text-[#2D3436] bg-[#F5F6FA] border border-transparent rounded-[14px] outline-none transition-all duration-300 hover:border-[#6C5CE7] focus:border-[#6C5CE7] focus:ring-1 focus:ring-[#6C5CE7] placeholder-[#2D3436] placeholder-opacity-40 disabled:opacity-50 disabled:cursor-not-allowed"
             />
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label className="text-[13px] font-bold text-[#333]">
+            <label className="text-[13px] font-bold text-[#2D3436] opacity-80">
               Password
             </label>
             <div className="relative">
@@ -143,12 +143,12 @@ const Signup = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={submitting}
-                className="w-full pl-4 pr-16 py-3 text-[13px] text-[#333] bg-[#fff] border border-[#333] rounded-[14px] outline-none"
+                className="w-full pl-4 pr-16 py-3 text-[13px] font-bold text-[#2D3436] bg-[#F5F6FA] border border-transparent rounded-[14px] outline-none transition-all duration-300 hover:border-[#6C5CE7] focus:border-[#6C5CE7] focus:ring-1 focus:ring-[#6C5CE7] placeholder-[#2D3436] placeholder-opacity-40 disabled:opacity-50 disabled:cursor-not-allowed"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-[13px] font-bold text-[#333] bg-transparent border-none cursor-pointer outline-none p-0 hover:opacity-80"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-[12px] font-black uppercase tracking-widest text-[#6C5CE7] bg-transparent border-none cursor-pointer outline-none p-0 hover:opacity-70 transition-opacity"
               >
                 {showPassword ? "Hide" : "Show"}
               </button>
@@ -158,18 +158,18 @@ const Signup = () => {
           <button
             onClick={handleSignup}
             disabled={submitting}
-            className="w-full mt-3 py-3 text-[14px] font-bold text-[#fff] bg-[#111] border-none rounded-[14px] cursor-pointer hover:opacity-80 flex justify-center items-center"
+            className="w-full mt-3 py-3 text-[14px] font-black text-[#FFFFFF] bg-[#6C5CE7] border-none rounded-[14px] cursor-pointer hover:bg-opacity-90 hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300 flex justify-center items-center shadow-md disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
           >
             {submitting ? "Creating..." : "Sign Up"}
           </button>
         </div>
 
         <div className="mt-4 text-center">
-          <p className="text-[13px] text-[#333] m-0">
+          <p className="text-[13px] font-bold text-[#2D3436] opacity-80 m-0">
             Already have an account?{" "}
             <Link
               to="/login"
-              className="text-[#111] hover:opacity-80 no-underline font-bold"
+              className="text-[#6C5CE7] hover:opacity-80 no-underline font-black transition-opacity"
             >
               Login here
             </Link>

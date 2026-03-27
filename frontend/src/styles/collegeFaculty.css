@@ -1,0 +1,87 @@
+.cf-page {
+  padding: 40px;
+  background: #f4f6f9;
+  min-height: 100vh;
+}
+
+.cf-card {
+  background: white;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+.cf-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.cf-table th,
+.cf-table td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+}
+
+.cf-btn-edit {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  margin-right: 6px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.cf-btn-delete {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.cf-btn-edit:hover {
+  background: #1d4ed8;
+}
+
+.cf-btn-delete:hover {
+  background: #dc2626;
+}
+
+/* Modal */
+
+.cf-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cf-modal-content {
+  background: white;
+  padding: 25px;
+  border-radius: 8px;
+  width: 400px;
+}
+
+.cf-modal-content input {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.cf-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}

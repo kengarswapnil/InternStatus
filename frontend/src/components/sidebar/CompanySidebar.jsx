@@ -10,47 +10,47 @@ export default function CompanySidebar() {
   const showCore = user.isRegistered && user.isVerified;
 
   const linkClass = ({ isActive }) =>
-    `group flex flex-col items-stretch px-3 py-2.5 rounded-xl transition-all duration-300 border mb-1 no-underline ${
+    `group flex flex-col items-stretch px-4 py-3 rounded-[14px] transition-all duration-300 border mb-1.5 no-underline transform ${
       isActive
-        ? "bg-blue-600 border-blue-600 text-white"
-        : "bg-transparent border-transparent text-gray-400 hover:bg-gray-800 hover:border-gray-700 hover:text-white"
+        ? "bg-[#6C5CE7] border-[#6C5CE7] text-[#FFFFFF] shadow-md shadow-[#6C5CE7]/20"
+        : "bg-transparent border-transparent text-[#2D3436] hover:bg-[#F5F6FA] hover:text-[#6C5CE7] hover:translate-x-1"
     }`;
 
   return (
-    <aside className="w-60 h-full bg-gray-900 border-r border-gray-800 flex flex-col flex-none z-10 overflow-hidden">
-      <div className="h-16 flex items-center px-4 border-b border-gray-800 shrink-0">
+    <aside className="w-60 h-full bg-[#FFFFFF] border-r border-[#F5F6FA] flex flex-col flex-none z-10 overflow-hidden font-['Nunito'] shadow-sm transition-all duration-300">
+      <div className="h-16 flex items-center px-5 border-b border-[#F5F6FA] shrink-0 bg-[#FFFFFF]">
         <div className="flex flex-col">
-          <h2 className="text-xl font-black m-0 tracking-tighter text-white">
+          <h2 className="text-[20px] font-black m-0 tracking-tighter text-[#6C5CE7] transition-colors duration-300">
             Company Menu
           </h2>
         </div>
       </div>
 
-      <nav className="flex-1 overflow-y-auto no-scrollbar p-3 flex flex-col gap-1">
+      <nav className="flex-1 overflow-y-auto no-scrollbar p-4 flex flex-col gap-1.5">
         {showCore && (
           <>
             <NavLink to="/company/dashboard" className={linkClass} end>
-              <span className="text-sm font-bold">Dashboard</span>
+              <span className="text-[13px] font-bold">Dashboard</span>
             </NavLink>
 
-             <NavLink to="/company/invite-mentor" className={linkClass} end>
-              <span className="text-sm font-bold">Add Mentor</span>
+            <NavLink to="/company/invite-mentor" className={linkClass} end>
+              <span className="text-[13px] font-bold">Add Mentor</span>
             </NavLink>
             <NavLink to="/company/mentors" className={linkClass} end>
-              <span className="text-sm font-bold">Mentor List</span>
+              <span className="text-[13px] font-bold">Mentor List</span>
             </NavLink>
             <NavLink to="/company/post-internship" className={linkClass} end>
-              <span className="text-sm font-bold">Post Internships</span>
+              <span className="text-[13px] font-bold">Post Internships</span>
             </NavLink>
             <NavLink
               to="/company/company-internships"
               className={linkClass}
               end
             >
-              <span className="text-sm font-bold">View Postings</span>
+              <span className="text-[13px] font-bold">View Postings</span>
             </NavLink>
             <NavLink to="/company/interns" className={linkClass} end>
-              <span className="text-sm font-bold">Interns List</span>
+              <span className="text-[13px] font-bold">Interns List</span>
             </NavLink>
           </>
         )}
@@ -59,7 +59,7 @@ export default function CompanySidebar() {
           <div className="mt-4">
             <Link
               to="/pending-verification"
-              className="block text-center px-4 py-2.5 rounded-xl text-gray-300 font-bold bg-gray-800 border border-gray-700 transition-colors no-underline tracking-wide hover:bg-gray-700 text-sm"
+              className="block text-center px-4 py-3 rounded-[14px] text-[#2D3436] font-bold bg-[#F5F6FA] border border-[#2D3436] transition-all duration-300 no-underline tracking-wide hover:bg-[#2D3436] hover:text-[#FFFFFF] transform hover:-translate-y-0.5 shadow-sm hover:shadow-md text-[13px]"
             >
               Verification Pending
             </Link>
@@ -70,7 +70,7 @@ export default function CompanySidebar() {
           <div className="mt-4">
             <Link
               to="/company/register"
-              className="block text-center px-5 py-2.5 rounded-xl text-white font-bold bg-blue-600 hover:bg-blue-700 transition-colors no-underline tracking-wide border-none text-sm"
+              className="block text-center px-5 py-3 rounded-[14px] text-[#FFFFFF] font-bold bg-[#6C5CE7] hover:opacity-90 transition-all duration-300 no-underline tracking-wide border-none text-[13px] transform hover:-translate-y-0.5 shadow-md"
             >
               Complete Registration
             </Link>

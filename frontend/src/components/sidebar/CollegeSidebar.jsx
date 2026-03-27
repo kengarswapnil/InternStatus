@@ -2,26 +2,24 @@ import { NavLink } from "react-router-dom";
 import API from "../../api/api";
 
 export default function CollegeSidebar() {
- 
-
   const linkClass = ({ isActive }) =>
-    `group flex flex-col items-stretch px-3 py-2.5 rounded-[14px] transition-all duration-300 border mb-1 no-underline ${
+    `group flex flex-col items-stretch px-4 py-3 rounded-[14px] transition-all duration-300 border mb-1.5 no-underline transform ${
       isActive
-        ? "bg-[#111] border-[#111] text-[#fff]"
-        : "bg-transparent border-transparent text-[#333] hover:bg-[#f9f9f9] hover:border-[#e5e5e5]"
+        ? "bg-[#6C5CE7] border-[#6C5CE7] text-[#FFFFFF] shadow-md shadow-[#6C5CE7]/20"
+        : "bg-transparent border-transparent text-[#2D3436] hover:bg-[#F5F6FA] hover:text-[#6C5CE7] hover:translate-x-1"
     }`;
 
   return (
-    <aside className="w-60 h-screen top-0 bg-[#fff] border-r border-[#e5e5e5] flex flex-col flex-none z-50 overflow-hidden">
-      <div className="h-16 flex items-center px-4 border-b border-[#e5e5e5] shrink-0">
+    <aside className="w-60 h-screen top-0 bg-[#FFFFFF] border-r border-[#F5F6FA] flex flex-col flex-none z-50 overflow-hidden font-['Nunito'] shadow-sm transition-all duration-300">
+      <div className="h-16 flex items-center px-5 border-b border-[#F5F6FA] shrink-0 bg-[#FFFFFF]">
         <div className="flex flex-col">
-          <h2 className="text-[20px] font-black m-0 tracking-tighter text-[#333]">
+          <h2 className="text-[20px] font-black m-0 tracking-tighter text-[#6C5CE7] transition-colors duration-300">
             College
           </h2>
         </div>
       </div>
 
-      <nav className="flex-1 overflow-y-auto no-scrollbar p-3 flex flex-col gap-1">
+      <nav className="flex-1 overflow-y-auto no-scrollbar p-4 flex flex-col gap-1.5">
         <NavLink to="/college/dashboard" className={linkClass} end>
           <span className="text-[13px] font-bold">Dashboard</span>
         </NavLink>

@@ -51,7 +51,6 @@ const Users = () => {
   if (loading) {
     return (
       <div className="min-h-screen w-full bg-[#f9f9f9] flex flex-col">
-        <AdminNavBar />
         <main className="flex-grow flex items-center justify-center">
           <p className="text-[14px] font-bold text-[#333] animate-pulse">
             Loading Users...
@@ -64,7 +63,6 @@ const Users = () => {
   if (error) {
     return (
       <div className="min-h-screen w-full bg-[#f9f9f9] flex flex-col">
-        <AdminNavBar />
         <main className="flex-grow flex items-center justify-center p-4">
           <div className="px-6 py-4 text-[13px] font-bold text-[#cc0000] bg-[#fff] border border-[#cc0000] rounded-[14px]">
             {error}
@@ -76,9 +74,7 @@ const Users = () => {
 
   return (
     <div className="min-h-screen w-full bg-[#f9f9f9] flex flex-col text-[#333]">
-      <AdminNavBar />
-
-      <main className="w-full max-w-7xl mx-auto flex-grow p-4 md:p-6 flex flex-col gap-4">
+           <main className="w-full max-w-7xl mx-auto flex-grow p-4 md:p-6 flex flex-col gap-4">
         {/* Compact Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-3 border-b border-[#e5e5e5] pb-4">
           <div>

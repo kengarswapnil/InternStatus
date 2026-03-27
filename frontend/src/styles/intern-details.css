@@ -1,0 +1,73 @@
+.intern-container {
+  padding: 30px;
+  display: flex;
+  justify-content: center;
+}
+
+.intern-card {
+  width: 600px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 25px;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+label {
+  font-weight: 600;
+  font-size: 13px;
+  color: #555;
+}
+
+.status {
+  font-weight: bold;
+}
+
+.resume-btn {
+  display: inline-block;
+  margin: 10px 0;
+  padding: 8px 14px;
+  background: #2563eb;
+  color: white;
+  border-radius: 6px;
+  text-decoration: none;
+}
+
+.resume-btn:hover {
+  background: #1e40af;
+}
+
+.mentor-select {
+  width: 100%;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin-top: 8px;
+}
+
+.locked-msg {
+  color: #888;
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+.progress-btn {
+  margin: 10px 0 20px;
+  padding: 10px 16px;
+  background: #16a34a;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.progress-btn:hover {
+  background: #15803d;
+}

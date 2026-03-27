@@ -41,11 +41,11 @@ export default function AdminCompanies() {
 
   if (loading) {
     return (
-      <div className="min-h-screen w-full bg-[#f9f9f9] flex flex-col font-sans">
-  
-        <main className="flex-grow flex items-center justify-center">
-          <p className="text-[#333] font-bold text-[14px] animate-pulse m-0">
-            Loading Companies...
+      <div className="min-h-screen w-full bg-[#FFFFFF] flex flex-col font-['Nunito'] transition-all duration-300">
+        <main className="flex-grow flex flex-col items-center justify-center">
+          <div className="w-12 h-12 border-4 border-[#F5F6FA] border-t-[#6C5CE7] rounded-full animate-spin mb-4"></div>
+          <p className="text-[#6C5CE7] font-black text-[14px] tracking-widest uppercase animate-pulse m-0">
+            Syncing Partners...
           </p>
         </main>
       </div>
@@ -53,103 +53,115 @@ export default function AdminCompanies() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f9f9f9] text-[#333] flex flex-col font-sans pb-10">
-
-
-      <main className="max-w-7xl mx-auto w-full px-4 md:px-6 py-6 flex flex-col gap-6">
-        <header className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 border-b border-[#e5e5e5] pb-5">
-          <div>
-            <h1 className="text-[23px] font-black text-[#333] m-0 tracking-tight leading-tight">
+    <div className="min-h-screen bg-[#FFFFFF] text-[#2D3436] flex flex-col font-['Nunito'] pb-10 transition-colors duration-300">
+      <main className="max-w-7xl mx-auto w-full px-4 md:px-8 py-8 flex flex-col gap-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+        {/* HEADER AREA */}
+        <header className="flex flex-col sm:flex-row justify-between sm:items-end gap-6 border-b border-[#F5F6FA] pb-8">
+          <div className="space-y-1">
+            <h1 className="text-3xl md:text-4xl font-black text-[#2D3436] m-0 tracking-tighter leading-tight">
               Companies
             </h1>
-            <p className="text-[13px] font-bold text-[#333] opacity-60 m-0 mt-1 uppercase tracking-widest">
+            <p className="text-[14px] font-bold text-[#6C5CE7] m-0 uppercase tracking-[0.2em] opacity-80">
               Industry Partners
             </p>
           </div>
           <button
             onClick={() => navigate("/admin/companies/new")}
-            className="px-6 py-2.5 text-[13px] font-bold text-[#fff] bg-[#111] border-none rounded-[14px] cursor-pointer hover:opacity-80 transition-opacity uppercase tracking-widest"
+            className="px-8 py-3.5 text-[12px] font-black text-[#FFFFFF] bg-[#6C5CE7] border-none rounded-[16px] cursor-pointer hover:shadow-[0_10px_25px_-5px_rgba(108,92,231,0.4)] hover:-translate-y-1 active:scale-95 transition-all duration-300 uppercase tracking-widest shadow-md"
           >
             Add Company
           </button>
         </header>
 
-        <div className="bg-[#fff] border border-[#e5e5e5] rounded-[20px] shadow-sm overflow-hidden box-border transition-all">
+        {/* DATA CONTAINER */}
+        <div className="bg-[#FFFFFF] border border-[#F5F6FA] rounded-[32px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden box-border transition-all duration-500 hover:shadow-[0_20px_50px_rgba(0,0,0,0.06)]">
           <div className="overflow-x-auto no-scrollbar">
             <table className="w-full text-left border-collapse whitespace-nowrap">
-              <thead className="bg-[#f9f9f9] border-b border-[#e5e5e5]">
+              <thead className="bg-[#F5F6FA] bg-opacity-50 border-b border-[#F5F6FA]">
                 <tr>
-                  <th className="px-5 py-3 text-[11px] font-bold text-[#333] opacity-60 uppercase tracking-widest">
+                  <th className="px-8 py-6 text-[11px] font-black text-[#2D3436] opacity-50 uppercase tracking-[0.15em]">
                     Name
                   </th>
-                  <th className="px-5 py-3 text-[11px] font-bold text-[#333] opacity-60 uppercase tracking-widest">
+                  <th className="px-8 py-6 text-[11px] font-black text-[#2D3436] opacity-50 uppercase tracking-[0.15em]">
                     Industry
                   </th>
-                  <th className="px-5 py-3 text-[11px] font-bold text-[#333] opacity-60 uppercase tracking-widest">
+                  <th className="px-8 py-6 text-[11px] font-black text-[#2D3436] opacity-50 uppercase tracking-[0.15em]">
                     Website
                   </th>
-                  <th className="px-5 py-3 text-[11px] font-bold text-[#333] opacity-60 uppercase tracking-widest">
+                  <th className="px-8 py-6 text-[11px] font-black text-[#2D3436] opacity-50 uppercase tracking-[0.15em]">
                     Status
                   </th>
-                  <th className="px-5 py-3 text-[11px] font-bold text-[#333] opacity-60 uppercase tracking-widest text-center">
-                    Actions
+                  <th className="px-8 py-6 text-[11px] font-black text-[#2D3436] opacity-50 uppercase tracking-[0.15em] text-center">
+                    Management
                   </th>
                 </tr>
               </thead>
 
-              <tbody className="divide-y divide-[#e5e5e5]">
+              <tbody className="divide-y divide-[#F5F6FA]">
                 {companies.length === 0 ? (
                   <tr>
-                    <td colSpan="5" className="px-5 py-10 text-center">
-                      <p className="text-[13px] font-bold text-[#333] opacity-40 m-0">
-                        No companies found
-                      </p>
+                    <td colSpan="5" className="px-8 py-20 text-center">
+                      <div className="flex flex-col items-center gap-2 opacity-30">
+                        <p className="text-lg font-black uppercase tracking-widest m-0">
+                          No companies found
+                        </p>
+                        <p className="text-sm font-bold m-0 tracking-tight">
+                          Database registry is currently empty.
+                        </p>
+                      </div>
                     </td>
                   </tr>
                 ) : (
                   companies.map((company) => (
                     <tr
                       key={company._id}
-                      className="hover:bg-[#f9f9f9] transition-colors duration-200"
+                      className="hover:bg-[#F5F6FA]/30 transition-all duration-300 group"
                     >
-                      <td className="px-5 py-3 text-[13px] font-bold text-[#333]">
-                        {company.name}
+                      <td className="px-8 py-6">
+                        <span className="text-[14px] font-black text-[#2D3436] group-hover:text-[#6C5CE7] transition-colors duration-300">
+                          {company.name}
+                        </span>
                       </td>
 
-                      <td className="px-5 py-3 text-[13px] font-medium text-[#333] opacity-70">
-                        {company.industry || "—"}
+                      <td className="px-8 py-6">
+                        <span className="text-[13px] font-bold text-[#2D3436] opacity-60">
+                          {company.industry || "—"}
+                        </span>
                       </td>
 
-                      <td className="px-5 py-3">
+                      <td className="px-8 py-6">
                         <a
                           href={company.website}
                           target="_blank"
                           rel="noreferrer"
-                          className="text-[13px] font-bold text-[#111] underline hover:opacity-70 transition-opacity"
+                          className="text-[13px] font-black text-[#6C5CE7] underline decoration-[#6C5CE7]/30 underline-offset-4 hover:decoration-[#6C5CE7] transition-all duration-300"
                         >
-                          {company.website ? "Visit Website" : "—"}
+                          {company.website ? "Visit Portal" : "—"}
                         </a>
                       </td>
 
-                      <td className="px-5 py-3">
+                      <td className="px-8 py-6">
                         <span
-                          className={`inline-block px-2.5 py-1 rounded-[10px] text-[10px] font-bold uppercase tracking-widest border ${
+                          className={`inline-flex items-center px-3 py-1.5 rounded-[12px] text-[10px] font-black uppercase tracking-widest border transition-all duration-300 shadow-sm ${
                             company.status === "active"
-                              ? "bg-[#111] text-[#fff] border-[#111]"
-                              : "bg-[#fff] text-[#cc0000] border-[#cc0000]"
+                              ? "bg-[#2D3436] text-[#FFFFFF] border-[#2D3436]"
+                              : "bg-[#FFFFFF] text-[#cc0000] border-[#cc0000]"
                           }`}
                         >
+                          <span
+                            className={`w-1.5 h-1.5 rounded-full mr-2 ${company.status === "active" ? "bg-emerald-400" : "bg-rose-500"}`}
+                          ></span>
                           {company.status}
                         </span>
                       </td>
 
-                      <td className="px-5 py-3">
-                        <div className="flex justify-center gap-2">
+                      <td className="px-8 py-6">
+                        <div className="flex justify-center gap-3">
                           <button
                             onClick={() =>
                               navigate(`/admin/companies/${company._id}`)
                             }
-                            className="px-3 py-1.5 text-[11px] font-bold text-[#333] uppercase tracking-widest bg-[#f9f9f9] border border-[#e5e5e5] rounded-[10px] hover:border-[#333] transition-colors cursor-pointer"
+                            className="px-4 py-2 text-[10px] font-black text-[#2D3436] uppercase tracking-widest bg-[#FFFFFF] border border-[#F5F6FA] rounded-[12px] hover:border-[#6C5CE7] hover:text-[#6C5CE7] hover:shadow-sm transition-all duration-300 cursor-pointer outline-none transform hover:-translate-y-0.5"
                           >
                             View
                           </button>
@@ -158,7 +170,7 @@ export default function AdminCompanies() {
                             onClick={() =>
                               navigate(`/admin/companies/edit/${company._id}`)
                             }
-                            className="px-3 py-1.5 text-[11px] font-bold text-[#fff] bg-[#111] border-none rounded-[10px] hover:opacity-80 transition-opacity cursor-pointer"
+                            className="px-4 py-2 text-[10px] font-black text-[#FFFFFF] bg-[#6C5CE7] border border-[#6C5CE7] rounded-[12px] hover:shadow-lg hover:bg-opacity-90 transition-all duration-300 cursor-pointer outline-none transform hover:-translate-y-0.5"
                           >
                             Edit
                           </button>
@@ -167,10 +179,10 @@ export default function AdminCompanies() {
                             onClick={() =>
                               toggleStatus(company._id, company.status)
                             }
-                            className={`px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest border rounded-[10px] transition-colors cursor-pointer ${
+                            className={`px-4 py-2 text-[10px] font-black uppercase tracking-widest border rounded-[12px] transition-all duration-300 cursor-pointer outline-none transform hover:-translate-y-0.5 shadow-sm ${
                               company.status === "active"
-                                ? "bg-[#fff] border-[#cc0000] text-[#cc0000] hover:bg-[#cc0000] hover:text-[#fff]"
-                                : "bg-[#f9f9f9] border-[#008000] text-[#008000] hover:bg-[#008000] hover:text-[#fff]"
+                                ? "bg-[#FFFFFF] border-[#cc0000] text-[#cc0000] hover:bg-[#cc0000] hover:text-[#FFFFFF] hover:shadow-rose-100"
+                                : "bg-[#FFFFFF] border-[#008000] text-[#008000] hover:bg-[#008000] hover:text-[#FFFFFF] hover:shadow-emerald-100"
                             }`}
                           >
                             {company.status === "active"
@@ -186,6 +198,18 @@ export default function AdminCompanies() {
             </table>
           </div>
         </div>
+
+        {/* SUMMARY FOOTER */}
+        <footer className="flex justify-end mt-4">
+          <div className="bg-[#F5F6FA] px-6 py-3 rounded-[16px] border border-transparent transition-all hover:border-[#6C5CE7]/20">
+            <p className="text-[11px] font-black text-[#2D3436] opacity-40 uppercase tracking-widest m-0">
+              Total Managed Entities:{" "}
+              <span className="text-[#6C5CE7] opacity-100 text-[13px] ml-1">
+                {companies.length}
+              </span>
+            </p>
+          </div>
+        </footer>
       </main>
     </div>
   );

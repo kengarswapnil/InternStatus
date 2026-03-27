@@ -5,15 +5,13 @@ import CollegeNavBar from "../components/navbars/CollegeNavBar";
 import CollegeSidebar from "../components/sidebar/CollegeSidebar";
 
 const CollegeLayout = () => (
-  // Changed min-h-screen to h-screen and added overflow-hidden to lock the body
-  <div className="h-screen flex flex-col bg-[#0B0F19] text-white overflow-hidden">
+  <div className="h-screen flex flex-col bg-[#FFFFFF] text-[#2D3436] overflow-hidden font-['Nunito'] transition-all duration-300">
     <CollegeNavBar />
     
     <div className="flex flex-1 overflow-hidden">
       <CollegeSidebar />
       
-      {/* Added custom-scrollbar for a cleaner look while it handles the internal scrolling */}
-      <main className="flex-1 bg-[#0B0F19] overflow-y-auto custom-scrollbar">
+      <main className="flex-1 bg-[#F5F6FA] overflow-y-auto custom-scrollbar">
         <Outlet />
       </main>
     </div>

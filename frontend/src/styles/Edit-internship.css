@@ -1,0 +1,49 @@
+.editContainer {
+  max-width: 650px;
+  margin: auto;
+  padding: 30px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+label {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+input, textarea, select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+textarea {
+  min-height: 100px;
+}
+
+button {
+  padding: 12px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #1e40af;
+}
+
+.warning {
+  color: #b45309;
+  margin-bottom: 10px;
+}
+
+.error {
+  color: #dc2626;
+  margin-bottom: 10px;
+}

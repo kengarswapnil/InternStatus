@@ -38,14 +38,16 @@ export default function CompanyInterns() {
   }, []);
 
   const getStatusBadge = (status) => {
-    let cls = "bg-[#f9f9f9] border-[#e5e5e5] text-[#333]";
+    // Default badge styling
+    let cls = "bg-[#F5F6FA] border-[#E5E5E5] text-[#2D3436]";
 
     if (["completed", "offer_accepted"].includes(status)) {
-      cls = "bg-[#f9f9f9] border-[#008000] text-[#008000]";
+      cls = "bg-emerald-50 border-emerald-300 text-emerald-600";
     } else if (status === "ongoing") {
-      cls = "bg-[#111] text-[#fff] border-[#111]";
+      // Primary color highlight
+      cls = "bg-[#6C5CE7] text-[#FFFFFF] border-[#6C5CE7]";
     } else if (["terminated", "rejected"].includes(status)) {
-      cls = "bg-[#fff] border-[#cc0000] text-[#cc0000]";
+      cls = "bg-rose-50 border-rose-300 text-rose-600";
     }
 
     return (
@@ -60,14 +62,15 @@ export default function CompanyInterns() {
   const filteredData = data.filter((item) => {
     const name = item?.student?.fullName || "";
     const matchesSearch = name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === "ALL" || item.status === statusFilter;
+    const matchesStatus =
+      statusFilter === "ALL" || item.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#f9f9f9] flex items-center justify-center">
-        <p className="text-[14px] font-bold text-[#333] animate-pulse">
+      <div className="min-h-screen bg-[#FFFFFF] flex items-center justify-center">
+        <p className="text-[14px] font-bold text-[#6C5CE7] animate-pulse">
           Syncing Company Interns...
         </p>
       </div>
@@ -75,20 +78,19 @@ export default function CompanyInterns() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f9f9f9] text-[#333] font-sans pb-10">
+    <div className="min-h-screen bg-[#FFFFFF] text-[#2D3436] font-sans pb-10">
       <main className="max-w-6xl mx-auto px-4 md:px-6 py-6 flex flex-col gap-6">
-
         {/* HEADER */}
-        <header className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-[#e5e5e5] pb-4">
+        <header className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-[#E5E5E5] pb-4">
           <div>
-            <h1 className="text-[23px] font-black tracking-tight">
+            <h1 className="text-[23px] font-black tracking-tight text-[#6C5CE7]">
               Company Interns
             </h1>
-            <p className="text-[13px] font-bold opacity-60 uppercase tracking-widest">
+            <p className="text-[13px] font-bold opacity-60 uppercase tracking-widest text-[#2D3436]">
               Active Intern Roster Management
             </p>
           </div>
-          <div className="text-[11px] font-black bg-[#fff] border border-[#e5e5e5] px-3 py-1.5 rounded-[10px] uppercase tracking-widest">
+          <div className="text-[11px] font-black bg-[#F5F6FA] text-[#2D3436] border border-[#E5E5E5] px-3 py-1.5 rounded-[10px] uppercase tracking-widest">
             Total: {data.length}
           </div>
         </header>
@@ -96,7 +98,6 @@ export default function CompanyInterns() {
         {/* FILTERS */}
         {data.length > 0 && (
           <div className="flex flex-col gap-3">
-
             {/* PRIMARY: Quick Status Buttons */}
             <div className="flex flex-wrap gap-2">
               {QUICK_STATUS_BUTTONS.map((status) => {
@@ -107,11 +108,13 @@ export default function CompanyInterns() {
                     onClick={() => setStatusFilter(status)}
                     className={`px-4 py-2 text-[11px] font-black uppercase tracking-widest rounded-[10px] border transition-colors cursor-pointer ${
                       isActive
-                        ? "bg-[#111] text-[#fff] border-[#111]"
-                        : "bg-[#fff] text-[#333] border-[#e5e5e5] hover:border-[#333]"
+                        ? "bg-[#6C5CE7] text-[#FFFFFF] border-[#6C5CE7] shadow-sm"
+                        : "bg-[#F5F6FA] text-[#2D3436] border-[#E5E5E5] hover:border-[#6C5CE7] hover:text-[#6C5CE7]"
                     }`}
                   >
-                    {status === "ALL" ? "All" : status.charAt(0).toUpperCase() + status.slice(1)}
+                    {status === "ALL"
+                      ? "All"
+                      : status.charAt(0).toUpperCase() + status.slice(1)}
                   </button>
                 );
               })}
@@ -124,16 +127,18 @@ export default function CompanyInterns() {
                 placeholder="Search by intern name..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="flex-1 px-4 py-3 text-[13px] bg-[#fff] border border-[#e5e5e5] rounded-[14px]"
+                className="flex-1 px-4 py-3 text-[13px] bg-[#F5F6FA] text-[#2D3436] border border-[#E5E5E5] rounded-[14px] focus:outline-none focus:border-[#6C5CE7] focus:ring-1 focus:ring-[#6C5CE7] transition-all placeholder:opacity-40"
               />
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="w-full md:w-56 px-4 py-3 text-[11px] font-bold bg-[#fff] border border-[#e5e5e5] rounded-[14px] uppercase tracking-widest"
+                className="w-full md:w-56 px-4 py-3 text-[11px] font-bold bg-[#F5F6FA] text-[#2D3436] border border-[#E5E5E5] rounded-[14px] uppercase tracking-widest focus:outline-none focus:border-[#6C5CE7] focus:ring-1 focus:ring-[#6C5CE7] transition-all"
               >
                 {STATUS_OPTIONS.map((status) => (
                   <option key={status} value={status}>
-                    {status === "ALL" ? "All Statuses" : status.replace("_", " ")}
+                    {status === "ALL"
+                      ? "All Statuses"
+                      : status.replace("_", " ")}
                   </option>
                 ))}
               </select>
@@ -141,40 +146,51 @@ export default function CompanyInterns() {
           </div>
         )}
 
-        {/* EMPTY */}
+        {/* EMPTY STATES */}
         {data.length === 0 ? (
-          <div className="bg-[#fff] border-2 border-dashed border-[#e5e5e5] rounded-[20px] p-20 text-center">
-            <p className="text-[13px] font-bold opacity-40 uppercase tracking-widest">
+          <div className="bg-[#F5F6FA] border-2 border-dashed border-[#E5E5E5] rounded-[20px] p-20 text-center">
+            <p className="text-[13px] font-bold text-[#6C5CE7] opacity-80 uppercase tracking-widest">
               No interns found
             </p>
           </div>
         ) : filteredData.length === 0 ? (
-          <div className="bg-[#fff] border border-[#e5e5e5] rounded-[20px] p-20 text-center">
-            <p className="text-[13px] font-bold opacity-40 uppercase tracking-widest">
+          <div className="bg-[#F5F6FA] border border-[#E5E5E5] rounded-[20px] p-20 text-center">
+            <p className="text-[13px] font-bold text-[#6C5CE7] opacity-80 uppercase tracking-widest">
               No results match filters
             </p>
           </div>
         ) : (
-          <div className="bg-[#fff] border border-[#e5e5e5] rounded-[20px] overflow-x-auto">
+          /* TABLE */
+          <div className="bg-[#FFFFFF] border border-[#E5E5E5] rounded-[20px] overflow-x-auto shadow-sm">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-[#f9f9f9] border-b border-[#e5e5e5]">
-                  <th className="p-5 text-[10px] uppercase opacity-40">Name</th>
-                  <th className="p-5 text-[10px] uppercase opacity-40">Role</th>
-                  <th className="p-5 text-[10px] uppercase opacity-40">Status</th>
-                  <th className="p-5 text-[10px] uppercase opacity-40 text-right">Action</th>
+                <tr className="bg-[#F5F6FA] border-b border-[#E5E5E5]">
+                  <th className="p-5 text-[10px] uppercase font-bold text-[#2D3436] opacity-60">
+                    Name
+                  </th>
+                  <th className="p-5 text-[10px] uppercase font-bold text-[#2D3436] opacity-60">
+                    Role
+                  </th>
+                  <th className="p-5 text-[10px] uppercase font-bold text-[#2D3436] opacity-60">
+                    Status
+                  </th>
+                  <th className="p-5 text-[10px] uppercase font-bold text-[#2D3436] opacity-60 text-right">
+                    Action
+                  </th>
                 </tr>
               </thead>
               <tbody>
-                {filteredData.map((item) => (
+                {filteredData.map((item, index) => (
                   <tr
                     key={item._id}
-                    className="border-b border-[#e5e5e5] hover:bg-[#fafafa]"
+                    className={`border-b border-[#E5E5E5] hover:bg-[#F5F6FA] transition-colors ${
+                      index === filteredData.length - 1 ? "border-none" : ""
+                    }`}
                   >
-                    <td className="p-5 font-bold">
+                    <td className="p-5 font-bold text-[#2D3436]">
                       {item?.student?.fullName || "—"}
                     </td>
-                    <td className="p-5 text-[13px] opacity-70">
+                    <td className="p-5 text-[13px] text-[#2D3436] opacity-80">
                       {item?.internship?.title || "—"}
                     </td>
                     <td className="p-5 whitespace-nowrap">
@@ -183,7 +199,7 @@ export default function CompanyInterns() {
                     <td className="p-5 text-right">
                       <button
                         onClick={() => navigate(`/company/intern/${item._id}`)}
-                        className="px-5 py-2 bg-[#f9f9f9] border border-[#333] text-[10px] font-black uppercase rounded-[10px] hover:bg-[#111] hover:text-[#fff]"
+                        className="px-5 py-2 bg-[#FFFFFF] border border-[#E5E5E5] text-[#2D3436] text-[10px] font-black uppercase rounded-[10px] hover:border-[#6C5CE7] hover:text-[#6C5CE7] transition-colors shadow-sm"
                       >
                         View
                       </button>

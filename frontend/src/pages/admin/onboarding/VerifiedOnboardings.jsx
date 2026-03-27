@@ -1,170 +1,226 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../../../api/api";
 
 export default function VerifiedOnboardings() {
   const navigate = useNavigate();
+  const controllerRef = useRef(null);
 
   const [filter, setFilter] = useState("all");
   const [search, setSearch] = useState("");
-  const [colleges, setColleges] = useState([]);
-  const [companies, setCompanies] = useState([]);
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  const [list, setList] = useState([]);
   const [counts, setCounts] = useState({ all: 0, college: 0, company: 0 });
+
+  const [page, setPage] = useState(1);
+  const [limit] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+
+  const [sortField, setSortField] = useState("createdAt");
+  const [sortOrder, setSortOrder] = useState("desc");
+
   const [loading, setLoading] = useState(true);
 
-  const fetchData = async () => {
+  /* ---------------- DEBOUNCE ---------------- */
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+      setPage(1);
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  /* ---------------- FETCH ---------------- */
+  const fetchData = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await API.get(`/admin/onboarding/verified?type=${filter}`);
-      const collegeList = res.data?.data?.colleges || [];
-      const companyList = res.data?.data?.companies || [];
 
-      setColleges(collegeList);
-      setCompanies(companyList);
-      setCounts({
-        all: collegeList.length + companyList.length,
-        college: collegeList.length,
-        company: companyList.length,
+      if (controllerRef.current) {
+        controllerRef.current.abort();
+      }
+
+      const controller = new AbortController();
+      controllerRef.current = controller;
+
+      const res = await API.get(`/admin/onboarding/verified`, {
+        params: {
+          type: filter,
+          search: debouncedSearch,
+          page,
+          limit,
+          sortField,
+          sortOrder,
+        },
+        signal: controller.signal,
       });
+
+      const data = res.data?.data?.data || [];
+setList(Array.isArray(data) ? data : []);
+      
+      setCounts(res.data?.data?.counts || { all: 0, college: 0, company: 0 });
+setTotalPages(res.data?.data?.pagination?.totalPages || 1);
+
     } catch (err) {
-      console.error(err);
+      if (err.name !== "CanceledError") {
+        console.error("Fetch Error:", err);
+      }
     } finally {
       setLoading(false);
     }
-  };
+  }, [filter, debouncedSearch, page, limit, sortField, sortOrder]);
 
   useEffect(() => {
     fetchData();
-  }, [filter]);
+  }, [fetchData]);
 
-  const list = [
-    ...colleges.map((c) => ({ ...c, type: "college" })),
-    ...companies.map((c) => ({ ...c, type: "company" })),
-  ];
+  /* ---------------- SORT ---------------- */
+  const handleSort = (field) => {
+    if (sortField === field) {
+      setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
+    } else {
+      setSortField(field);
+      setSortOrder("asc");
+    }
+  };
 
-  const filteredList = list.filter(
-    (item) =>
-      item.requesterName?.toLowerCase().includes(search.toLowerCase()) ||
-      item.requesterEmail?.toLowerCase().includes(search.toLowerCase()) ||
-      item.collegeName?.toLowerCase().includes(search.toLowerCase()) ||
-      item.companyName?.toLowerCase().includes(search.toLowerCase()),
-  );
-
+  /* ---------------- LOADING ---------------- */
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#f9f9f9] flex items-center justify-center font-sans">
-        <p className="text-[14px] font-bold text-[#333] animate-pulse m-0 uppercase tracking-widest">
-          Indexing Verified Directory...
-        </p>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-10 h-10 border-4 border-gray-200 border-t-[#6C5CE7] rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#f9f9f9] text-[#333] font-sans pb-10">
-      <main className="max-w-7xl mx-auto w-full px-4 md:px-6 py-6 flex flex-col gap-6">
-        <header className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-[#e5e5e5] pb-4">
-          <div className="flex flex-col gap-1">
-            <h1 className="text-[23px] font-black text-[#333] m-0 tracking-tight leading-tight">
-              Verified Onboardings
-            </h1>
-            <p className="text-[13px] font-bold text-[#333] opacity-60 m-0 uppercase tracking-widest">
-              Authorized Institutional Directory
-            </p>
-          </div>
-        </header>
+    <div className="min-h-screen bg-white text-[#2D3436] pb-10">
+      <main className="max-w-7xl mx-auto px-4 md:px-8 py-8 flex flex-col gap-8">
 
-        <section className="bg-[#fff] border border-[#e5e5e5] rounded-[20px] p-5 md:p-6 shadow-sm flex flex-col lg:flex-row gap-5 justify-between items-center">
-          <div className="w-full lg:max-w-md">
-            <input
-              type="text"
-              placeholder="Search directory records..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full px-4 py-3 text-[13px] text-[#333] bg-[#fff] border border-[#333] rounded-[14px] outline-none"
-            />
-          </div>
+        <h1 className="text-3xl font-black">Verified Onboardings</h1>
 
-          <div className="flex gap-2 p-1 bg-[#f9f9f9] border border-[#e5e5e5] rounded-[14px]">
-            {[
-              { id: "all", label: "All Records", count: counts.all },
-              { id: "college", label: "Colleges", count: counts.college },
-              { id: "company", label: "Companies", count: counts.company },
-            ].map((tab) => (
+        {/* SEARCH + FILTER */}
+        <div className="bg-[#F5F6FA] p-6 rounded-2xl flex flex-col lg:flex-row gap-4 justify-between">
+
+          <input
+            type="text"
+            placeholder="Search..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="px-5 py-3 rounded-xl w-full lg:max-w-md"
+          />
+
+          <div className="flex gap-2">
+            {["all", "college", "company"].map((t) => (
               <button
-                key={tab.id}
-                onClick={() => setFilter(tab.id)}
-                className={`px-6 py-2 rounded-[10px] text-[10px] font-black uppercase tracking-widest transition-all cursor-pointer border-none ${
-                  filter === tab.id
-                    ? "bg-[#111] text-[#fff]"
-                    : "text-[#333] opacity-40 hover:opacity-100"
+                key={t}
+                onClick={() => {
+                  setFilter(t);
+                  setPage(1);
+                }}
+                className={`px-4 py-2 rounded-lg text-sm font-bold ${
+                  filter === t
+                    ? "bg-[#6C5CE7] text-white"
+                    : "bg-white opacity-60"
                 }`}
               >
-                {tab.label} ({tab.count})
+                {t} ({counts[t] || 0})
               </button>
             ))}
           </div>
-        </section>
+        </div>
 
-        {filteredList.length === 0 ? (
-          <div className="bg-[#fff] border-2 border-dashed border-[#e5e5e5] rounded-[20px] p-20 text-center">
-            <p className="text-[13px] font-bold text-[#333] opacity-40 m-0 uppercase tracking-widest">
-              No matching verified entities found
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredList.map((item) => (
-              <div
-                key={item._id}
-                className="bg-[#fff] border border-[#e5e5e5] rounded-[20px] shadow-sm hover:border-[#333] transition-all flex flex-col"
-              >
-                <div className="p-6 flex-grow flex flex-col gap-5">
-                  <div className="flex justify-between items-start">
-                    <span className="px-2.5 py-1 rounded-[10px] text-[9px] font-black uppercase tracking-widest bg-[#f9f9f9] border border-[#e5e5e5]">
-                      {item.type}
-                    </span>
-                  </div>
+        {/* TABLE */}
+        <div className="overflow-x-auto border rounded-2xl">
+          <table className="w-full text-left">
 
-                  <div className="flex flex-col gap-1">
-                    <h3 className="text-[18px] font-black text-[#111] m-0 leading-tight">
-                      {item.type === "college"
-                        ? item.collegeName
-                        : item.companyName}
-                    </h3>
-                  </div>
+            <thead className="bg-[#F5F6FA] text-xs uppercase">
+              <tr>
+                <th className="p-4 cursor-pointer" onClick={() => handleSort("type")}>Type</th>
+                <th className="p-4 cursor-pointer" onClick={() => handleSort("name")}>Name</th>
+                <th className="p-4 cursor-pointer" onClick={() => handleSort("requesterName")}>Requester</th>
+                <th className="p-4">Email</th>
+                <th className="p-4 text-right">Action</th>
+              </tr>
+            </thead>
 
-                  <div className="flex flex-col gap-4 py-4 border-y border-[#f9f9f9] mt-auto">
-                    <div className="flex flex-col gap-1">
-                      <span className="text-[10px] font-bold opacity-40 uppercase tracking-widest">
-                        Official Requester
+            <tbody>
+              {list.length === 0 ? (
+                <tr>
+                  <td colSpan="5" className="p-10 text-center opacity-50">
+                    No data found
+                  </td>
+                </tr>
+              ) : (
+                list.map((item) => (
+                  <tr key={item._id || Math.random()} className="border-t hover:bg-gray-50">
+
+                    <td className="p-4 capitalize">
+                      <span className={`px-2 py-1 rounded text-xs font-bold ${
+                        item.type === "college"
+                          ? "bg-blue-100 text-blue-600"
+                          : "bg-green-100 text-green-600"
+                      }`}>
+                        {item.type || "N/A"}
                       </span>
-                      <div className="flex flex-col">
-                        <span className="text-[13px] font-bold text-[#111]">
-                          {item.requesterName || "Not Documented"}
-                        </span>
-                        <span className="text-[11px] font-mono text-[#333] opacity-60">
-                          {item.requesterEmail}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                    </td>
 
-                <div className="p-4 bg-[#fcfcfc] border-t border-[#f9f9f9] rounded-b-[20px]">
-                  <button
-                    onClick={() =>
-                      navigate(`/admin/onboarding/${item.type}/${item._id}`)
-                    }
-                    className="w-full py-3 bg-[#f9f9f9] border border-[#333] text-[#333] text-[11px] font-black uppercase tracking-widest rounded-[10px] hover:bg-[#333] hover:text-[#fff] transition-all cursor-pointer"
-                  >
-                    View Record Details
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+                    <td className="p-4 font-bold">
+                      {item.name || item.collegeName || item.companyName || "N/A"}
+                    </td>
+
+                    <td className="p-4">
+                      {item.requesterName || "N/A"}
+                    </td>
+
+                    <td className="p-4 text-[#6C5CE7] text-sm">
+                      {item.requesterEmail || "N/A"}
+                    </td>
+
+                    <td className="p-4 text-right">
+                      <button
+                        onClick={() =>
+                          navigate(`/admin/onboarding/${item.type}/${item._id}`)
+                        }
+                        className="px-4 py-2 bg-[#6C5CE7] text-white rounded-lg text-xs font-bold"
+                      >
+                        View
+                      </button>
+                    </td>
+
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* PAGINATION */}
+        <div className="flex justify-between items-center">
+
+          <button
+            disabled={page === 1}
+            onClick={() => setPage((p) => p - 1)}
+            className="px-4 py-2 bg-gray-200 rounded disabled:opacity-40"
+          >
+            Prev
+          </button>
+
+          <span className="text-sm font-bold">
+            Page {page} / {totalPages}
+          </span>
+
+          <button
+            disabled={page === totalPages}
+            onClick={() => setPage((p) => p + 1)}
+            className="px-4 py-2 bg-gray-200 rounded disabled:opacity-40"
+          >
+            Next
+          </button>
+
+        </div>
+
       </main>
     </div>
   );

@@ -1,0 +1,151 @@
+.mp-page {
+  min-height: 100vh;
+  background: #f4f6f9;
+  display: flex;
+  justify-content: center;
+  padding: 40px;
+}
+
+.mp-card {
+  display: flex;
+  width: 900px;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+/* Sidebar */
+
+.mp-sidebar {
+  width: 280px;
+  background: #0f172a;
+  color: white;
+  padding: 30px;
+  text-align: center;
+}
+
+.mp-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #2563eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  margin: 0 auto 15px;
+  font-weight: bold;
+}
+
+.mp-status {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+}
+
+.mp-status.completed {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.mp-status.pending {
+  background: #fef9c3;
+  color: #854d0e;
+}
+
+.mp-meta {
+  margin-top: 20px;
+  font-size: 14px;
+  text-align: left;
+}
+
+/* Main */
+
+.mp-main {
+  flex: 1;
+  padding: 40px;
+}
+
+.mp-main h1 {
+  margin-bottom: 20px;
+}
+
+.mp-main label {
+  display: block;
+  margin-top: 15px;
+  font-weight: 600;
+}
+
+.mp-main input,
+.mp-main textarea {
+  width: 100%;
+  padding: 10px;
+  margin-top: 6px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+/* Button */
+
+.mp-btn {
+  margin-top: 20px;
+  width: 100%;
+  padding: 12px;
+  border: none;
+  background: #2563eb;
+  color: white;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.mp-btn:hover {
+  background: #1d4ed8;
+}
+
+.mp-btn-loading {
+  opacity: 0.8;
+  cursor: not-allowed;
+}
+
+/* Spinner */
+
+.mp-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid white;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: mp-spin 0.6s linear infinite;
+}
+
+@keyframes mp-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Alerts */
+
+.mp-error {
+  background: #fee2e2;
+  color: #991b1b;
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+
+.mp-success {
+  background: #dcfce7;
+  color: #166534;
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}

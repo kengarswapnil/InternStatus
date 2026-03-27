@@ -1,0 +1,158 @@
+.cp-page {
+  min-height: 100vh;
+  background: #f4f6f9;
+  display: flex;
+  justify-content: center;
+  padding: 40px;
+}
+
+.cp-card {
+  width: 900px;
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+.cp-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.cp-logo img {
+  width: 70px;
+  height: 70px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.cp-logo-placeholder {
+  width: 70px;
+  height: 70px;
+  background: #2563eb;
+  color: white;
+  font-size: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+}
+
+.cp-status {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  margin-top: 5px;
+  display: inline-block;
+}
+.cp-status.active {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.cp-status.pending {
+  background: #fef9c3;
+  color: #854d0e;
+}
+
+.cp-status.rejected {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.cp-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.cp-grid input,
+textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.cp-locations {
+  margin-top: 20px;
+}
+
+.cp-location-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.cp-location-row input {
+  flex: 1;
+}
+
+.cp-location-row button {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 0 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.cp-readonly {
+  margin-top: 20px;
+  font-size: 14px;
+  color: #555;
+}
+
+.cp-btn {
+  margin-top: 20px;
+  width: 100%;
+  padding: 12px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.cp-btn-loading {
+  opacity: 0.8;
+  cursor: not-allowed;
+}
+
+.cp-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid white;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: cp-spin 0.6s linear infinite;
+}
+
+@keyframes cp-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.cp-error {
+  background: #fee2e2;
+  color: #991b1b;
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+
+.cp-success {
+  background: #dcfce7;
+  color: #166534;
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+
