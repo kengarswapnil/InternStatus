@@ -230,26 +230,26 @@ if (ongoingApplication) {
     throw new Error("Internship dates are not properly set");
   }
 
-  const totalDays = Math.max(
-    Math.ceil((end - start) / (1000 * 60 * 60 * 24)),
-    1
-  );
+  // const totalDays = Math.max(
+  //   Math.ceil((end - start) / (1000 * 60 * 60 * 24)),
+  //   1
+  // );
 
-  const elapsedDays = Math.min(
-    Math.max(
-      Math.ceil((today - start) / (1000 * 60 * 60 * 24)),
-      0
-    ),
-    totalDays
-  );
+  // const elapsedDays = Math.min(
+  //   Math.max(
+  //     Math.ceil((today - start) / (1000 * 60 * 60 * 24)),
+  //     0
+  //   ),
+  //   totalDays
+  // );
 
-  const progress = Math.round((elapsedDays / totalDays) * 100);
+  // const progress = Math.round((elapsedDays / totalDays) * 100);
 
           /// Task progress calculation
-//     const completedTasks = taskMap.completed || 0;
-// const totalTasks = Object.values(taskMap).reduce((a, b) => a + b, 0) || 1;
+    const completedTasks = taskMap.completed || 0;
+const totalTasks = Object.values(taskMap).reduce((a, b) => a + b, 0) || 1;
 
-// const progress = Math.round((completedTasks / totalTasks) * 100);
+const progress = Math.round((completedTasks / totalTasks) * 100);
 
   currentInternship = {
     applicationId: ongoingApplication._id,

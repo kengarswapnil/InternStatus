@@ -124,39 +124,174 @@ export const generateInternshipReportService = async (applicationId) => {
     // 7. HTML
    const html = `
 <style>
-  body { font-family: Arial; padding: 30px; line-height: 1.6; }
-  h1 { text-align: center; margin-bottom: 20px; }
-  h2 { margin-top: 20px; }
-  .section { margin-bottom: 25px; }
-  .task { margin-left: 20px; padding: 10px; border-left: 3px solid #555; margin-bottom: 10px; }
-  .label { font-weight: bold; }
+  body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    padding: 40px;
+    color: #2D3436;
+    line-height: 1.6;
+    background: #fff;
+  }
+
+  h1 {
+    text-align: center;
+    font-size: 28px;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+  }
+
+  .sub-header {
+    text-align: center;
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 30px;
+  }
+
+  .card {
+    border: 1px solid #e5e5e5;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .section-title {
+    font-size: 14px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+    border-left: 4px solid #6C5CE7;
+    padding-left: 10px;
+    text-transform: uppercase;
+  }
+
+  .grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .grid div {
+    flex: 1 1 45%;
+  }
+
+  .label {
+    font-weight: bold;
+    font-size: 12px;
+    color: #555;
+  }
+
+  .value {
+    font-size: 14px;
+    margin-top: 2px;
+  }
+
+  .week {
+    margin-top: 25px;
+  }
+
+  .task {
+    border: 1px solid #f0f0f0;
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 10px;
+    background: #fafafa;
+  }
+
+  .task-title {
+    font-weight: bold;
+    font-size: 13px;
+    margin-bottom: 6px;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 6px;
+    font-size: 10px;
+    background: #6C5CE7;
+    color: white;
+    margin-left: 6px;
+  }
+
+  .footer {
+    margin-top: 40px;
+    font-size: 11px;
+    text-align: center;
+    color: #999;
+  }
+
 </style>
 
 <h1>INTERNSHIP REPORT</h1>
+<p class="sub-header">Academic Internship Summary Document</p>
 
-<div class="section">
-  <p><span class="label">Student:</span> ${application.student?.fullName}</p>
-  <p><span class="label">Company:</span> ${application.company?.name}</p>
-  <p><span class="label">Total Tasks:</span> ${totalTasks}</p>
-  <p><span class="label">Mentor Score:</span> ${mentorScore.toFixed(2)}</p>
+<!-- SUMMARY -->
+<div class="card">
+  <div class="section-title">Student Information</div>
+  <div class="grid">
+    <div>
+      <div class="label">Student Name</div>
+      <div class="value">${application.student?.fullName || "-"}</div>
+    </div>
+    <div>
+      <div class="label">Company</div>
+      <div class="value">${application.company?.name || "-"}</div>
+    </div>
+    <div>
+      <div class="label">Total Tasks</div>
+      <div class="value">${totalTasks}</div>
+    </div>
+    <div>
+      <div class="label">Mentor Score</div>
+      <div class="value">${mentorScore.toFixed(2)} / 10</div>
+    </div>
+  </div>
 </div>
 
+<!-- TECHNOLOGIES -->
+<div class="card">
+  <div class="section-title">Technologies Used</div>
+  <div class="value">
+    ${technologies.length ? technologies.join(", ") : "Not specified"}
+  </div>
+</div>
+
+<!-- WEEKLY REPORT -->
 ${weeks.map(w => `
-  <div class="section">
-    <h2>Week ${w.weekNumber}</h2>
+  <div class="card week">
+    <div class="section-title">Week ${w.weekNumber}</div>
 
     ${w.tasks.map((t, i) => `
       <div class="task">
-        <p><span class="label">Task ${i + 1}: ${t.taskTitle}</span></p>
-        <p><span class="label">Description:</span> ${t.summary}</p>
-        <p><span class="label">Technologies:</span> ${t.technologies?.join(", ") || "-"}</p>
-        <p><span class="label">Score:</span> ${t.score || 0}/10</p>
-        <p><span class="label">Feedback:</span> ${t.mentorFeedback || "-"}</p>
+        <div class="task-title">
+          Task ${i + 1}: ${t.taskTitle}
+        </div>
+
+        <div><span class="label">Description:</span> ${t.summary}</div>
+
+        <div>
+          <span class="label">Technologies:</span>
+          ${t.technologies?.length ? t.technologies.join(", ") : "-"}
+        </div>
+
+        <div>
+          <span class="label">Score:</span>
+          ${t.score || 0}/10
+          <span class="badge">Mentor Rated</span>
+        </div>
+
+        <div>
+          <span class="label">Feedback:</span>
+          ${t.mentorFeedback || "-"}
+        </div>
       </div>
     `).join("")}
 
   </div>
 `).join("")}
+
+<!-- FOOTER -->
+<div class="footer">
+  Generated on ${new Date().toLocaleDateString("en-IN")} • Internship Evaluation System
 </div>
 `;
 

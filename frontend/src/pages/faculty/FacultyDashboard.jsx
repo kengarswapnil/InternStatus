@@ -14,6 +14,7 @@ import {
   Activity,
   ChevronRight,
   Zap,
+  CheckCircle2, // ✅ ADD THIS
 } from "lucide-react";
 
 // ─────────────────────────────────────────────────────────────────────
