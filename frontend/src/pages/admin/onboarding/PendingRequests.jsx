@@ -61,33 +61,33 @@ export default function PendingRequests() {
       )
   );
 
-  const approve = async (id, type) => {
-    try {
-      const url = `/admin/onboarding/${type}/${id}/status`;
-      await API.put(url, { status: "approved" });
-      fetchData();
-    } catch {
-      alert("Approve failed");
-    }
-  };
+const approve = async (id, type) => {
+  try {
+    const url = `/onboarding/${type}/${id}/status`;
+    await API.patch(url, { status: "approved" }); // ✅ PATCH, not PUT
+    fetchData();
+  } catch {
+    alert("Approve failed");
+  }
+};
 
-  const reject = async (id, type) => {
-    try {
-      const reason = prompt("Enter rejection reason");
-      if (!reason) return;
-      const url = type === "college"
-          ? `/college-onboarding/${id}/status`
-          : `/company-onboarding/${id}/status`;
+const reject = async (id, type) => {
+  try {
+    const reason = prompt("Enter rejection reason");
+    if (!reason) return;
 
-      await API.put(url, {
-        status: "rejected",
-        rejectionReason: reason,
-      });
-      fetchData();
-    } catch {
-      alert("Reject failed");
-    }
-  };
+    const url = `/onboarding/${type}/${id}/status`;
+
+    await API.patch(url, {
+      status: "rejected",
+      rejectionReason: reason,
+    });
+
+    fetchData();
+  } catch {
+    alert("Reject failed");
+  }
+};
 
   return (
     <div className="min-h-screen bg-[#FFFFFF] text-[#2D3436] p-4 md:p-8 lg:p-12 font-['Nunito']">
